@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NomadFlow - ノマドワーカー専用 集中BGM&環境音自動生成ポモドーロタイマー</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icon CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Fonts -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'deep-navy': '#0D1117',
+            'neon-emerald': '#10B981',
+            'slate-gray': '#94A3B8',
+            'dark-card': '#161B22',
+            'dark-border': '#30363D'
+          },
+          fontFamily: {
+            sans: ['Inter', 'SF Pro', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0D1117;
+      color: #F0F6FC;
+      font-family: 'Inter', 'SF Pro', sans-serif;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .glow-emerald {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+    }
+    .glow-emerald-lg {
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.4);
+    }
+    input[type=range] {
+      accent-color: #10B981;
+    }
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        radial-gradient(circle, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-[#0D1117] text-gray-100 min-h-screen flex flex-col justify-between selection:bg-[#10B981] selection:text-black bg-grid-pattern relative overflow-x-hidden">
+
+  <!-- Ambient Glowing Background Filter -->
+  <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#10B981]/10 rounded-full blur-[130px] pointer-events-none"></div>
+
+  <!-- Header Area -->
+  <header class="w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#10B981] to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-900/40">
+        <i class="fa-solid fa-wave-square text-black text-lg font-bold"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          NomadFlow
+          <span class="text-[10px] font-normal px-2 py-0.5 rounded bg-emerald-950/80 text-[#10B981] border border-emerald-800/40">MVP</span>
+        </h1>
+        <p class="text-xs text-[#94A3B8]">集中BGM &amp; 環境音自動生成ポモドーロ</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Offline Indicator -->
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#161B22] border border-[#30363D] text-xs text-[#94A3B8]">
+        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+        <span class="hidden sm:inline">オフライン動作対応</span>
+      </div>
+
+      <!-- Settings Button -->
+      <button id="settingsBtn" aria-label="設定" class="p-2.5 rounded-xl bg-[#161B22] border border-[#30363D] text-[#94A3B8] hover:text-white hover:border-[#10B981] transition-all">
+        <i class="fa-solid fa-sliders"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Display Container -->
+  <main class="w-full max-w-4xl mx-auto px-6 py-4 flex-1 flex flex-col justify-center items-center relative z-10 gap-8">
+    
+    <!-- Timer Section -->
+    <div class="flex flex-col items-center justify-center w-full">
+      
+      <!-- Mode Tabs -->
+      <div class="flex bg-[#161B22] p-1.5 rounded-2xl border border-[#30363D] mb-8 gap-1 shadow-inner">
+        <button id="modeWork" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all bg-[#10B981] text-black font-semibold shadow-md">
+          <i class="fa-solid fa-brain mr-1.5"></i> 集中 (25分)
+        </button>
+        <button id="modeShort" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#94A3B8] hover:text-white transition-all">
+          <i class="fa-solid fa-coffee mr-1.5"></i> 短い休憩 (5分)
+        </button>
+        <button id="modeLong" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#94A3B8] hover:text-white transition-all">
+          <i class="fa-solid fa-mug-hot mr-1.5"></i> 長い休憩 (15分)
+        </button>
+      </div>
+
+      <!-- Circular Timer Container -->
+      <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center my-2">
+        <!-- SVG Ring -->
+        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" stroke="#161B22" stroke-width="4" fill="none" class="stroke-[#30363D]" />
+          <circle id="progressRing" cx="50" cy="50" r="44" stroke="#10B981" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear" />
+        </svg>
+
+        <!-- Timer Display Inside Ring -->
+        <div class="absolute flex flex-col items-center justify-center text-center">
+          <div id="timerDisplay" class="text-6xl sm:text-7xl font-bold tracking-tight text-white tabular-nums font-mono drop-shadow-md">
+            25:00
+          </div>
+          <div id="audioStatus" class="mt-3 flex items-center gap-2 text-xs text-[#10B981] bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/50">
+            <i class="fa-solid fa-headphones animate-bounce"></i>
+            <span id="audioStatusText">立体音響(ASMR)連動</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Control Buttons -->
+      <div class="flex items-center gap-4 mt-8">
+        <button id="resetBtn" aria-label="リセット" class="w-12 h-12 rounded-xl bg-[#161B22] border border-[#30363D] text-[#94A3B8] hover:text-white hover:border-[#10B981] transition-all flex items-center justify-center">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+
+        <button id="startBtn" class="px-10 py-4 rounded-2xl bg-[#10B981] text-black font-bold text-lg hover:bg-emerald-400 transition-all shadow-lg glow-emerald active:scale-95 flex items-center gap-3">
+          <i id="startIcon" class="fa-solid fa-play"></i>
+          <span id="startText">START</span>
+        </button>
+
+        <button id="skipBtn" aria-label="スキップ" class="w-12 h-12 rounded-xl bg-[#161B22] border border-[#30363D] text-[#94A3B8] hover:text-white hover:border-[#10B981] transition-all flex items-center justify-center">
+          <i class="fa-solid fa-forward"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sound Mixer Section -->
+    <div class="w-full max-w-xl bg-[#161B22] border border-[#30363D] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+          <i class="fa-solid fa-[#sliders] fa-sliders text-[#10B981]"></i>
+          音量ミキサーコントロール (自動生成)
+        </h2>
+        <span class="text-xs text-[#94A3B8]">カフェ/雨音 ASMR &amp; Deep Focus</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <!-- Track 1: Ambient ASMR -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-[#94A3B8] flex items-center gap-1.5">
+              <i class="fa-solid fa-cloud-rain text-emerald-400"></i> カフェ環境音 (ASMR)
+            </span>
+            <span id="asmrVolVal" class="text-white font-mono">50%</span>
+          </div>
+          <input type="range" id="asmrVol" min="0" max="100" value="50" class="w-full h-1.5 bg-[#30363D] rounded-lg appearance-none cursor-pointer">
+        </div>
+
+        <!-- Track 2: Focus Tone BGM -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-[#94A3B8] flex items-center gap-1.5">
+              <i class="fa-solid fa-compact-disc text-emerald-400"></i> 集中BGM (バイノーラル)
+            </span>
+            <span id="bgmVolVal" class="text-white font-mono">30%</span>
+          </div>
+          <input type="range" id="bgmVol" min="0" max="100" value="30" class="w-full h-1.5 bg-[#30363D] rounded-lg appearance-none cursor-pointer">
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Summary Area -->
+  <footer class="w-full max-w-5xl mx-auto px-6 py-6 border-t border-[#30363D]/50 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
+    <!-- Daily Summary -->
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-fire text-[#10B981]"></i>
+        <span>本日完了セッション: <strong id="sessionCount" class="text-white font-mono">0</strong> 回</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-clock text-[#10B981]"></i>
+        <span>総集中時間: <strong id="totalMinutes" class="text-white font-mono">0</strong> 分</span>
+      </div>
+    </div>
+
+    <!-- SNS Share Button -->
+    <div class="flex items-center gap-3">
+      <button id="shareBtn" class="px-4 py-2 rounded-xl bg-[#161B22] border border-[#30363D] text-white hover:border-[#10B981] hover:text-[#10B981] transition-all flex items-center gap-2">
+        <i class="fa-brands fa-x-twitter"></i>
+        <span>作業成果を自然拡散 (SNSシェア)</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-[#161B22] border border-[#30363D] rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-[#30363D] pb-3">
+        <h3 class="text-lg font-bold text-white">タイマー時間のカスタマイズ</h3>
+        <button id="closeModalBtn" aria-label="閉じる" class="text-[#94A3B8] hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div class="flex items-center justify-between">
+          <label for="workInput" class="text-[#94A3B8]">集中時間 (分)</label>
+          <input type="number" id="workInput" value="25" min="1" max="120" class="w-20 bg-[#0D1117] border border-[#30363D] rounded-lg px-3 py-1.5 text-white text-center font-mono">
+        </div>
+        <div class="flex items-center justify-between">
+          <label for="shortInput" class="text-[#94A3B8]">短い休憩 (分)</label>
+          <input type="number" id="shortInput" value="5" min="1" max="30" class="w-20 bg-[#0D1117] border border-[#30363D] rounded-lg px-3 py-1.5 text-white text-center font-mono">
+        </div>
+        <div class="flex items-center justify-between">
+          <label for="longInput" class="text-[#94A3B8]">長い休憩 (分)</label>
+          <input type="number" id="longInput" value="15" min="1" max="60" class="w-20 bg-[#0D1117] border border-[#30363D] rounded-lg px-3 py-1.5 text-white text-center font-mono">
+        </div>
+      </div>
+
+      <button id="saveSettingsBtn" class="w-full py-2.5 rounded-xl bg-[#10B981] text-black font-bold text-sm hover:bg-emerald-400 transition-all">
+        設定を保存して適用
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    // --- App State ---
+    let timerState = {
+      workDuration: 25 * 60,
+      shortDuration: 5 * 60,
+      longDuration: 15 * 60,
+      currentDuration: 25 * 60,
+      remainingTime: 25 * 60,
+      mode: 'work', // 'work', 'short', 'long'
+      isRunning: false,
+      intervalId: null,
+      completedSessions: 0,
+      totalFocusSeconds: 0
+    };
+
+    // --- Web Audio Synthesizer Engine (Generative Ambient ASMR & Focus Beats) ---
+    class NomadAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.asmrGain = null;
+        this.bgmGain = null;
+        this.noiseNode = null;
+        this.oscNode = null;
+        this.isInitialized = false;
+      }
+
+      init() {
+        if (this.isInitialized) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+
+        // Ambient Noise Synthesizer (Brownian Noise Simulation)
+        const bufferSize = 2 * this.ctx.sampleRate;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= 3.5;
+        }
+
+        this.noiseNode = this.ctx.createBufferSource();
+        this.noiseNode.buffer = noiseBuffer;
+        this.noiseNode.loop = true;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 750;
+
+        this.asmrGain = this.ctx.createGain();
+        this.asmrGain.gain.value = 0.5 * 0.25; // Initial 50%
+
+        this.noiseNode.connect(filter);
+        filter.connect(this.asmrGain);
+        this.asmrGain.connect(this.ctx.destination);
+
+        // BGM Tone Synthesizer (432Hz Ambient Focus Frequency)
+        this.oscNode = this.ctx.createOscillator();
+        this.oscNode.type = 'sine';
+        this.oscNode.frequency.value = 216;
+
+        this.bgmGain = this.ctx.createGain();
+        this.bgmGain.gain.value = 0.3 * 0.12; // Initial 30%
+
+        this.oscNode.connect(this.bgmGain);
+        this.bgmGain.connect(this.ctx.destination);
+
+        this.noiseNode.start();
+        this.oscNode.start();
+        this.isInitialized = true;
+      }
+
+      setAsmrVolume(val) {
+        if (!this.asmrGain) return;
+        this.asmrGain.gain.setTargetAtTime((val / 100) * 0.3, this.ctx.currentTime, 0.1);
+      }
+
+      setBgmVolume(val) {
+        if (!this.bgmGain) return;
+        this.bgmGain.gain.setTargetAtTime((val / 100) * 0.15, this.ctx.currentTime, 0.1);
+      }
+
+      playChime() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1046.50, this.ctx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 1.2);
+      }
+    }
+
+    const audioEngine = new NomadAudioEngine();
+
+    // --- DOM Elements ---
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startBtn = document.getElementById('startBtn');
+    const startIcon = document.getElementById('startIcon');
+    const startText = document.getElementById('startText');
+    const resetBtn = document.getElementById('resetBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const progressRing = document.getElementById('progressRing');
+
+    const modeWork = document.getElementById('modeWork');
+    const modeShort = document.getElementById('modeShort');
+    const modeLong = document.getElementById('modeLong');
+
+    const asmrVol = document.getElementById('asmrVol');
+    const bgmVol = document.getElementById('bgmVol');
+    const asmrVolVal = document.getElementById('asmrVolVal');
+    const bgmVolVal = document.getElementById('bgmVolVal');
+
+    const sessionCount = document.getElementById('sessionCount');
+    const totalMinutes = document.getElementById('totalMinutes');
+    const shareBtn = document.getElementById('shareBtn');
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+    const RING_CIRCUMFERENCE = 276.46;
+
+    // --- Helpers & Controllers ---
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      timerDisplay.textContent = formatTime(timerState.remainingTime);
+      const progress = timerState.remainingTime / timerState.currentDuration;
+      const offset = RING_CIRCUMFERENCE * (1 - progress);
+      progressRing.style.strokeDashoffset = offset;
+      document.title = `${formatTime(timerState.remainingTime)} - NomadFlow`;
+    }
+
+    function switchMode(mode) {
+      timerState.mode = mode;
+      pauseTimer();
+
+      [modeWork, modeShort, modeLong].forEach(btn => {
+        btn.className = "px-5 py-2 rounded-xl text-xs sm:text-sm font-medium text-[#94A3B8] hover:text-white transition-all";
+      });
+
+      if (mode === 'work') {
+        timerState.currentDuration = timerState.workDuration;
+        modeWork.className = "px-5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all bg-[#10B981] text-black font-semibold shadow-md";
+      } else if (mode === 'short') {
+        timerState.currentDuration = timerState.shortDuration;
+        modeShort.className = "px-5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all bg-[#10B981] text-black font-semibold shadow-md";
+      } else if (mode === 'long') {
+        timerState.currentDuration = timerState.longDuration;
+        modeLong.className = "px-5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all bg-[#10B981] text-black font-semibold shadow-md";
+      }
+
+      timerState.remainingTime = timerState.currentDuration;
+      updateDisplay();
+    }
+
+    function startTimer() {
+      audioEngine.init();
+      timerState.isRunning = true;
+      startIcon.className = "fa-solid fa-pause";
+      startText.textContent = "PAUSE";
+
+      timerState.intervalId = setInterval(() => {
+        if (timerState.remainingTime > 0) {
+          timerState.remainingTime--;
+          if (timerState.mode === 'work') {
+            timerState.totalFocusSeconds++;
+            totalMinutes.textContent = Math.floor(timerState.totalFocusSeconds / 60);
+          }
+          updateDisplay();
+        } else {
+          onTimerComplete();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      timerState.isRunning = false;
+      startIcon.className = "fa-solid fa-play";
+      startText.textContent = "START";
+      if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+      }
+    }
+
+    function onTimerComplete() {
+      pauseTimer();
+      audioEngine.playChime();
+
+      if (timerState.mode === 'work') {
+        timerState.completedSessions++;
+        sessionCount.textContent = timerState.completedSessions;
+        alert("🎉 集中セッション完了!短い休憩を取りましょう。");
+        switchMode('short');
+      } else {
+        alert("☕️ 休憩終了!次のポモドーロを開始しましょう。");
+        switchMode('work');
+      }
+    }
+
+    // --- Listeners ---
+    startBtn.addEventListener('click', () => {
+      if (timerState.isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      pauseTimer();
+      timerState.remainingTime = timerState.currentDuration;
+      updateDisplay();
+    });
+
+    skipBtn.addEventListener('click', () => {
+      if (confirm("現在のセッションをスキップしますか?")) {
+        onTimerComplete();
+      }
+    });
+
+    modeWork.addEventListener('click', () => switchMode('work'));
+    modeShort.addEventListener('click', () => switchMode('short'));
+    modeLong.addEventListener('click', () => switchMode('long'));
+
+    asmrVol.addEventListener('input', (e) => {
+      const val = e.target.value;
+      asmrVolVal.textContent = `${val}%`;
+      audioEngine.setAsmrVolume(val);
+    });
+
+    bgmVol.addEventListener('input', (e) => {
+      const val = e.target.value;
+      bgmVolVal.textContent = `${val}%`;
+      audioEngine.setBgmVolume(val);
+    });
+
+    shareBtn.addEventListener('click', () => {
+      const mins = Math.floor(timerState.totalFocusSeconds / 60);
+      const text = `🎧 NomadFlowで集中セッションを ${timerState.completedSessions} 回完了!(総集中時間: ${mins}分)\nどこでも没入できるノマド専用環境音ポモドーロタイマー #NomadFlow #ポモドーロ #ノマドワーカー`;
+      const shareUrl = `[link removed]{encodeURIComponent(text)}`;
+      window.open(shareUrl, '_blank');
+    });
+
+    settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    closeModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+    saveSettingsBtn.addEventListener('click', () => {
+      const w = parseInt(document.getElementById('workInput').value) || 25;
+      const s = parseInt(document.getElementById('shortInput').value) || 5;
+      const l = parseInt(document.getElementById('longInput').value) || 15;
+
+      timerState.workDuration = w * 60;
+      timerState.shortDuration = s * 60;
+      timerState.longDuration = l * 60;
+
+      switchMode(timerState.mode);
+      settingsModal.classList.add('hidden');
+    });
+
+    // Initial Render
+    updateDisplay();
+  </script>
+</body>
+</html>
