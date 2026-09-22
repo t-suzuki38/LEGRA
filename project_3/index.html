@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeedCafe Checker - 現在地のWi-Fi速度・コンセント検索</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo">
+        <span class="logo-icon">⚡☕</span>
+        <span class="logo-text">SpeedCafe Checker</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero / Action Area -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <h1 class="hero-title">現在地のWi-Fi実測速度・コンセントの有無をワンタップで確認</h1>
+      <p class="hero-subtitle">アプリ不要でブラウザから即座にストレスフリーな作業スペースを発見できます</p>
+      <button id="search-main-btn" class="cta-button-gradient">
+        <span class="cta-icon">📍</span> 現在地周辺のカフェを検索
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Content & Sidebar Layout -->
+  <div class="main-layout">
+    <main class="content-area">
+      <h2 class="section-title">周辺のカフェ一覧</h2>
+      <div class="shop-list" id="shop-list">
+        <!-- Shop Card 1 -->
+        <article class="shop-card" data-power="true" data-meeting="true" data-open="true">
+          <div class="card-header">
+            <div class="shop-info">
+              <h3 class="shop-name">ルノアール 渋谷宮益坂店</h3>
+            </div>
+            <span class="status-badge status-green">Web会議快適 (下り <strong class="speed-val">85Mbps</strong>)</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-post-speed">⚡ 速度を投稿する</button>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
