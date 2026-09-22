@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-slate-950 text-slate-100 font-sans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NomadSpeed Map | ノマドワーカーのための実測Wi-Fi速度・電源マップ</title>
+  
+  <!-- Google Fonts: Inter & Noto Sans JP -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="[link removed]">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            },
+            electric: {
+              DEFAULT: '#2563eb',
+              light: '#3b82f6',
+              glow: '#00f0ff',
+            },
+            neon: {
+              green: '#10b981',
+              yellow: '#eab308',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full flex flex-col overflow-hidden bg-slate-950 text-slate-100">
+
+  <!-- ヘッダーエリア -->
+  <header class="h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-4 lg:px-6 z-30 shrink-0">
+    <!-- サービスロゴ (NomadSpeed Map) -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-blue-500/20">
+        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+          <i class="fa-solid fa-bolt text-emerald-400 text-lg"></i>
+        </div>
+      </div>
+      <div>
+        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-blue-400 bg-clip-text text-transparent">
+          NomadSpeed <span class="text-emerald-400">Map</span>
+        </span>
+        <span class="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          PRO Beta
+        </span>
+      </div>
+    </div>
+
+    <!-- エリア・キーワード検索バー -->
+    <div class="hidden md:flex flex-1 max-w-md mx-6">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-sm"></i>
+        </div>
+        <input type="text" id="searchInput" placeholder="エリア名+カフェで検索 (例: 渋谷 カフェ 電源)" 
+          class="w-full pl-10 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 rounded-full text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+      </div>
+    </div>
+
+    <!-- アクションボタン & 有料プラン誘導 -->
+    <div class="flex items-center gap-3">
+      <button onclick="openModal()" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-all">
+        <i class="fa-solid fa-plus-circle"></i>
+        <span>速度を投稿する</span>
+      </button>
+
+      <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5">
+        <i class="fa-solid fa-crown text-amber-300"></i>
+        <span>有料PRO会員</span>
+      </button>
+
+      <button class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-300 transition-colors">
+        <i class="fa-regular fa-user"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 絞り込みフィルターバー -->
+  <div class="bg-slate-900/60 border-b border-slate-800 px-4 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar z-20 shrink-0">
+    <div class="flex items-center gap-2 text-xs text-slate-400 pr-2 border-r border-slate-800 shrink-0">
+      <i class="fa-solid fa-sliders text-blue-400"></i>
+      <span class="font-medium">絞り込み</span>
+    </div>
+
+    <!-- 実測速度レンジフィルター -->
+    <div class="flex items-center gap-1 shrink-0">
+      <button class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-600 text-white border border-blue-500 transition-all" data-filter="all">
+        すべて
+      </button>
+      <button class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all" data-filter="100">
+        ⚡ 100Mbps以上
+      </button>
+      <button class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all" data-filter="200">
+        🚀 200Mbps超高速
+      </button>
+    </div>
+
+    <div class="h-4 w-px bg-slate-800 shrink-0"></div>
+
+    <!-- 電源の有無フィルター -->
+    <button id="powerFilterBtn" onclick="togglePowerFilter()" class="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-1.5">
+      <i class="fa-solid fa-plug text-amber-400"></i>
+      <span>電源ありのみ</span>
+    </button>
+
+    <!-- リアルタイム混雑状況フィルター -->
+    <button id="vacancyFilterBtn" onclick="toggleVacancyFilter()" class="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-1.5">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span>空席ありのみ</span>
+    </button>
+  </div>
+
+  <!-- メイン表示エリア (マップ & リストの分割表示) -->
+  <main class="flex-1 flex overflow-hidden relative">
+
+    <!-- 店舗スポットカード / サイドビュー -->
+    <aside class="w-full md:w-[420px] lg:w-[460px] bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 z-10 transition-transform duration-300">
+      
+      <!-- エリア情報 & ソート -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h1 class="font-bold text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-rose-500"></i>
+            <span>渋谷・恵比寿エリア</span>
+          </h1>
+          <p class="text-xs text-slate-400 mt-0.5">実測データ投稿 1,240件 (本日更新)</p>
+        </div>
+        <select class="bg-slate-800 text-xs text-slate-300 border border-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+          <option>通信速度順</option>
+          <option>空席順</option>
+          <option>距離順</option>
+        </select>
+      </div>
+
+      <!-- スポットカードリスト -->
+      <div id="spotList" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+
+        <!-- 店舗スポンサー枠・有料プラン対象情報の強調表示 -->
+        <div class="relative group rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-emerald-500/50 p-4 shadow-xl shadow-emerald-950/20 hover:border-emerald-400 transition-all">
+          <div class="absolute -top-3 left-4 bg-emerald-500 text-slate-950 text-[10px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-md">
+            SPONSORED / 公式加盟店
+          </div>
+          
+          <div class="flex justify-between items-start pt-1">
+            <div>
+              <h2 class="font-bold text-base text-white group-hover:text-emerald-400 transition-colors">
+                WeWork 渋谷スクランブルスクエア
+              </h2>
+              <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                <i class="fa-regular fa-map"></i> 東京都渋谷区渋谷2-24-12 39F
+              </p>
+            </div>
+            <!-- 実測通信速度(Mbps)の大文字表示 -->
+            <div class="text-right">
+              <div class="text-2xl font-black tracking-tight text-emerald-400 font-mono">
+                280 <span class="text-xs font-semibold text-slate-400">Mbps</span>
+              </div>
+              <span class="inline-block text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                超爆速 🚀
+              </span>
+            </div>
+          </div>
+
+          <!-- 電源席の有無 & リアルタイム混雑状況 -->
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1 text-slate-200 font-medium">
+                <i class="fa-solid fa-plug text-amber-400"></i> 電源あり
+              </span>
+              <span class="flex items-center gap-1 text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> 空席あり
+              </span>
+            </div>
+          </div>
+
+          <!-- 通信速度を投稿・測定する アクションボタン -->
+          <div class="mt-3 flex gap-2">
+            <button onclick="openModal('WeWork 渋谷スクランブルスクエア')" class="flex-1 py-2 bg-slate-800 hover:bg-emerald-600 hover:text-white border border-slate-700 hover:border-emerald-500 rounded-xl text-xs font-bold text-slate-200 transition-all flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>通信速度を投稿・測定する</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 店舗スポットカード 2 -->
+        <div class="spot-card rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 transition-all cursor-pointer">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="font-bold text-sm text-white hover:text-blue-400 transition-colors">
+                WIRED CAFE 渋谷QFRONT店
+              </h2>
+              <p class="text-xs text-slate-400 mt-1">東京都渋谷区宇田川町21-6 7F</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold text-blue-400 font-mono">
+                145 <span class="text-xs text-slate-400">Mbps</span>
+              </div>
+              <span class="text-[10px] text-blue-300">高速通信 ⚡</span>
+            </div>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <span class="text-slate-300"><i class="fa-solid fa-plug text-amber-400 mr-1"></i>一部電源あり</span>
+              <span class="text-amber-400 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>やや混雑</span>
+            </div>
+            <button onclick="openModal('WIRED CAFE 渋谷QFRONT店')" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
+              <i class="fa-solid fa-plus-circle mr-1"></i>速度投稿
+            </button>
+          </div>
+        </div>
+
+        <!-- 店舗スポットカード 3 -->
+        <div class="spot-card rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 transition-all cursor-pointer">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="font-bold text-sm text-white hover:text-blue-400 transition-colors">
+                FabCafe Tokyo
+              </h2>
+              <p class="text-xs text-slate-400 mt-1">東京都渋谷区道玄坂1-22-7 1F</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold text-emerald-400 font-mono">
+                210 <span class="text-xs text-slate-400">Mbps</span>
+              </div>
+              <span class="text-[10px] text-emerald-300">超爆速 🚀</span>
+            </div>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <span class="text-slate-300"><i class="fa-solid fa-plug text-amber-400 mr-1"></i>電源あり</span>
+              <span class="text-emerald-400 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>空席あり</span>
+            </div>
+            <button onclick="openModal('FabCafe Tokyo')" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
+              <i class="fa-solid fa-plus-circle mr-1"></i>速度投稿
+            </button>
+          </div>
+        </div>
+
+        <!-- 店舗スポットカード 4 -->
+        <div class="spot-card rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 transition-all cursor-pointer">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="font-bold text-sm text-white hover:text-blue-400 transition-colors">
+                スターバックス コーヒー SHIBUYA TSUTAYA店
+              </h2>
+              <p class="text-xs text-slate-400 mt-1">東京都渋谷区宇田川町21-6</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-bold text-cyan-400 font-mono">
+                92 <span class="text-xs text-slate-400">Mbps</span>
+              </div>
+              <span class="text-[10px] text-cyan-300">快適 👍</span>
+            </div>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-700/50 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <span class="text-slate-300"><i class="fa-solid fa-plug text-amber-400 mr-1"></i>電源あり</span>
+              <span class="text-rose-400 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>満席</span>
+            </div>
+            <button onclick="openModal('スターバックス コーヒー SHIBUYA TSUTAYA店')" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
+              <i class="fa-solid fa-plus-circle mr-1"></i>速度投稿
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- 地図UIパネル (マップ表示) -->
+    <section class="flex-1 bg-slate-950 relative overflow-hidden flex items-center justify-center">
+      
+      <!-- 地図背景グラフィック -->
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]"></div>
+      
+      <svg class="absolute inset-0 w-full h-full stroke-slate-800/60 fill-none" xmlns="[link removed]">
+        <path d="M-100 200 Q 300 150 800 500 T 1400 800" stroke-width="12" />
+        <path d="M200 -50 Q 250 400 600 900" stroke-width="8" />
+        <path d="M 500 100 L 1100 600" stroke-width="6" />
+      </svg>
+
+      <!-- ピン上に実測通信速度(Mbps)を色別バッジで直感表示 -->
+      <!-- 地図ピン 1 (280Mbps ネオングリーンバッジ) -->
+      <div class="absolute top-[32%] left-[45%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20">
+        <div class="relative flex flex-col items-center">
+          <div class="px-3 py-1.5 rounded-full bg-emerald-500 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/50 flex items-center gap-1.5 border-2 border-white animate-bounce">
+            <i class="fa-solid fa-bolt"></i>
+            <span>280 Mbps</span>
+          </div>
+          <div class="w-3 h-3 bg-emerald-500 transform rotate-45 -mt-1.5 border-r border-b border-white"></div>
+          <span class="mt-1 text-[11px] font-bold text-white bg-slate-900/90 px-2 py-0.5 rounded-md border border-slate-700 shadow-md">
+            WeWork 渋谷
+          </span>
+        </div>
+      </div>
+
+      <!-- 地図ピン 2 (210Mbps バッジ) -->
+      <div class="absolute top-[55%] left-[28%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20">
+        <div class="relative flex flex-col items-center">
+          <div class="px-2.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs shadow-md border border-emerald-400 flex items-center gap-1">
+            <i class="fa-solid fa-wifi text-[10px]"></i>
+            <span>210 Mbps</span>
+          </div>
+          <div class="w-2.5 h-2.5 bg-emerald-600 transform rotate-45 -mt-1 border-r border-b border-emerald-400"></div>
+          <span class="mt-1 text-[10px] font-medium text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+            FabCafe
+          </span>
+        </div>
+      </div>
+
+      <!-- 地図ピン 3 (145Mbps エレクトリックブルーバッジ) -->
+      <div class="absolute top-[25%] left-[68%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20">
+        <div class="relative flex flex-col items-center">
+          <div class="px-2.5 py-1 rounded-full bg-blue-600 text-white font-extrabold text-xs shadow-md border border-blue-400 flex items-center gap-1">
+            <i class="fa-solid fa-wifi text-[10px]"></i>
+            <span>145 Mbps</span>
+          </div>
+          <div class="w-2.5 h-2.5 bg-blue-600 transform rotate-45 -mt-1 border-r border-b border-blue-400"></div>
+          <span class="mt-1 text-[10px] font-medium text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+            WIRED CAFE
+          </span>
+        </div>
+      </div>
+
+      <!-- 地図ピン 4 (92Mbps バッジ) -->
+      <div class="absolute top-[65%] left-[62%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20">
+        <div class="relative flex flex-col items-center">
+          <div class="px-2.5 py-1 rounded-full bg-cyan-600 text-white font-extrabold text-xs shadow-md border border-cyan-400 flex items-center gap-1">
+            <i class="fa-solid fa-wifi text-[10px]"></i>
+            <span>92 Mbps</span>
+          </div>
+          <div class="w-2.5 h-2.5 bg-cyan-600 transform rotate-45 -mt-1 border-r border-b border-cyan-400"></div>
+          <span class="mt-1 text-[10px] font-medium text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+            スタバ TSUTAYA
+          </span>
+        </div>
+      </div>
+
+      <!-- 地図コントロール -->
+      <div class="absolute bottom-20 md:bottom-6 right-6 flex flex-col gap-2 z-20">
+        <button class="w-10 h-10 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-200 flex items-center justify-center shadow-lg hover:bg-slate-800 transition-all">
+          <i class="fa-solid fa-location-crosshairs text-blue-400"></i>
+        </button>
+        <div class="flex flex-col bg-slate-900/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+          <button class="w-10 h-10 text-slate-200 flex items-center justify-center hover:bg-slate-800 transition-all border-b border-slate-800">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+          <button class="w-10 h-10 text-slate-200 flex items-center justify-center hover:bg-slate-800 transition-all">
+            <i class="fa-solid fa-minus text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- モバイルフッターナビゲーション (ボトムバー) -->
+  <nav class="md:hidden h-16 bg-slate-900/95 border-t border-slate-800 flex items-center justify-around px-2 z-30 shrink-0">
+    <button class="flex flex-col items-center text-emerald-400 gap-1">
+      <i class="fa-solid fa-map-location-dot text-base"></i>
+      <span class="text-[10px] font-bold">マップ表示</span>
+    </button>
+    <button class="flex flex-col items-center text-slate-400 hover:text-slate-200 gap-1">
+      <i class="fa-solid fa-location-arrow text-base"></i>
+      <span class="text-[10px]">現在地検索</span>
+    </button>
+    <button onclick="openModal()" class="flex flex-col items-center justify-center -mt-5 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/30">
+      <i class="fa-solid fa-bolt text-lg"></i>
+    </button>
+    <button onclick="openModal()" class="flex flex-col items-center text-slate-400 hover:text-slate-200 gap-1">
+      <i class="fa-solid fa-plus-circle text-base"></i>
+      <span class="text-[10px]">速度投稿</span>
+    </button>
+    <button class="flex flex-col items-center text-slate-400 hover:text-slate-200 gap-1">
+      <i class="fa-solid fa-crown text-base text-amber-400"></i>
+      <span class="text-[10px]">有料会員</span>
+    </button>
+  </nav>
+
+  <!-- 通信速度を投稿・測定する モーダルダイアログ -->
+  <div id="speedModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-gauge-high text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">通信速度を投稿・測定する</h3>
+          <p class="text-xs text-slate-400">ノマドワーカーのためのリアルタイム実測データ</p>
+        </div>
+      </div>
+
+      <form id="speedForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">店舗・スポット名</label>
+          <input type="text" id="modalShopName" required placeholder="例: Starbucks 渋谷店" 
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">実測通信速度 (Mbps)</label>
+            <div class="relative">
+              <input type="number" id="modalSpeed" required min="1" max="1000" placeholder="150" 
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-blue-500">
+              <span class="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">Mbps</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">電源席の有無</label>
+            <select id="modalPower" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <option value="あり">電源あり 🔌</option>
+              <option value="一部あり">一部電源あり</option>
+              <option value="なし">電源なし</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">リアルタイム混雑状況</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="border border-slate-700 bg-slate-800 rounded-xl p-2.5 text-center cursor-pointer hover:border-emerald-500 transition-all">
+              <input type="radio" name="congestion" value="空席あり" checked class="hidden peer">
+              <span class="text-xs text-slate-300 peer-checked:text-emerald-400 font-semibold block">🟢 空席あり</span>
+            </label>
+            <label class="border border-slate-700 bg-slate-800 rounded-xl p-2.5 text-center cursor-pointer hover:border-amber-500 transition-all">
+              <input type="radio" name="congestion" value="やや混雑" class="hidden peer">
+              <span class="text-xs text-slate-300 peer-checked:text-amber-400 font-semibold block">🟡 やや混雑</span>
+            </label>
+            <label class="border border-slate-700 bg-slate-800 rounded-xl p-2.5 text-center cursor-pointer hover:border-rose-500 transition-all">
+              <input type="radio" name="congestion" value="満席" class="hidden peer">
+              <span class="text-xs text-slate-300 peer-checked:text-rose-400 font-semibold block">🔴 満席</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all mt-2">
+          測定結果を投稿する
+        </button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
