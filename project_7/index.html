@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>詰みリバーシ・クロニクル</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            slateBg: '#020617',
+            slateCard: '#0F172A',
+            emeraldPrimary: '#10B981',
+            blueSecondary: '#2563EB',
+            amberAccent: '#F59E0B',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+            mono: ['Monospace', 'Courier New', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #020617;
+      color: #f8fafc;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    }
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      gap: 4px;
+      background-color: #1e293b;
+      padding: 6px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+    }
+    .cell {
+      background-color: #0f172a;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.2s ease;
+    }
+    .cell:hover {
+      background-color: #1e293b;
+    }
+    .disc {
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .disc.black {
+      background: linear-gradient(145deg, #1f2937, #111827);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.8);
+      border: 1px solid #374151;
+    }
+    .disc.white {
+      background: linear-gradient(145deg, #ffffff, #e2e8f0);
+      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.5);
+    }
+    .valid-move::after {
+      content: '';
+      width: 28%;
+      height: 28%;
+      border-radius: 50%;
+      background-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 8px #10B981;
+    }
+    .hint-move::after {
+      content: '';
+      width: 35%;
+      height: 35%;
+      border-radius: 50%;
+      background-color: rgba(37, 99, 235, 0.8);
+      box-shadow: 0 0 12px #2563EB;
+    }
+    .turn-glow {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+      border-color: #10B981;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+  <!-- ヘッダーエリア -->
+  <header class="max-w-4xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emeraldPrimary to-blueSecondary flex items-center justify-center text-slateBg shadow-lg shadow-emerald-500/20">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H9v2H7v-2H5v-2h2V9h2v2h2v2zm4.5 1c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          詰みリバーシ・クロニクル
+        </h1>
+        <p class="text-xs text-slate-400">1分完結の爽快脳トレパズル</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="inline-flex rounded-lg bg-slateCard p-1 border border-slate-800 text-xs">
+        <button id="btnEasy" onclick="setDifficulty('EASY')" class="px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition">EASY</button>
+        <button id="btnNormal" onclick="setDifficulty('NORMAL')" class="px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition">NORMAL</button>
+        <button id="btnHard" onclick="setDifficulty('HARD')" class="px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition">HARD</button>
+      </div>
+      <button id="soundToggle" onclick="toggleSound()" class="w-9 h-9 rounded-lg bg-slateCard border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition">
+        <svg id="soundIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- メインエリア -->
+  <main class="max-w-xl mx-auto w-full flex-grow flex flex-col gap-5">
+
+    <!-- デイリーミッションバー -->
+    <div class="bg-slateCard border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs sm:text-sm">
+      <div class="flex items-center gap-2">
+        <span class="bg-amberAccent/20 text-amberAccent px-2 py-0.5 rounded font-bold text-[10px] tracking-wider uppercase">Mission</span>
+        <span class="text-slate-200">本日の対戦を1回クリアしよう</span>
+      </div>
+      <span class="font-mono font-bold text-emeraldPrimary" id="missionProgress">0/1 完了</span>
+    </div>
+
+    <!-- スコアボード -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- YOU -->
+      <div id="playerCard" class="bg-slateCard border border-emeraldPrimary rounded-xl p-3 flex items-center justify-between turn-glow transition-all">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-emeraldPrimary">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-bold">YOU (黒)</div>
+            <div class="text-xs text-emeraldPrimary font-medium" id="playerStatus">あなたの手番</div>
+          </div>
+        </div>
+        <div class="text-2xl font-black font-mono text-white" id="scoreBlack">2</div>
+      </div>
+
+      <!-- CPU -->
+      <div id="cpuCard" class="bg-slateCard border border-slate-800 rounded-xl p-3 flex items-center justify-between transition-all">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-900">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2H2v2h2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9h2zm-4 10H6V5h12v14zm-9-7c.83 0 1.5-.67 1.5-1.5S9.83 9 9 9s-1.5.67-1.5 1.5S8.17 12 9 12zm6 0c.83 0 1.5-.67 1.5-1.5S15.83 9 15 9s-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-7 3h8v2H8v-2z"/></svg>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-bold">CPU (白)</div>
+            <div class="text-xs text-slate-500 font-medium" id="cpuStatus">待機中</div>
+          </div>
+        </div>
+        <div class="text-2xl font-black font-mono text-white" id="scoreWhite">2</div>
+      </div>
+    </div>
+
+    <!-- 8x8 オセロ盤面 -->
+    <div id="board" class="board-grid shadow-2xl"></div>
+
+    <!-- ステータス & アシスト操作コントローラー -->
+    <div class="bg-slateCard border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+      <div class="text-center text-sm font-semibold text-slate-300" id="statusMessage">
+        あなたの番です
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="undoMove()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          <span>待った</span>
+        </button>
+        <button onclick="showHint()" class="bg-slate-800 hover:bg-slate-700 text-blueSecondary border border-blueSecondary/40 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
+          <svg class="w-3.5 h-3.5 fill-amberAccent" viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+          <span>ヒント</span>
+        </button>
+        <button onclick="passTurn()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+          <span>パス</span>
+        </button>
+        <button onclick="resetGame()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          <span>リセット</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- フッター -->
+  <footer class="max-w-4xl mx-auto w-full mt-8 pt-4 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-3">
+    <div>&copy; 2026 詰みリバーシ・クロニクル. All rights reserved.</div>
+    <div class="flex items-center gap-4 text-base">
+      <span class="hover:text-emeraldPrimary cursor-pointer transition">Share</span>
+    </div>
+  </footer>
+
+  <!-- 勝敗リザルトモーダル -->
+  <div id="resultModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-slateCard border border-slate-700 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl flex flex-col gap-4">
+      <div id="resultTitle" class="text-3xl font-black text-emeraldPrimary tracking-wide">YOU WIN!</div>
+      <div class="text-sm text-slate-300">最終獲得枚数</div>
+      <div class="flex justify-center items-center gap-6 my-2">
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-slate-400 mb-1">YOU (黒)</span>
+          <span id="finalBlack" class="text-3xl font-mono font-bold text-white">0</span>
+        </div>
+        <span class="text-xl font-bold text-slate-600">-</span>
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-slate-400 mb-1">CPU (白)</span>
+          <span id="finalWhite" class="text-3xl font-mono font-bold text-white">0</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 mt-2">
+        <button onclick="resetGame()" class="w-full bg-emeraldPrimary hover:bg-emerald-600 text-slateBg font-extrabold py-3 rounded-xl shadow-lg shadow-emerald-500/20 transition">
+          もう一度プレイ
+        </button>
+        <button onclick="shareResult()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+          SNSへ解答をシェア
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EMPTY = 0, BLACK = 1, WHITE = 2;
+    let board = [];
+    let currentPlayer = BLACK;
+    let historyStack = [];
+    let soundEnabled = true;
+    let difficulty = 'NORMAL';
+    let hintCell = null;
+
+    const directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [ 0, -1],          [ 0, 1],
+      [ 1, -1], [ 1, 0], [ 1, 1]
+    ];
+
+    function initBoard() {
+      board = Array(8).fill(null).map(() => Array(8).fill(EMPTY));
+      board[3][3] = WHITE;
+      board[3][4] = BLACK;
+      board[4][3] = BLACK;
+      board[4][4] = WHITE;
+      currentPlayer = BLACK;
+      historyStack = [];
+      hintCell = null;
+      renderBoard();
+      updateStatus();
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
+      const validMoves = getValidMoves(board, currentPlayer);
+
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+
+          if (board[r][c] !== EMPTY) {
+            const disc = document.createElement('div');
+            disc.className = `disc ${board[r][c] === BLACK ? 'black' : 'white'}`;
+            cell.appendChild(disc);
+          } else {
+            const isValid = validMoves.some(m => m.r === r && m.c === c);
+            if (isValid && currentPlayer === BLACK) {
+              cell.classList.add('valid-move');
+              cell.onclick = () => handleCellClick(r, c);
+            }
+            if (hintCell && hintCell.r === r && hintCell.c === c) {
+              cell.classList.add('hint-move');
+            }
+          }
+          boardEl.appendChild(cell);
+        }
+      }
+      updateScores();
+    }
+
+    function getValidMoves(b, player) {
+      const moves = [];
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (b[r][c] === EMPTY) {
+            const flips = getFlips(b, r, c, player);
+            if (flips.length > 0) moves.push({ r, c, flips });
+          }
+        }
+      }
+      return moves;
+    }
+
+    function getFlips(b, r, c, player) {
+      const opponent = player === BLACK ? WHITE : BLACK;
+      let totalFlips = [];
+
+      for (const [dr, dc] of directions) {
+        let nr = r + dr;
+        let nc = c + dc;
+        let currentFlips = [];
+
+        while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && b[nr][nc] === opponent) {
+          currentFlips.push({ r: nr, c: nc });
+          nr += dr;
+          nc += dc;
+        }
+
+        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && b[nr][nc] === player && currentFlips.length > 0) {
+          totalFlips = totalFlips.concat(currentFlips);
+        }
+      }
+      return totalFlips;
+    }
+
+    function handleCellClick(r, c) {
+      if (currentPlayer !== BLACK) return;
+      const validMoves = getValidMoves(board, BLACK);
+      const move = validMoves.find(m => m.r === r && m.c === c);
+      if (!move) return;
+
+      saveHistory();
+      makeMove(r, c, move.flips, BLACK);
+      hintCell = null;
+
+      if (checkGameOver()) return;
+
+      currentPlayer = WHITE;
+      renderBoard();
+      updateStatus();
+
+      setTimeout(cpuTurn, 600);
+    }
+
+    function cpuTurn() {
+      if (currentPlayer !== WHITE) return;
+      const validMoves = getValidMoves(board, WHITE);
+
+      if (validMoves.length === 0) {
+        document.getElementById('statusMessage').innerText = 'CPUはパスしました';
+        currentPlayer = BLACK;
+        renderBoard();
+        updateStatus();
+        checkGameOver();
+        return;
+      }
+
+      let selectedMove = validMoves[0];
+      if (difficulty === 'EASY') {
+        selectedMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+      } else {
+        selectedMove = validMoves.reduce((prev, current) => 
+          (current.flips.length > prev.flips.length) ? current : prev
+        );
+      }
+
+      makeMove(selectedMove.r, selectedMove.c, selectedMove.flips, WHITE);
+
+      if (checkGameOver()) return;
+
+      currentPlayer = BLACK;
+      renderBoard();
+      updateStatus();
+    }
+
+    function makeMove(r, c, flips, player) {
+      board[r][c] = player;
+      flips.forEach(f => {
+        board[f.r][f.c] = player;
+      });
+    }
+
+    function saveHistory() {
+      historyStack.push(JSON.parse(JSON.stringify(board)));
+    }
+
+    function undoMove() {
+      if (historyStack.length === 0 || currentPlayer !== BLACK) return;
+      board = historyStack.pop();
+      currentPlayer = BLACK;
+      hintCell = null;
+      renderBoard();
+      updateStatus();
+    }
+
+    function showHint() {
+      if (currentPlayer !== BLACK) return;
+      const validMoves = getValidMoves(board, BLACK);
+      if (validMoves.length === 0) return;
+      
+      const bestMove = validMoves.reduce((prev, current) => 
+        (current.flips.length > prev.flips.length) ? current : prev
+      );
+      hintCell = bestMove;
+      renderBoard();
+    }
+
+    function passTurn() {
+      if (currentPlayer !== BLACK) return;
+      const validMoves = getValidMoves(board, BLACK);
+      if (validMoves.length === 0) {
+        currentPlayer = WHITE;
+        renderBoard();
+        updateStatus();
+        setTimeout(cpuTurn, 600);
+      }
+    }
+
+    function updateScores() {
+      let bCount = 0, wCount = 0;
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (board[r][c] === BLACK) bCount++;
+          if (board[r][c] === WHITE) wCount++;
+        }
+      }
+      document.getElementById('scoreBlack').innerText = bCount;
+      document.getElementById('scoreWhite').innerText = wCount;
+      return { bCount, wCount };
+    }
+
+    function updateStatus() {
+      const pCard = document.getElementById('playerCard');
+      const cCard = document.getElementById('cpuCard');
+      const msg = document.getElementById('statusMessage');
+      const pStatus = document.getElementById('playerStatus');
+      const cStatus = document.getElementById('cpuStatus');
+
+      if (currentPlayer === BLACK) {
+        pCard.classList.add('turn-glow', 'border-emeraldPrimary');
+        pCard.classList.remove('border-slate-800');
+        cCard.classList.remove('turn-glow', 'border-emeraldPrimary');
+        cCard.classList.add('border-slate-800');
+        msg.innerText = 'あなたの番です';
+        pStatus.innerText = 'あなたの手番';
+        cStatus.innerText = '待機中';
+      } else {
+        cCard.classList.add('turn-glow', 'border-emeraldPrimary');
+        cCard.classList.remove('border-slate-800');
+        pCard.classList.remove('turn-glow', 'border-emeraldPrimary');
+        pCard.classList.add('border-slate-800');
+        msg.innerText = 'CPUが考え中...';
+        pStatus.innerText = '待機中';
+        cStatus.innerText = '思考中...';
+      }
+    }
+
+    function checkGameOver() {
+      const blackMoves = getValidMoves(board, BLACK);
+      const whiteMoves = getValidMoves(board, WHITE);
+
+      if (blackMoves.length === 0 && whiteMoves.length === 0) {
+        endGame();
+        return true;
+      }
+      return false;
+    }
+
+    function endGame() {
+      const { bCount, wCount } = updateScores();
+      document.getElementById('finalBlack').innerText = bCount;
+      document.getElementById('finalWhite').innerText = wCount;
+      
+      const titleEl = document.getElementById('resultTitle');
+      if (bCount > wCount) {
+        titleEl.innerText = 'YOU WIN!';
+        titleEl.className = 'text-3xl font-black text-emeraldPrimary tracking-wide';
+        document.getElementById('missionProgress').innerText = '1/1 完了';
+      } else if (wCount > bCount) {
+        titleEl.innerText = 'CPU WIN!';
+        titleEl.className = 'text-3xl font-black text-rose-500 tracking-wide';
+      } else {
+        titleEl.innerText = 'DRAW!';
+        titleEl.className = 'text-3xl font-black text-amberAccent tracking-wide';
+      }
+
+      document.getElementById('resultModal').classList.remove('hidden');
+    }
+
+    function resetGame() {
+      document.getElementById('resultModal').classList.add('hidden');
+      initBoard();
+    }
+
+    function setDifficulty(diff) {
+      difficulty = diff;
+      document.getElementById('btnEasy').className = diff === 'EASY' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
+      document.getElementById('btnNormal').className = diff === 'NORMAL' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
+      document.getElementById('btnHard').className = diff === 'HARD' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      icon.style.opacity = soundEnabled ? '1' : '0.3';
+    }
+
+    function shareResult() {
+      const b = document.getElementById('finalBlack').innerText;
+      const w = document.getElementById('finalWhite').innerText;
+      alert(`【詰みリバーシ・クロニクル】\nスコア YOU: ${b} vs CPU: ${w}\nSNSへのシェア準備が完了しました!`);
+    }
+
+    window.onload = initBoard;
+  </script>
+</body>
+</html>
