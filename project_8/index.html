@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>オセロ勝率ラボ - リアルタイムAIアドバイス&振り返り</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#1E293B',
+              900: '#0F172A',
+              950: '#020617',
+            },
+            emerald: {
+              400: '#34D399',
+              500: '#10B981',
+              600: '#059669',
+            },
+            cyan: {
+              400: '#22D3EE',
+              500: '#06B6D4',
+              600: '#0891B2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="[link removed]">
+  
+  <!-- Chart.js for Game Analysis -->
+  <script src="[link removed]"></script>
+
+  <style>
+    @import url('[link removed]');
+    
+    body {
+      background-color: #0F172A;
+      color: #F8FAFC;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .board-container {
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(6, 182, 212, 0.15);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 3px;
+      background-color: #022C22;
+      padding: 6px;
+      border-radius: 0.75rem;
+    }
+
+    .cell {
+      aspect-ratio: 1 / 1;
+      background-color: #065F46;
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .cell:hover {
+      background-color: #047857;
+    }
+
+    .disc {
+      width: 84%;
+      height: 84%;
+      border-radius: 50%;
+      transition: transform 0.4s ease, background-color 0.4s ease;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 4px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .disc-black {
+      background: radial-gradient(circle at 35% 35%, #4B5563, #090D16);
+    }
+
+    .disc-white {
+      background: radial-gradient(circle at 35% 35%, #FFFFFF, #CBD5E1);
+    }
+
+    .valid-move::after {
+      content: '';
+      width: 28%;
+      height: 28%;
+      border-radius: 50%;
+      background-color: rgba(6, 182, 212, 0.85);
+      box-shadow: 0 0 10px #06B6D4;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0F172A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between max-w-md md:max-w-xl mx-auto border-x border-slate-800 shadow-2xl relative overflow-x-hidden">
+
+  <!-- HEADER -->
+  <header class="p-4 bg-navy-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-20 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-navy-950 font-bold shadow-lg">
+        <i class="fa-solid me-0.5 fa-brain"></i>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+          オセロ勝率ラボ
+          <span class="text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-1.5 py-0.5 rounded">PRO AI</span>
+        </h1>
+      </div>
+    </div>
+    <button id="reset-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 transition flex items-center gap-1.5">
+      <i class="fa-solid fa-rotate-right"></i> リセット
+    </button>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 p-4 flex flex-col gap-4">
+
+    <!-- REAL-TIME WIN RATE BAR -->
+    <section class="bg-navy-800/80 border border-slate-800 rounded-xl p-3.5 shadow-lg">
+      <div class="flex justify-between text-xs font-bold mb-1.5">
+        <span class="text-slate-300 flex items-center gap-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600 inline-block"></span>
+          あなた (黒): <span id="black-rate-text" class="text-cyan-400 font-extrabold text-sm ml-0.5">50%</span>
+        </span>
+        <span class="text-slate-400 flex items-center gap-1">
+          AI (白): <span id="white-rate-text" class="text-slate-300 font-extrabold text-sm ml-0.5">50%</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-100 inline-block"></span>
+        </span>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="w-full bg-slate-900 h-3.5 rounded-full overflow-hidden p-0.5 flex border border-slate-700/50">
+        <div id="win-rate-bar-black" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full rounded-full transition-all duration-500 ease-out" style="width: 50%;"></div>
+        <div id="win-rate-bar-white" class="bg-slate-700 h-full rounded-full transition-all duration-500 ease-out" style="width: 50%;"></div>
+      </div>
+    </section>
+
+    <!-- PLAYER & STATUS AREA -->
+    <section class="flex justify-between items-center bg-navy-800/40 px-3 py-2 rounded-lg border border-slate-800">
+      <!-- Player Black -->
+      <div id="player-black-card" class="flex items-center gap-2 p-1.5 rounded-md transition-all">
+        <div class="w-7 h-7 rounded-full disc-black border border-slate-700 flex items-center justify-center text-xs font-bold shadow">
+          <span id="score-black" class="text-white">2</span>
+        </div>
+        <div class="text-xs">
+          <div class="font-bold text-slate-200">YOU</div>
+          <div class="text-[10px] text-slate-400">黒番</div>
+        </div>
+      </div>
+
+      <!-- Turn Status -->
+      <div id="turn-indicator" class="text-center px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold animate-pulse">
+        あなたのターンです
+      </div>
+
+      <!-- Player White (CPU) -->
+      <div id="player-white-card" class="flex items-center gap-2 p-1.5 rounded-md transition-all">
+        <div class="text-xs text-right">
+          <div class="font-bold text-slate-200">AI CPU</div>
+          <div class="text-[10px] text-slate-400">白番</div>
+        </div>
+        <div class="w-7 h-7 rounded-full disc-white border border-slate-300 flex items-center justify-center text-xs font-bold shadow">
+          <span id="score-white" class="text-slate-900">2</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OTHELLO BOARD -->
+    <section class="board-container bg-navy-900 p-2.5 rounded-2xl border border-slate-800">
+      <div id="board" class="board-grid">
+        <!-- Cells generated via JavaScript -->
+      </div>
+    </section>
+
+    <!-- AI REALTIME ADVICE BOX -->
+    <section class="bg-gradient-to-r from-navy-800 to-slate-900 border border-cyan-500/30 rounded-xl p-3 shadow-lg relative overflow-hidden">
+      <div class="absolute -right-4 -bottom-4 opacity-10 text-cyan-400 text-6xl pointer-events-none">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="flex items-start gap-2.5">
+        <div class="w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-cyan-500/40">
+          <i class="fa-solid fa-comment-dots text-xs"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">AI リアルタイム解説</span>
+            <span id="ai-evaluation-tag" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 rounded">互角</span>
+          </div>
+          <p id="ai-advice-text" class="text-xs text-slate-200 mt-0.5 leading-relaxed">
+            ゲーム開始。中央の制御を目指して展開しましょう。
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM ACTION BAR (ONE-HAND FRIENDLY) -->
+  <footer class="p-4 bg-navy-900/90 border-t border-slate-800 backdrop-blur sticky bottom-0 z-20">
+    <div class="grid grid-cols-2 gap-3">
+      <button id="hint-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow">
+        <i class="fa-regular fa-lightbulb text-cyan-400"></i> AIヒント
+      </button>
+      <button id="review-trigger-btn" class="w-full bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-navy-950 font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg glow-cyan">
+        <i class="fa-solid fa-chart-line"></i> 投了 / 振り返り
+      </button>
+    </div>
+  </footer>
+
+  <!-- REVIEW / RESULT MODAL -->
+  <div id="review-modal" class="fixed inset-0 bg-navy-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-navy-900 border border-slate-700 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-5 shadow-2xl flex flex-col gap-4">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">AI Analytics Report</span>
+          <h2 id="modal-result-title" class="text-xl font-extrabold text-white">対局振り返り</h2>
+        </div>
+        <button id="close-modal-btn" class="text-slate-400 hover:text-white p-2">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Result Summary Card -->
+      <div class="bg-slate-800/60 rounded-xl p-3 border border-slate-700/60 flex justify-around items-center text-center">
+        <div>
+          <div class="text-xs text-slate-400">あなた (黒)</div>
+          <div id="modal-black-score" class="text-2xl font-extrabold text-cyan-400">0</div>
+        </div>
+        <div class="text-xs font-bold text-slate-500">VS</div>
+        <div>
+          <div class="text-xs text-slate-400">AI (白)</div>
+          <div id="modal-white-score" class="text-2xl font-extrabold text-slate-300">0</div>
+        </div>
+      </div>
+
+      <!-- Win Rate Chart Area -->
+      <div class="bg-slate-800/40 rounded-xl p-3 border border-slate-700/50">
+        <h3 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-area text-cyan-400"></i> 全勝率推移グラフ
+        </h3>
+        <div class="w-full h-40">
+          <canvas id="winRateChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Key Turning Point Card -->
+      <div class="bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-3">
+        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mb-1">
+          <i class="fa-solid fa-bolt"></i> 勝敗を分けた1手 (ターニングポイント)
+        </div>
+        <p id="turning-point-text" class="text-xs text-slate-300 leading-relaxed">
+          第18手: あなたがC4に打ったことで盤面の中央権限を完全に奪取し、勝率が+24%急上昇しました。
+        </p>
+      </div>
+
+      <!-- SNS Share Button -->
+      <button id="share-sns-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-xs shadow">
+        <i class="fa-brands fa-x-twitter text-sm"></i> 「本日の逆転劇」データを出力してシェア
+      </button>
+
+      <!-- Subscription Banner -->
+      <div class="bg-gradient-to-r from-indigo-900/60 to-purple-900/60 border border-indigo-500/30 rounded-xl p-3 flex items-center justify-between">
+        <div class="pr-2">
+          <div class="text-xs font-bold text-indigo-300 flex items-center gap-1">
+            <i class="fa-solid fa-crown text-amber-400"></i> オセロ勝率ラボ Pro
+          </div>
+          <div class="text-[10px] text-slate-300 mt-0.5">無制限の全木解析・AI対局分析を開放</div>
+        </div>
+        <button class="bg-gradient-to-r from-amber-400 to-amber-500 text-navy-950 font-extrabold text-[11px] px-3 py-1.5 rounded-lg shrink-0 shadow">
+          月額詳細
+        </button>
+      </div>
+
+      <!-- Play Again Button -->
+      <button id="modal-restart-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-navy-950 font-extrabold py-3 rounded-xl transition text-sm shadow-lg">
+        もう一度対戦する
+      </button>
+
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // --- Othello Game State ---
+    const BOARD_SIZE = 8;
+    const BLACK = 1;  // Player
+    const WHITE = -1; // CPU
+    const EMPTY = 0;
+
+    let board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
+    let currentPlayer = BLACK;
+    let gameEnded = false;
+    let history = []; // { boardState, move, player, winRate, advice }
+    let chartInstance = null;
+
+    // Weight matrix for Win Rate calculation
+    const WEIGHTS = [
+      [120, -20,  20,   5,   5,  20, -20, 120],
+      [-20, -40,  -5,  -5,  -5,  -5, -40, -20],
+      [ 20,  -5,  15,   3,   3,  15,  -5,  20],
+      [  5,  -5,   3,   3,   3,   3,  -5,   5],
+      [  5,  -5,   3,   3,   3,   3,  -5,   5],
+      [ 20,  -5,  15,   3,   3,  15,  -5,  20],
+      [-20, -40,  -5,  -5,  -5,  -5, -40, -20],
+      [120, -20,  20,   5,   5,  20, -20, 120]
+    ];
+
+    const DIRECTIONS = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [ 0, -1],          [ 0, 1],
+      [ 1, -1], [ 1, 0], [ 1, 1]
+    ];
+
+    // DOM Elements
+    const boardEl = document.getElementById('board');
+    const scoreBlackEl = document.getElementById('score-black');
+    const scoreWhiteEl = document.getElementById('score-white');
+    const winRateBarBlack = document.getElementById('win-rate-bar-black');
+    const winRateBarWhite = document.getElementById('win-rate-bar-white');
+    const blackRateText = document.getElementById('black-rate-text');
+    const whiteRateText = document.getElementById('white-rate-text');
+    const turnIndicator = document.getElementById('turn-indicator');
+    const aiAdviceText = document.getElementById('ai-advice-text');
+    const aiEvaluationTag = document.getElementById('ai-evaluation-tag');
+    const reviewModal = document.getElementById('review-modal');
+
+    // Initialize Game
+    function initGame() {
+      board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
+      // Initial 4 discs
+      board[3][3] = WHITE;
+      board[3][4] = BLACK;
+      board[4][3] = BLACK;
+      board[4][4] = WHITE;
+
+      currentPlayer = BLACK;
+      gameEnded = false;
+      history = [];
+
+      // Initial record
+      const initialRate = calculateWinRate(board);
+      recordHistory(null, BLACK, initialRate, "ゲーム開始。まずは中央の主導権を確保しましょう。");
+
+      renderBoard();
+      updateUI();
+    }
+
+    // Render Board Cells
+    function renderBoard() {
+      boardEl.innerHTML = '';
+      const validMoves = getValidMoves(board, currentPlayer);
+
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          const discVal = board[r][c];
+          if (discVal !== EMPTY) {
+            const disc = document.createElement('div');
+            disc.className = `disc ${discVal === BLACK ? 'disc-black' : 'disc-white'}`;
+            cell.appendChild(disc);
+          } else if (!gameEnded && currentPlayer === BLACK && validMoves.some(m => m.r === r && m.c === c)) {
+            cell.classList.add('valid-move');
+            cell.addEventListener('click', () => handlePlayerMove(r, c));
+          }
+
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    // Handle Player 착手
+    function handlePlayerMove(r, c) {
+      if (gameEnded || currentPlayer !== BLACK) return;
+
+      const flipped = executeMove(board, r, c, BLACK);
+      if (flipped.length === 0) return;
+
+      const currentRate = calculateWinRate(board);
+      const movePosName = getPosName(r, c);
+      const advice = generateAIAdvice(r, c, BLACK, currentRate);
+      recordHistory({ r, c }, BLACK, currentRate, advice);
+
+      currentPlayer = WHITE;
+      renderBoard();
+      updateUI(advice);
+
+      if (isGameOver()) {
+        endGame();
+        return;
+      }
+
+      // Check CPU valid moves
+      if (getValidMoves(board, WHITE).length === 0) {
+        // Pass back to Player
+        setTimeout(() => {
+          currentPlayer = BLACK;
+          renderBoard();
+          updateUI("AIに着手可能手がないため、パスされました。あなたの番です。");
+        }, 1000);
+      } else {
+        // CPU Turn
+        setTimeout(handleCPUMove, 800);
+      }
+    }
+
+    // CPU Logic
+    function handleCPUMove() {
+      if (gameEnded || currentPlayer !== WHITE) return;
+
+      const validMoves = getValidMoves(board, WHITE);
+      if (validMoves.length === 0) {
+        currentPlayer = BLACK;
+        renderBoard();
+        updateUI();
+        return;
+      }
+
+      // Select Best Move for CPU
+      let bestMove = validMoves[0];
+      let bestScore = -Infinity;
+
+      for (let move of validMoves) {
+        // Simple 1-step lookahead evaluation
+        let tempBoard = board.map(row => [...row]);
+        executeMove(tempBoard, move.r, move.c, WHITE);
+        let score = evaluateBoardScore(tempBoard, WHITE);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+
+      executeMove(board, bestMove.r, bestMove.c, WHITE);
+      const currentRate = calculateWinRate(board);
+      const advice = generateAIAdvice(bestMove.r, bestMove.c, WHITE, currentRate);
+      recordHistory(bestMove, WHITE, currentRate, advice);
+
+      currentPlayer = BLACK;
+      renderBoard();
+      updateUI(advice);
+
+      if (isGameOver()) {
+        endGame();
+        return;
+      }
+
+      if (getValidMoves(board, BLACK).length === 0) {
+        // Player Pass
+        setTimeout(() => {
+          currentPlayer = WHITE;
+          renderBoard();
+          updateUI("あなたに着手可能手がないため、パスされました。");
+          setTimeout(handleCPUMove, 800);
+        }, 1000);
+      }
+    }
+
+    // Execute Move & Flip
+    function executeMove(targetBoard, r, c, player) {
+      targetBoard[r][c] = player;
+      let totalFlipped = [];
+
+      for (let [dr, dc] of DIRECTIONS) {
+        let nr = r + dr;
+        let nc = c + dc;
+        let toFlip = [];
+
+        while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && targetBoard[nr][nc] === -player) {
+          toFlip.push({ r: nr, c: nc });
+          nr += dr;
+          nc += dc;
+        }
+
+        if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && targetBoard[nr][nc] === player) {
+          for (let pos of toFlip) {
+            targetBoard[pos.r][pos.c] = player;
+            totalFlipped.push(pos);
+          }
+        }
+      }
+      return totalFlipped;
+    }
+
+    // Get Valid Moves
+    function getValidMoves(targetBoard, player) {
+      let moves = [];
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          if (targetBoard[r][c] !== EMPTY) continue;
+          
+          for (let [dr, dc] of DIRECTIONS) {
+            let nr = r + dr;
+            let nc = c + dc;
+            let count = 0;
+            while (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && targetBoard[nr][nc] === -player) {
+              nr += dr;
+              nc += dc;
+              count++;
+            }
+            if (count > 0 && nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && targetBoard[nr][nc] === player) {
+              moves.push({ r, c });
+              break;
+            }
+          }
+        }
+      }
+      return moves;
+    }
+
+    // Board Score Evaluation
+    function evaluateBoardScore(targetBoard, player) {
+      let score = 0;
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          if (targetBoard[r][c] === player) {
+            score += WEIGHTS[r][c];
+          } else if (targetBoard[r][c] === -player) {
+            score -= WEIGHTS[r][c];
+          }
+        }
+      }
+      return score;
+    }
+
+    // Win Rate Calculation (0 - 100% for Black)
+    function calculateWinRate(targetBoard) {
+      let score = evaluateBoardScore(targetBoard, BLACK);
+      // Sigmoid normalization
+      let winRate = 1 / (1 + Math.exp(-score / 60));
+      let percentage = Math.round(winRate * 100);
+      return Math.max(5, Math.min(95, percentage)); // Clamp between 5% - 95%
+    }
+
+    // Generate Dynamic AI Advice Text
+    function generateAIAdvice(r, c, player, currentRate) {
+      const posName = getPosName(r, c);
+      const isCorner = (r === 0 || r === 7) && (c === 0 || c === 7);
+      const prevRate = history.length > 0 ? history[history.length - 1].winRate : 50;
+      const rateDiff = currentRate - prevRate;
+
+      if (player === BLACK) {
+        if (isCorner) return `【神の一手】${posName}の角を獲得! 勝率が大幅に優位に傾きました。`;
+        if (rateDiff > 10) return `${posName}への好手! AIの評価値が+${rateDiff}%急上昇しました。`;
+        if (rateDiff < -10) return `${posName}は危険な手です。相手に隙を与えてしまいました。`;
+        return `${posName}に着手。堅実に盤面のバランスを維持しています。`;
+      } else {
+        if (isCorner) return `AIが${posName}の角を奪取しました。ガードを固めましょう。`;
+        if (rateDiff < -10) return `AIの${posName}により、黒の勝率が下降。巻き返しを狙いましょう。`;
+        return `AIが${posName}へ展開。次の手を慎重に吟味してください。`;
+      }
+    }
+
+    function getPosName(r, c) {
+      const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      return `${cols[c]}${r + 1}`;
+    }
+
+    // Record History Step
+    function recordHistory(move, player, winRate, advice) {
+      history.push({
+        move,
+        player,
+        winRate,
+        advice
+      });
+    }
+
+    // Update UI Elements
+    function updateUI(customAdvice) {
+      // Counts
+      let blackCount = 0;
+      let whiteCount = 0;
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          if (board[r][c] === BLACK) blackCount++;
+          if (board[r][c] === WHITE) whiteCount++;
+        }
+      }
+
+      scoreBlackEl.innerText = blackCount;
+      scoreWhiteEl.innerText = whiteCount;
+
+      // Win Rate
+      const currentRate = calculateWinRate(board);
+      winRateBarBlack.style.width = `${currentRate}%`;
+      winRateBarWhite.style.width = `${100 - currentRate}%`;
+      blackRateText.innerText = `${currentRate}%`;
+      whiteRateText.innerText = `${100 - currentRate}%`;
+
+      // Turn Indicator
+      if (gameEnded) {
+        turnIndicator.innerText = "対局終了";
+        turnIndicator.className = "text-center px-3 py-1 rounded-full bg-slate-700 text-slate-300 text-xs font-semibold";
+      } else if (currentPlayer === BLACK) {
+        turnIndicator.innerText = "あなたのターンです";
+        turnIndicator.className = "text-center px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold animate-pulse";
+      } else {
+        turnIndicator.innerText = "AI思考中...";
+        turnIndicator.className = "text-center px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold animate-pulse";
+      }
+
+      // Advice Text
+      if (customAdvice) {
+        aiAdviceText.innerText = customAdvice;
+      }
+
+      // Evaluation Tag
+      if (currentRate >= 65) {
+        aiEvaluationTag.innerText = "黒優勢";
+        aiEvaluationTag.className = "text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded";
+      } else if (currentRate <= 35) {
+        aiEvaluationTag.innerText = "白優勢";
+        aiEvaluationTag.className = "text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded";
+      } else {
+        aiEvaluationTag.innerText = "互角";
+        aiEvaluationTag.className = "text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded";
+      }
+    }
+
+    // Check Game Over
+    function isGameOver() {
+      const blackMoves = getValidMoves(board, BLACK);
+      const whiteMoves = getValidMoves(board, WHITE);
+      return blackMoves.length === 0 && whiteMoves.length === 0;
+    }
+
+    // End Game
+    function endGame() {
+      gameEnded = true;
+      updateUI("対局が終了しました。「振り返り」ボタンから全分析データを閲覧できます。");
+      showReviewModal();
+    }
+
+    // Show Review Modal & Render Chart
+    function showReviewModal() {
+      reviewModal.classList.remove('hidden');
+
+      // Scores
+      let blackCount = parseInt(scoreBlackEl.innerText);
+      let whiteCount = parseInt(scoreWhiteEl.innerText);
+      document.getElementById('modal-black-score').innerText = blackCount;
+      document.getElementById('modal-white-score').innerText = whiteCount;
+
+      const titleEl = document.getElementById('modal-result-title');
+      if (blackCount > whiteCount) {
+        titleEl.innerText = "🎉 あなたの勝利!";
+        titleEl.className = "text-xl font-extrabold text-cyan-400";
+      } else if (whiteCount > blackCount) {
+        titleEl.innerText = "💀 AI CPUの勝利";
+        titleEl.className = "text-xl font-extrabold text-rose-400";
+      } else {
+        titleEl.innerText = "🤝 引き分け";
+        titleEl.className = "text-xl font-extrabold text-slate-300";
+      }
+
+      // Turning Point Finding
+      let maxDiff = 0;
+      let turningPointStep = null;
+      for (let i = 1; i < history.length; i++) {
+        let diff = Math.abs(history[i].winRate - history[i - 1].winRate);
+        if (diff > maxDiff) {
+          maxDiff = diff;
+          turningPointStep = history[i];
+        }
+      }
+
+      if (turningPointStep && turningPointStep.move) {
+        const posName = getPosName(turningPointStep.move.r, turningPointStep.move.c);
+        const playerStr = turningPointStep.player === BLACK ? "あなた" : "AI";
+        document.getElementById('turning-point-text').innerText = 
+          `第${history.indexOf(turningPointStep)}手 (${playerStr}): ${posName}への着手により勝率が${maxDiff}%大きく変動。この手が局面を決定付けました。`;
+      } else {
+        document.getElementById('turning-point-text').innerText = "全体を通じて極めて均衡した着手が続いた好勝負でした。";
+      }
+
+      // Render Chart.js
+      renderWinRateChart();
+    }
+
+    // Render Chart.js Win Rate Graph
+    function renderWinRateChart() {
+      const ctx = document.getElementById('winRateChart').getContext('2d');
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const labels = history.map((_, index) => `${index}手`);
+      const dataPoints = history.map(h => h.winRate);
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '黒(あなた)の勝率 (%)',
+            data: dataPoints,
+            borderColor: '#06B6D4',
+            backgroundColor: 'rgba(6, 182, 212, 0.15)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: '#10B981'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              grid: { color: 'rgba(255, 255, 255, 0.08)' },
+              ticks: { color: '#94A3B8', font: { size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94A3B8', font: { size: 9 } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // Event Listeners
+    document.getElementById('reset-btn').addEventListener('click', initGame);
+    document.getElementById('modal-restart-btn').addEventListener('click', () => {
+      reviewModal.classList.add('hidden');
+      initGame();
+    });
+    document.getElementById('review-trigger-btn').addEventListener('click', showReviewModal);
+    document.getElementById('close-modal-btn').addEventListener('click', () => {
+      reviewModal.classList.add('hidden');
+    });
+
+    // Hint Button
+    document.getElementById('hint-btn').addEventListener('click', () => {
+      if (gameEnded || currentPlayer !== BLACK) return;
+      const validMoves = getValidMoves(board, BLACK);
+      if (validMoves.length > 0) {
+        let bestMove = validMoves[0];
+        let bestScore = -Infinity;
+        for (let m of validMoves) {
+          let tempBoard = board.map(r => [...r]);
+          executeMove(tempBoard, m.r, m.c, BLACK);
+          let score = evaluateBoardScore(tempBoard, BLACK);
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = m;
+          }
+        }
+        const hintPos = getPosName(bestMove.r, bestMove.c);
+        aiAdviceText.innerText = `💡 AIヒント: 最適手は 【${hintPos}】 です。勝率を高める盤面コントロールが見込めます。`;
+      }
+    });
+
+    // SNS Share Button
+    document.getElementById('share-sns-btn').addEventListener('click', () => {
+      const text = `オセロ勝率ラボでAI対戦を完了! 最終勝率: ${blackRateText.innerText} で対局を終えました! #オセロ勝率ラボ #AIゲーム解析`;
+      const url = `[link removed]{encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    });
+
+    // Start on Load
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+</body>
+</html>
