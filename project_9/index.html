@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NomadDesk Guide | 物理環境特化型デスクガイド</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#1b3b2b',
+            amber: '#d97706',
+            warmgray: '#f4f3f0',
+            lightgray: '#f8f9fa',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f4f3f0;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      color: #2d3748;
+    }
+  </style>
+</head>
+<body class="bg-warmgray min-h-screen flex flex-col">
+
+  <!-- ヘッダーエリア -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- 左: ブランドロゴ -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-forest text-white p-2 rounded-lg flex items-center justify-center w-10 h-10">
+          <i class="fa-solid fa-chair text-lg text-amber"></i>
+        </div>
+        <span class="text-xl font-bold text-forest tracking-tight">NomadDesk Guide</span>
+      </div>
+
+      <!-- 中央: 簡易エリア検索バー -->
+      <div class="hidden md:flex items-center bg-lightgray px-3 py-1.5 rounded-full border border-gray-300 w-80">
+        <i class="fa-solid fa-location-dot text-gray-400 mr-2"></i>
+        <input type="text" placeholder="エリアを検索(例: 渋谷、新宿)" class="bg-transparent border-none text-sm focus:outline-none w-full text-gray-700">
+      </div>
+
+      <!-- 右: アクションボタン -->
+      <div class="flex items-center space-x-3">
+        <button class="text-xs sm:text-sm text-forest font-semibold px-3 py-2 rounded-lg border border-forest hover:bg-forest hover:text-white transition">
+          <i class="fa-solid fa-plus mr-1"></i> データ投稿
+        </button>
+        <button class="text-xs sm:text-sm bg-amber text-white font-semibold px-3 py-2 rounded-lg shadow hover:opacity-90 transition">
+          <i class="fa-solid fa-crown mr-1"></i> プレミアム
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ヒーローセクション -->
+  <section class="bg-forest text-white py-12 px-4 sm:px-6 lg:px-8 shadow-inner">
+    <div class="max-w-5xl mx-auto text-center">
+      <h1 class="text-2xl sm:text-4xl font-bold mb-3 tracking-tight">
+        身体負担を抑え、最高のパフォーマンスを発揮できるデスク環境を。
+      </h1>
+      <p class="text-gray-300 text-sm sm:text-base max-w-3xl mx-auto mb-8">
+        デスク寸法、椅子のエルゴノミクス度、コンセント配置、BGM音量などの物理環境に特化したワーキングスペースガイド。
+      </p>
+
+      <!-- 物理環境特化型フィルター検索パネル -->
+      <div class="bg-white text-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl text-left">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- デスク広さ・高さ -->
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">
+              <i class="fa-solid fa-ruler-horizontal text-amber mr-1"></i> デスク広さ・高さ
+            </label>
+            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
+              <option>指定なし</option>
+              <option>幅80cm以上</option>
+              <option>幅100cm以上</option>
+              <option>昇降デスクあり</option>
+            </select>
+          </div>
+
+          <!-- 椅子の座り心地 -->
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">
+              <i class="fa-solid fa-couch text-amber mr-1"></i> 椅子の座り心地
+            </label>
+            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
+              <option>指定なし</option>
+              <option>エルゴノミクスチェア完備</option>
+              <option>高反発クッション</option>
+              <option>ヘッドレスト付き</option>
+            </select>
+          </div>
+
+          <!-- 電源・足元スペース -->
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">
+              <i class="fa-solid fa-plug text-amber mr-1"></i> 電源・足元スペース
+            </label>
+            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
+              <option>指定なし</option>
+              <option>全席コンセント配備</option>
+              <option>足元ゆったりスペース</option>
+              <option>複数口タップあり</option>
+            </select>
+          </div>
+
+          <!-- BGM音量レベル -->
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">
+              <i class="fa-solid fa-volume-low text-amber mr-1"></i> BGM音量レベル
+            </label>
+            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
+              <option>指定なし</option>
+              <option>静寂 (40dB以下)</option>
+              <option>適度 (50dB前後)</option>
+              <option>賑やか (60dB以上)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 検索実行ボタン -->
+        <button class="w-full bg-amber hover:bg-yellow-600 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center text-base">
+          <i class="fa-solid fa-magnifying-glass mr-2"></i> 物理環境フィルターで検索
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- メインコンテンツエリア -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- メインカラム: 厳選ワークスペース一覧 -->
+      <div class="lg:col-span-2 space-y-6">
+        <h2 class="text-xl font-bold text-forest flex items-center">
+          <i class="fa-solid fa-compass text-amber mr-2"></i> 厳選ワークスペース一覧
+        </h2>
+
+        <!-- カード1 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
+          <div class="sm:w-2/5 bg-gray-200 relative min-h-[160px]">
+            <img src="[link removed]" alt="Workspace" class="w-full h-full object-cover">
+            <span class="absolute top-2 left-2 bg-forest text-white text-xs font-semibold px-2 py-1 rounded">渋谷エリア</span>
+          </div>
+          <div class="sm:w-3/5 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-bold text-lg text-gray-800">Organic Work Lab 渋谷</h3>
+                <span class="bg-amber/10 text-amber font-bold text-xs px-2.5 py-1 rounded-full flex items-center">
+                  <i class="fa-solid fa-star text-xs mr-1"></i> 4.8
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 mb-3">エルゴノミクススコア: <span class="text-forest font-bold">95/100</span></p>
+
+              <!-- 物理環境インジケーター -->
+              <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-4 bg-lightgray p-2.5 rounded-lg">
+                <div><i class="fa-solid fa-ruler text-forest mr-1"></i>幅90cm×奥行60cm</div>
+                <div><i class="fa-solid fa-plug text-forest mr-1"></i>全席2口コンセント</div>
+                <div><i class="fa-solid fa-couch text-forest mr-1"></i>ハーマンミラーチェア</div>
+                <div><i class="fa-solid fa-volume-xmark text-forest mr-1"></i>静寂 (38dB)</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t pt-3 border-gray-100">
+              <p class="text-xs text-gray-500 line-clamp-1">「長時間の作業でも腰がまったく痛くなりません」</p>
+              <button class="text-xs font-bold text-forest hover:text-amber transition flex items-center ml-2 whitespace-nowrap">
+                詳細表示 <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- カード2 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
+          <div class="sm:w-2/5 bg-gray-200 relative min-h-[160px]">
+            <img src="[link removed]" alt="Workspace" class="w-full h-full object-cover">
+            <span class="absolute top-2 left-2 bg-forest text-white text-xs font-semibold px-2 py-1 rounded">新宿エリア</span>
+          </div>
+          <div class="sm:w-3/5 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-bold text-lg text-gray-800">Focus Lounge 新宿</h3>
+                <span class="bg-amber/10 text-amber font-bold text-xs px-2.5 py-1 rounded-full flex items-center">
+                  <i class="fa-solid fa-star text-xs mr-1"></i> 4.6
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 mb-3">エルゴノミクススコア: <span class="text-forest font-bold">91/100</span></p>
+
+              <!-- 物理環境インジケーター -->
+              <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-4 bg-lightgray p-2.5 rounded-lg">
+                <div><i class="fa-solid fa-ruler text-forest mr-1"></i>電動昇降デスク完備</div>
+                <div><i class="fa-solid fa-plug text-forest mr-1"></i>USB-C給電可能</div>
+                <div><i class="fa-solid fa-couch text-forest mr-1"></i>高機能メッシュチェア</div>
+                <div><i class="fa-solid fa-volume-low text-forest mr-1"></i>適度 (45dB)</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border-t pt-3 border-gray-100">
+              <p class="text-xs text-gray-500 line-clamp-1">「立ち作業と座り作業を交互にできて快適です」</p>
+              <button class="text-xs font-bold text-forest hover:text-amber transition flex items-center ml-2 whitespace-nowrap">
+                詳細表示 <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- サイドバー: 収益化・広告エリア -->
+      <div class="space-y-6">
+        
+        <!-- プレミアム機能バナー -->
+        <div class="bg-gradient-to-br from-forest to-emerald-900 text-white rounded-xl p-6 shadow-md relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl">
+            <i class="fa-solid fa-cube"></i>
+          </div>
+          <span class="bg-amber text-xs font-bold px-2.5 py-1 rounded text-white uppercase tracking-wider mb-2 inline-block">PREMIUM</span>
+          <h3 class="text-lg font-bold mb-2">3Dデスク寸法マップ&空き情報</h3>
+          <p class="text-xs text-gray-200 mb-4 leading-relaxed">
+            リアルタイムの電源空き状況や、ミリ単位のデスク寸法3Dマップをアンロック。
+          </p>
+          <button class="w-full bg-amber hover:bg-yellow-600 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+            プレミアム版を無料体験
+          </button>
+        </div>
+
+        <!-- 姿勢改善・アフィリエイト枠 -->
+        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+          <h4 class="font-bold text-sm text-gray-800 mb-3 flex items-center border-b pb-2">
+            <i class="fa-solid fa-shield-heart text-amber mr-2"></i> エルゴノミクス推奨グッズ
+          </h4>
+          <div class="space-y-3">
+            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-lightgray transition group">
+              <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-forest flex-shrink-0">
+                <i class="fa-solid fa-laptop text-xl"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800 group-hover:text-amber transition">折りたたみノートPCスタンド</p>
+                <p class="text-[11px] text-gray-500">目線を上げて首の負担を軽減</p>
+              </div>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-lightgray transition group">
+              <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-forest flex-shrink-0">
+                <i class="fa-solid fa-mattress-pillow text-xl"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-800 group-hover:text-amber transition">高反発ランバーサポートクッション</p>
+                <p class="text-[11px] text-gray-500">骨盤を支えて正しい姿勢を維持</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- フッターエリア -->
+  <footer class="bg-forest text-white border-t border-emerald-900 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-3">
+            <i class="fa-solid fa-chair text-amber text-lg"></i>
+            <span class="text-lg font-bold">NomadDesk Guide</span>
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            リモートワーカーやフリーランスのための物理環境特化型デスク・作業スペース検索プラットフォーム。
+          </p>
+        </div>
+        <div>
+          <h5 class="text-xs font-bold text-amber tracking-wider uppercase mb-3">クイックカテゴリ検索</h5>
+          <ul class="text-xs text-gray-300 space-y-2">
+            <li><a href="#" class="hover:underline">エルゴノミクスチェア完備</a></li>
+            <li><a href="#" class="hover:underline">昇降デスク・立ち作業エリア</a></li>
+            <li><a href="#" class="hover:underline">静音・BGM低音量重視</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5 class="text-xs font-bold text-amber tracking-wider uppercase mb-3">サポート・運営</h5>
+          <ul class="text-xs text-gray-300 space-y-2">
+            <li><a href="#" class="hover:underline">利用規約</a></li>
+            <li><a href="#" class="hover:underline">プライバシーポリシー</a></li>
+            <li><a href="#" class="hover:underline">お問い合わせ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-emerald-800 pt-6 text-center text-xs text-gray-400">
+        &copy; 2026 NomadDesk Guide. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 検索ボタンクリック時の簡単なインタラクション
+    document.querySelector('button.bg-amber').addEventListener('click', function() {
+      console.log('検索フィルターが実行されました');
+    });
+  </script>
+</body>
+</html>
