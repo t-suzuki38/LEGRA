@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シネマティック・チェス: 盤上の英雄神話</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: '#0b0f19',
+            'midnight-card': '#151c2e',
+            gold: '#ffd700',
+            'neon-purple': '#a855f7',
+            'energy-blue': '#06b6d4',
+          },
+          boxShadow: {
+            'gold-glow': '0 0 15px rgba(255, 215, 0, 0.6)',
+            'purple-glow': '0 0 20px rgba(168, 85, 247, 0.5)',
+            'blue-glow': '0 0 20px rgba(6, 182, 212, 0.5)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('[link removed]');
+    
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+    
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+
+    /* 3Dチェス盤面の視覚表現 */
+    .chess-board-container {
+      perspective: 1000px;
+    }
+    .chess-board {
+      transform: rotateX(25deg);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    
+    /* 発光・アニメーションエフェクト */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+      50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); }
+    }
+    .best-move-highlight {
+      animation: pulse-glow 1.5s infinite;
+      border: 2px solid #ffd700;
+    }
+
+    /* 必殺技演出カットイン */
+    .cutin-overlay {
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(11, 15, 25, 0.9) 80%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-midnight text-gray-100 select-none">
+
+  <!-- ヘッダーエリア -->
+  <header class="w-full bg-midnight-card/80 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between z-20 sticky top-0">
+    <!-- 左上: プレイヤー情報 -->
+    <div class="flex items-center space-x-3">
+      <div class="relative">
+        <div class="w-12 h-12 rounded-full border-2 border-gold p-0.5 bg-gradient-to-tr from-purple-900 to-indigo-900 flex items-center justify-center shadow-gold-glow">
+          <i class="fa-solid fa-chess-knight text-2xl text-gold"></i>
+        </div>
+        <span class="absolute -bottom-1 -right-1 bg-gold text-black text-xs font-bold px-1.5 py-0.2 rounded-full border border-black">Lv.15</span>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h2 class="font-bold text-sm md:text-base tracking-wide">英雄アザー</h2>
+          <span class="text-xs bg-purple-900/60 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded">ナイトマスター</span>
+        </div>
+        <p class="text-xs text-gray-400">勝率: 68.4%</p>
+      </div>
+    </div>
+
+    <!-- 中央: 対戦タイマーおよびスコア表示 -->
+    <div class="flex flex-col items-center">
+      <div class="text-xs tracking-widest text-gray-400 uppercase font-cinzel">Match Time</div>
+      <div class="text-xl md:text-2xl font-bold font-mono text-gold tracking-wider flex items-center space-x-2">
+        <i class="fa-regular fa-clock text-sm"></i>
+        <span id="timer">04:45</span>
+      </div>
+      <div class="text-xs text-gray-400 mt-0.5">
+        <span class="text-energy-blue font-bold">2400</span> vs <span class="text-rose-500 font-bold">2150</span>
+      </div>
+    </div>
+
+    <!-- 右上: 通貨・設定アイコン -->
+    <div class="flex items-center space-x-4">
+      <div class="hidden sm:flex items-center space-x-3 bg-black/40 px-3 py-1.5 rounded-full border border-gray-700">
+        <div class="flex items-center space-x-1">
+          <i class="fa-solid fa-coins text-gold text-sm"></i>
+          <span class="text-xs font-bold text-gray-200">12,500</span>
+        </div>
+        <div class="w-px h-3 bg-gray-700"></div>
+        <div class="flex items-center space-x-1">
+          <i class="fa-solid fa-gem text-neon-purple text-sm"></i>
+          <span class="text-xs font-bold text-gray-200">450</span>
+        </div>
+      </div>
+      <button onclick="toggleModal('settings-modal')" class="text-gray-400 hover:text-white transition-colors">
+        <i class="fa-solid fa-gear text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- メインビジュアル (対戦・ゲーム盤面) -->
+  <main class="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    
+    <!-- 背景光彩演出 -->
+    <div class="absolute w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+    <div class="absolute w-[400px] h-[400px] bg-blue-900/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+    <!-- ゲームタイトルロゴ (控えめ表示) -->
+    <div class="text-center mb-2">
+      <h1 class="font-cinzel text-lg md:text-xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold via-white to-gold drop-shadow">
+        CINEMATIC CHESS
+      </h1>
+      <p class="text-[10px] text-gray-400 tracking-wider">盤上の英雄神話</p>
+    </div>
+
+    <!-- 盤面コンテナ -->
+    <div class="chess-board-container my-2">
+      <div id="board" class="chess-board w-[340px] h-[340px] sm:w-[420px] sm:h-[420px] bg-slate-900 border-4 border-slate-700 rounded-lg p-2 shadow-2xl grid grid-cols-8 grid-rows-8 gap-0.5 relative">
+        <!-- JSで盤面セル(8x8)を動的生成 -->
+      </div>
+    </div>
+
+    <!-- 最善手アシスト案内 -->
+    <div class="mt-4 flex items-center space-x-2 bg-black/60 border border-gold/40 px-4 py-2 rounded-full shadow-gold-glow">
+      <i class="fa-solid fa-wand-magic-sparkles text-gold animate-pulse"></i>
+      <span class="text-xs text-gray-200">初心者ガイド: <strong class="text-gold">最善手ハイライト</strong>が発光中。金色のマスをタップ!</span>
+    </div>
+
+    <!-- 必殺技・カットイン演出レイヤー (非表示デモ用) -->
+    <div id="cutin-layer" class="hidden absolute inset-0 cutin-overlay flex flex-col items-center justify-center z-30 transition-all duration-300">
+      <div class="text-center transform scale-110 animate-bounce">
+        <span class="text-xs tracking-widest text-neon-purple font-bold uppercase">Ultimate Skill Activated</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-300 to-gold drop-shadow-lg">
+          神雷一閃 (LIGHTNING STRIKE)
+        </h2>
+        <p class="text-sm text-gray-300 mt-2">ナイトが敵クィーンを粉砕!</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- フッター / 操作アクションエリア -->
+  <footer class="w-full bg-midnight-card/90 border-t border-gray-800 p-3 md:px-8 z-20">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- 左下: ガチャ / ショップボタン -->
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-center">
+        <button onclick="toggleModal('shop-modal')" class="flex-1 md:flex-none px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-purple-glow transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-store text-gold"></i>
+          <span>ガチャ / ショップ</span>
+        </button>
+      </div>
+
+      <!-- 中央: 駒操作UIパネル -->
+      <div class="flex items-center justify-center space-x-2 bg-black/50 px-4 py-2 rounded-xl border border-gray-800 w-full md:w-auto">
+        <button onclick="triggerCutin()" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-red-600 hover:brightness-110 text-white font-bold text-xs rounded-lg shadow-lg flex items-center space-x-1">
+          <i class="fa-solid fa-bolt"></i>
+          <span>必殺技テスト</span>
+        </button>
+        <button onclick="resetBoard()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded-lg transition-colors">
+          <i class="fa-solid fa-rotate-left mr-1"></i>盤面リセット
+        </button>
+      </div>
+
+      <!-- 右下: SNS動画シェアボタン -->
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-center">
+        <button onclick="toggleModal('share-modal')" class="flex-1 md:flex-none px-5 py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>ハイライト動画シェア</span>
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ガチャ / ショップ モーダル -->
+  <div id="shop-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-midnight-card border border-purple-500/30 rounded-2xl max-w-md w-full p-6 relative shadow-purple-glow">
+      <button onclick="toggleModal('shop-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-xl font-bold text-gold font-cinzel mb-1">ショップ & ガチャ</h3>
+      <p class="text-xs text-gray-400 mb-4">3Dエフェクトスキンやアバターを獲得して盤面を華やかに飾ろう。</p>
+      
+      <div class="space-y-3">
+        <div class="bg-slate-900 p-3 rounded-xl border border-gray-800 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-purple-900/50 rounded-lg flex items-center justify-center border border-purple-500">
+              <i class="fa-solid fa-fire text-neon-purple"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold">龍炎撃破エフェクト</div>
+              <div class="text-xs text-gray-400">エフェクトスキン</div>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 bg-gold text-black font-bold text-xs rounded-lg hover:bg-yellow-400">100 ジェム</button>
+        </div>
+
+        <div class="bg-slate-900 p-3 rounded-xl border border-gray-800 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-900/50 rounded-lg flex items-center justify-center border border-blue-500">
+              <i class="fa-solid fa-chess-king text-energy-blue"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold">漆黒の王スキンセット</div>
+              <div class="text-xs text-gray-400">3Dアバター</div>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 bg-gold text-black font-bold text-xs rounded-lg hover:bg-yellow-400">250 ジェム</button>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-800 flex justify-end">
+        <button onclick="toggleModal('shop-modal')" class="px-4 py-2 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SNS動画シェア モーダル -->
+  <div id="share-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-midnight-card border border-pink-500/30 rounded-2xl max-w-md w-full p-6 relative shadow-lg">
+      <button onclick="toggleModal('share-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-xl font-bold text-pink-400 font-cinzel mb-1">SNSショート動画シェア</h3>
+      <p class="text-xs text-gray-400 mb-4">決定打の3Dハイライト動画をショート動画としてSNSに投稿しよう!</p>
+      
+      <div class="bg-black rounded-xl h-48 mb-4 flex items-center justify-center relative overflow-hidden border border-gray-800">
+        <i class="fa-solid fa-play text-4xl text-white/80 z-10 cursor-pointer hover:scale-110 transition-transform"></i>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <span class="absolute bottom-2 left-2 text-[10px] text-gray-300">00:15 / 決着の瞬間</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button class="py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg flex flex-col items-center justify-center space-y-1">
+          <i class="fa-brands fa-x-twitter text-base"></i>
+          <span>X (Twitter)</span>
+        </button>
+        <button class="py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg flex flex-col items-center justify-center space-y-1">
+          <i class="fa-brands fa-tiktok text-base text-pink-500"></i>
+          <span>TikTok</span>
+        </button>
+        <button class="py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg flex flex-col items-center justify-center space-y-1">
+          <i class="fa-brands fa-youtube text-base text-red-500"></i>
+          <span>Shorts</span>
+        </button>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-800 flex justify-end">
+        <button onclick="toggleModal('share-modal')" class="px-4 py-2 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript ロジック -->
+  <script>
+    // チェス盤初期化データ (簡易表現)
+    const initialBoard = [
+      ['r','n','b','q','k','b','n','r'],
+      ['p','p','p','p','p','p','p','p'],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['P','P','P','P','P','P','P','P'],
+      ['R','N','B','Q','K','B','N','R']
+    ];
+
+    const pieceIcons = {
+      'r': 'fa-chess-rook text-purple-400',
+      'n': 'fa-chess-knight text-purple-400',
+      'b': 'fa-chess-bishop text-purple-400',
+      'q': 'fa-chess-queen text-purple-400',
+      'k': 'fa-chess-king text-purple-400',
+      'p': 'fa-chess-pawn text-purple-400',
+      'R': 'fa-chess-rook text-gold',
+      'N': 'fa-chess-knight text-gold',
+      'B': 'fa-chess-bishop text-gold',
+      'Q': 'fa-chess-queen text-gold',
+      'K': 'fa-chess-king text-gold',
+      'P': 'fa-chess-pawn text-gold'
+    };
+
+    // 最善手ハイライトマス (デモ用: G1のナイトからF3への移動想定)
+    const bestMoveFrom = { r: 7, c: 6 }; // N (金色のナイト)
+    const bestMoveTo = { r: 5, c: 5 };   // 最善手ターゲット
+
+    function renderBoard() {
+      const boardElement = document.getElementById('board');
+      boardElement.innerHTML = '';
+
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const isDark = (r + c) % 2 === 1;
+          const square = document.createElement('div');
+          
+          let baseClass = "flex items-center justify-center rounded cursor-pointer transition-all relative ";
+          baseClass += isDark ? "bg-slate-800/90 hover:bg-slate-700 " : "bg-slate-700/80 hover:bg-slate-600 ";
+
+          // 最善手ハイライトの付与
+          if (r === bestMoveFrom.r && c === bestMoveFrom.c) {
+            baseClass += "best-move-highlight ";
+          } else if (r === bestMoveTo.r && c === bestMoveTo.c) {
+            baseClass += "border-2 border-dashed border-gold bg-yellow-500/20 ";
+          }
+
+          square.className = baseClass;
+
+          // 最善手用ガイドアイコン
+          if (r === bestMoveTo.r && c === bestMoveTo.c) {
+            const guide = document.createElement('div');
+            guide.className = "absolute w-3 h-3 bg-gold rounded-full animate-ping";
+            square.appendChild(guide);
+          }
+
+          // 駒の描画
+          const piece = initialBoard[r][c];
+          if (piece) {
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${pieceIcons[piece]} text-2xl sm:text-3xl drop-shadow`;
+            square.appendChild(icon);
+          }
+
+          // クリックイベントハンドラ
+          square.onclick = () => onSquareClick(r, c);
+
+          boardElement.appendChild(square);
+        }
+      }
+    }
+
+    function onSquareClick(r, c) {
+      if (r === bestMoveFrom.r && c === bestMoveFrom.c) {
+        alert("最善手が選択されました!ターゲットのマス(発光枠)へ移動します。");
+      } else if (r === bestMoveTo.r && c === bestMoveTo.c) {
+        triggerCutin();
+      }
+    }
+
+    // 必殺技演出発動デモ
+    function triggerCutin() {
+      const cutin = document.getElementById('cutin-layer');
+      cutin.classList.remove('hidden');
+      setTimeout(() => {
+        cutin.classList.add('hidden');
+      }, 2500);
+    }
+
+    // 盤面リセット
+    function resetBoard() {
+      renderBoard();
+    }
+
+    // モーダル表示切り替え
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.toggle('hidden');
+    }
+
+    // 初期化実行
+    document.addEventListener('DOMContentLoaded', () => {
+      renderBoard();
+    });
+  </script>
+</body>
+</html>
