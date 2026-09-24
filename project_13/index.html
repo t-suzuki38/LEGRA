@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タワーパニック・オンライン</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Three.js CDN for 3D Tower Graphics -->
+  <script src="[link removed]"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0a0e1a',
+              card: '#12192c',
+              border: '#1e293b',
+              blue: '#00f0ff',
+              pink: '#ff007f',
+              yellow: '#ffe600',
+            }
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            sans: ['Noto Sans JP', 'sans-serif']
+          },
+          boxShadow: {
+            'neon-blue': '0 0 20px rgba(0, 240, 255, 0.4)',
+            'neon-pink': '0 0 20px rgba(255, 0, 127, 0.4)',
+            'neon-yellow': '0 0 20px rgba(255, 230, 0, 0.4)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0a0e1a;
+      color: #ffffff;
+      font-family: 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+    }
+    .glass-panel {
+      background: rgba(18, 25, 44, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0e1a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+  <!-- Header Section -->
+  <header class="w-full border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md fixed top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('lobby')">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-pink-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+        <i class="fa-solid font-black text-slate-950 text-xl fa-cubes-stacked"></i>
+      </div>
+      <div>
+        <h1 class="font-orbitron font-black text-lg md:text-xl tracking-wider bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-300 bg-clip-text text-transparent">
+          TOWER PANIC ONLINE
+        </h1>
+        <p class="text-[10px] text-slate-400 tracking-wider hidden sm:block">リアルタイム物理クラッシュ・ボードゲーム</p>
+      </div>
+    </div>
+
+    <!-- Status & Header Actions -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-700/60 px-3 py-1.5 rounded-full text-xs">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-slate-300 font-medium">オンライン (3ms)</span>
+      </div>
+      <button onclick="openShopModal()" class="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 font-bold px-3.5 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition-all shadow-md shadow-yellow-500/20">
+        <i class="fa-solid fa-store"></i>
+        <span>スキンショップ</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="pt-20 pb-10 px-4 max-w-7xl mx-auto w-full flex-grow flex flex-col justify-center items-center">
+
+    <!-- VIEW 1: LOBBY & MATCHING SCREEN (ロビーレス招待) -->
+    <section id="view-lobby" class="w-full max-w-4xl flex flex-col gap-6 items-center">
+      <div class="text-center space-y-2 mt-4">
+        <span class="inline-block px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold rounded-full tracking-wider uppercase">
+          ルール説明不要!2〜4人で3分サクッとバトル
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          崩した方が、負け!
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
+          ロビーレスで即対戦!部屋URLを友達に送るだけで瞬時に接続できる完全公開情報ゲーム
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full items-center">
+        <!-- 3D Tower Preview Container -->
+        <div class="lg:col-span-7 glass-panel rounded-2xl p-4 relative overflow-hidden h-[360px] sm:h-[420px] flex items-center justify-center border border-slate-800">
+          <div id="lobby-canvas-container" class="w-full h-full rounded-xl overflow-hidden relative"></div>
+          <div class="absolute bottom-4 left-4 bg-slate-950/80 backdrop-blur-sm border border-slate-800 px-3 py-1.5 rounded-lg text-xs text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-cube text-cyan-400 animate-spin"></i>
+            <span>3D物理演算エンジン同期中...</span>
+          </div>
+        </div>
+
+        <!-- Players Slot & Match Controls -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <div class="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">対戦枠スロット (2〜4人)</span>
+              <span class="text-xs text-cyan-400 font-mono">ROOM #8294</span>
+            </div>
+
+            <!-- Player Slots Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-900/90 border border-cyan-500/50 p-3 rounded-xl flex items-center gap-3">
+                <div class="relative">
+                  <img src="[link removed]" class="w-9 h-9 rounded-lg bg-cyan-950 border border-cyan-400" alt="Host">
+                  <span class="absolute -top-1 -right-1 bg-yellow-400 text-slate-950 text-[9px] font-black px-1 rounded">HOST</span>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="text-xs font-bold text-white truncate">あなた (Player 1)</div>
+                  <div class="text-[10px] text-cyan-400">準備完了</div>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
+                <img src="[link removed]" class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700" alt="Player 2">
+                <div class="overflow-hidden">
+                  <div class="text-xs font-bold text-white truncate">タロウ_29</div>
+                  <div class="text-[10px] text-emerald-400">準備完了</div>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/40 border border-dashed border-slate-800 p-3 rounded-xl flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-slate-800/50 border border-slate-800 flex items-center justify-center text-slate-600">
+                  <i class="fa-solid fa-user-plus text-sm"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-slate-500">待機中...</div>
+                  <div class="text-[10px] text-slate-600">空きスロット</div>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/40 border border-dashed border-slate-800 p-3 rounded-xl flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-slate-800/50 border border-slate-800 flex items-center justify-center text-slate-600">
+                  <i class="fa-solid fa-user-plus text-sm"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-slate-500">待機中...</div>
+                  <div class="text-[10px] text-slate-600">空きスロット</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Area -->
+            <div class="space-y-2.5 pt-2">
+              <button onclick="startGame()" class="w-full bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg shadow-cyan-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-base tracking-wide">
+                <i class="fa-solid fa-play text-lg"></i>
+                <span>対戦を始める</span>
+              </button>
+
+              <button onclick="copyRoomUrl()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 px-4 rounded-xl active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-xs">
+                <i class="fa-regular fa-copy text-cyan-400"></i>
+                <span>部屋URL共有 (ロビーレス招待)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: MAIN PLAY SCREEN (対戦中) -->
+    <section id="view-game" class="w-full max-w-5xl flex flex-col gap-4 hidden">
+      <!-- Top HUD Header -->
+      <div class="glass-panel rounded-2xl p-4 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-400">
+            <i class="fa-solid fa-stopwatch text-xl animate-pulse"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">残り時間 (制限3分)</div>
+            <div id="game-timer" class="font-orbitron font-black text-2xl text-pink-500 tracking-wider">02:58</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-cyan-500/40 px-4 py-2 rounded-xl flex items-center gap-3">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
+          <div>
+            <span class="text-[10px] text-slate-400 block font-bold uppercase">現在のターン</span>
+            <span class="text-sm font-bold text-cyan-400">あなたの番 (Player 1)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="flex -space-x-2">
+            <img class="w-8 h-8 rounded-full border-2 border-cyan-400 bg-slate-800" src="[link removed]" title="あなた">
+            <img class="w-8 h-8 rounded-full border-2 border-slate-700 bg-slate-800 opacity-60" src="[link removed]" title="タロウ_29">
+          </div>
+          <span class="text-xs text-slate-400 font-medium">2人対戦中</span>
+        </div>
+      </div>
+
+      <!-- Lightweight 3D Viewport Area -->
+      <div class="relative w-full h-[450px] sm:h-[520px] glass-panel rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center">
+        <div id="game-canvas-container" class="w-full h-full"></div>
+
+        <!-- Active Skin Overlay UI -->
+        <div class="absolute top-4 left-4 bg-slate-950/80 backdrop-blur-md p-3 rounded-xl border border-slate-800 text-xs space-y-1.5 max-w-[210px]">
+          <div class="font-bold text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-yellow-400"></i>
+            <span>適用中のスキン</span>
+          </div>
+          <div class="text-[11px] text-slate-400">・ブロック: <span class="text-cyan-400">ネオンサイバー</span></div>
+          <div class="text-[11px] text-slate-400">・崩壊エフェクト: <span class="text-pink-400">超次元スパーク</span></div>
+        </div>
+
+        <!-- In-Game Controls -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-slate-950/90 backdrop-blur-md px-6 py-3 rounded-2xl border border-slate-800 shadow-2xl">
+          <button onclick="pullBlock()" class="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-cyan-500/20 active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-hand-pointer"></i>
+            <span>ブロックを引き抜く</span>
+          </button>
+
+          <button onclick="triggerCollapse()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md shadow-pink-500/20 active:scale-95 flex items-center gap-1.5">
+            <i class="fa-solid fa-burst"></i>
+            <span>(デモ)タワー崩壊</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: RESULT & HIGHLIGHT REPLAY SCREEN -->
+    <section id="view-result" class="w-full max-w-3xl flex flex-col gap-6 items-center hidden">
+      <!-- Result Banner -->
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-sm font-bold animate-bounce">
+          <i class="fa-solid fa-trophy"></i> GAME OVER - タワー崩壊!
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-black text-white">
+          PLAYER 2 の勝利!
+        </h2>
+        <p class="text-slate-400 text-sm">あなたの操作でバランスが崩れ、タワーがクラッシュしました</p>
+      </div>
+
+      <!-- Auto-Generated Highlight Replay Area -->
+      <div class="w-full glass-panel rounded-2xl p-4 border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <span class="flex items-center gap-1.5 text-cyan-400 font-bold">
+            <i class="fa-solid fa-clapperboard"></i> 崩壊瞬間プレイハイライト動画
+          </span>
+          <span class="bg-pink-500/20 text-pink-400 text-[10px] px-2 py-0.5 rounded font-bold">AUTO REPLAY</span>
+        </div>
+
+        <div class="relative w-full h-[280px] sm:h-[340px] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center group">
+          <div id="highlight-canvas-container" class="w-full h-full"></div>
+        </div>
+
+        <!-- One-Click SNS Share Action Area -->
+        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-center sm:text-left">
+            <div class="text-xs font-bold text-white">SNSワンクリック投稿機能</div>
+            <div class="text-[11px] text-slate-400">ハイライト動画を共有してバイラル拡散!</div>
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="shareSNS('TikTok')" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 px-3.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700">
+              <i class="fa-brands fa-tiktok text-cyan-400"></i> TikTok
+            </button>
+            <button onclick="shareSNS('YouTube Shorts')" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 px-3.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700">
+              <i class="fa-brands fa-youtube text-red-500"></i> Shorts
+            </button>
+            <button onclick="shareSNS('X (Twitter)')" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 px-3.5 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700">
+              <i class="fa-brands fa-x-twitter text-slate-200"></i> X
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 w-full">
+        <button onclick="switchView('lobby')" class="flex-1 bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>もう一度遊ぶ</span>
+        </button>
+
+        <button onclick="openShopModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-cart-shopping text-yellow-400"></i>
+          <span>スキンショップ導線</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Skin Shop Modal Window -->
+  <div id="modal-shop" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border border-slate-800 rounded-2xl w-full max-w-lg p-6 space-y-5 relative shadow-2xl">
+      <button onclick="closeShopModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-slate-950 text-xl font-bold">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-white">スキン課金ショップ</h3>
+          <p class="text-xs text-slate-400">限定ブロックデザインや崩壊エフェクトを購入</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+        <div class="bg-slate-900/90 border border-cyan-500/40 p-3.5 rounded-xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-cyan-950 border border-cyan-400 flex items-center justify-center text-cyan-400">
+              <i class="fa-solid fa-cube text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">限定ブロック: ネオンサイバー</div>
+              <div class="text-[10px] text-slate-400">発光エフェクト付きテーマ</div>
+            </div>
+          </div>
+          <button class="bg-cyan-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg opacity-80 cursor-default">
+            装着中
+          </button>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-pink-950 border border-pink-500 flex items-center justify-center text-pink-400">
+              <i class="fa-solid fa-volcano text-lg"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">崩壊エフェクト: 超次元スパーク</div>
+              <div class="text-[10px] text-slate-400">クラッシュ演出パーティクル</div>
+            </div>
+          </div>
+          <button onclick="alert('スキンを購入しました!')" class="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition-all shadow-md shadow-yellow-500/20">
+            ¥300
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="closeShopModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl border border-slate-700">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-cyan-500 text-slate-950 px-4 py-3 rounded-xl font-bold text-xs shadow-2xl shadow-cyan-500/40 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300">
+    <i class="fa-solid fa-circle-check text-sm"></i>
+    <span id="toast-message">部屋URLをコピーしました!</span>
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="w-full border-t border-slate-800/60 py-4 px-4 text-center text-xs text-slate-500">
+    &copy; 2026 TOWER PANIC ONLINE / LEGRA Studio.
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    let currentView = 'lobby';
+    let lobbyScene, gameScene, resultScene;
+    let lobbyCamera, gameCamera, resultCamera;
+    let lobbyRenderer, gameRenderer, resultRenderer;
+    let towerBlocks = [];
+    let gameTowerBlocks = [];
+    let resultTowerBlocks = [];
+    let gameTimerInterval = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initLobbyScene();
+      initGameScene();
+      initResultScene();
+      animate();
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    function switchView(viewName) {
+      document.getElementById('view-lobby').classList.add('hidden');
+      document.getElementById('view-game').classList.add('hidden');
+      document.getElementById('view-result').classList.add('hidden');
+
+      if (viewName === 'lobby') {
+        document.getElementById('view-lobby').classList.remove('hidden');
+        if (gameTimerInterval) clearInterval(gameTimerInterval);
+      } else if (viewName === 'game') {
+        document.getElementById('view-game').classList.remove('hidden');
+        startTimer();
+      } else if (viewName === 'result') {
+        document.getElementById('view-result').classList.remove('hidden');
+        if (gameTimerInterval) clearInterval(gameTimerInterval);
+        triggerResultCollapseAnimation();
+      }
+      currentView = viewName;
+      onWindowResize();
+    }
+
+    function copyRoomUrl() {
+      navigator.clipboard.writeText(window.location.href);
+      showToast("部屋URLをクリップボードにコピーしました!");
+    }
+
+    function startGame() {
+      switchView('game');
+      showToast("対戦スタート!あなたのターンです");
+    }
+
+    function startTimer() {
+      let secondsLeft = 178; // 3分制限
+      const timerEl = document.getElementById('game-timer');
+      if (gameTimerInterval) clearInterval(gameTimerInterval);
+
+      gameTimerInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(gameTimerInterval);
+          switchView('result');
+          return;
+        }
+        const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+        const s = String(secondsLeft % 60).padStart(2, '0');
+        timerEl.textContent = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function pullBlock() {
+      if (gameTowerBlocks.length > 3) {
+        const removed = gameTowerBlocks.pop();
+        gameScene.remove(removed);
+        showToast("ブロックを引き抜きました!");
+      } else {
+        triggerCollapse();
+      }
+    }
+
+    function triggerCollapse() {
+      switchView('result');
+    }
+
+    function shareSNS(platform) {
+      showToast(`${platform} へのワンクリック投稿画面を起動しました`);
+    }
+
+    function openShopModal() {
+      document.getElementById('modal-shop').classList.remove('hidden');
+    }
+    function closeShopModal() {
+      document.getElementById('modal-shop').classList.add('hidden');
+    }
+
+    // --- THREE.JS 3D SCENES SETUP ---
+    function initLobbyScene() {
+      const container = document.getElementById('lobby-canvas-container');
+      const width = container.clientWidth || 300;
+      const height = container.clientHeight || 300;
+
+      lobbyScene = new THREE.Scene();
+      lobbyCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      lobbyCamera.position.set(6, 8, 10);
+      lobbyCamera.lookAt(0, 3, 0);
+
+      lobbyRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      lobbyRenderer.setSize(width, height);
+      lobbyRenderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(lobbyRenderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      lobbyScene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0x00f0ff, 1.2);
+      dirLight.position.set(5, 10, 7);
+      lobbyScene.add(dirLight);
+
+      buildTower(lobbyScene, towerBlocks, 12);
+    }
+
+    function initGameScene() {
+      const container = document.getElementById('game-canvas-container');
+      const width = container.clientWidth || 400;
+      const height = container.clientHeight || 400;
+
+      gameScene = new THREE.Scene();
+      gameCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      gameCamera.position.set(5, 7, 8);
+      gameCamera.lookAt(0, 3, 0);
+
+      gameRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      gameRenderer.setSize(width, height);
+      gameRenderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(gameRenderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      gameScene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0x00f0ff, 1.5);
+      dirLight.position.set(5, 10, 7);
+      gameScene.add(dirLight);
+
+      buildTower(gameScene, gameTowerBlocks, 12);
+    }
+
+    function initResultScene() {
+      const container = document.getElementById('highlight-canvas-container');
+      const width = container.clientWidth || 300;
+      const height = container.clientHeight || 300;
+
+      resultScene = new THREE.Scene();
+      resultCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      resultCamera.position.set(7, 4, 9);
+      resultCamera.lookAt(0, 2, 0);
+
+      resultRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      resultRenderer.setSize(width, height);
+      resultRenderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(resultRenderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      resultScene.add(ambientLight);
+
+      const pointLight = new THREE.PointLight(0xff007f, 2, 20);
+      pointLight.position.set(0, 5, 0);
+      resultScene.add(pointLight);
+
+      buildTower(resultScene, resultTowerBlocks, 10);
+    }
+
+    function buildTower(targetScene, targetArray, layers) {
+      const geometry = new THREE.BoxGeometry(2.4, 0.45, 0.75);
+      
+      const cyanMat = new THREE.MeshStandardMaterial({
+        color: 0x00f0ff,
+        roughness: 0.2,
+        metalness: 0.8,
+        emissive: 0x003344
+      });
+
+      const pinkMat = new THREE.MeshStandardMaterial({
+        color: 0xff007f,
+        roughness: 0.2,
+        metalness: 0.8,
+        emissive: 0x440022
+      });
+
+      for (let i = 0; i < layers; i++) {
+        const isRotated = i % 2 === 1;
+        for (let j = 0; j < 3; j++) {
+          const mat = (i + j) % 2 === 0 ? cyanMat : pinkMat;
+          const mesh = new THREE.Mesh(geometry, mat);
+
+          if (isRotated) {
+            mesh.rotation.y = Math.PI / 2;
+            mesh.position.set((j - 1) * 0.8, i * 0.48, 0);
+          } else {
+            mesh.position.set(0, i * 0.48, (j - 1) * 0.8);
+          }
+
+          targetScene.add(mesh);
+          targetArray.push(mesh);
+        }
+      }
+    }
+
+    function triggerResultCollapseAnimation() {
+      resultTowerBlocks.forEach((block) => {
+        block.position.x += (Math.random() - 0.5) * 3;
+        block.position.z += (Math.random() - 0.5) * 3;
+        block.position.y = Math.max(0.2, block.position.y - Math.random() * 2);
+        block.rotation.x += Math.random() * 2;
+        block.rotation.z += Math.random() * 2;
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (currentView === 'lobby' && lobbyScene) {
+        lobbyScene.rotation.y += 0.005;
+        lobbyRenderer.render(lobbyScene, lobbyCamera);
+      }
+
+      if (currentView === 'game' && gameScene) {
+        gameScene.rotation.y += 0.002;
+        gameRenderer.render(gameScene, gameCamera);
+      }
+
+      if (currentView === 'result' && resultScene) {
+        resultRenderer.render(resultScene, resultCamera);
+      }
+    }
+
+    function onWindowResize() {
+      if (currentView === 'lobby' && lobbyRenderer) {
+        const c = document.getElementById('lobby-canvas-container');
+        if (c) {
+          lobbyCamera.aspect = c.clientWidth / c.clientHeight;
+          lobbyCamera.updateProjectionMatrix();
+          lobbyRenderer.setSize(c.clientWidth, c.clientHeight);
+        }
+      }
+      if (currentView === 'game' && gameRenderer) {
+        const c = document.getElementById('game-canvas-container');
+        if (c) {
+          gameCamera.aspect = c.clientWidth / c.clientHeight;
+          gameCamera.updateProjectionMatrix();
+          gameRenderer.setSize(c.clientWidth, c.clientHeight);
+        }
+      }
+      if (currentView === 'result' && resultRenderer) {
+        const c = document.getElementById('highlight-canvas-container');
+        if (c) {
+          resultCamera.aspect = c.clientWidth / c.clientHeight;
+          resultCamera.updateProjectionMatrix();
+          resultRenderer.setSize(c.clientWidth, c.clientHeight);
+        }
+      }
+    }
+
+    window.addEventListener('resize', onWindowResize);
+  </script>
+</body>
+</html>
