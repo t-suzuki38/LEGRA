@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>狼なんて怖くない Online 〜3匹の子豚の建築ストラテジー〜</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts: M PLUS Rounded 1c -->
+  <link href="[link removed]" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            straw: '#f59e0b',       /* 藁: ナチュラルイエロー */
+            stoneMat: '#6b7280',    /* 石: クールグレー */
+            brick: '#dc2626',       /* レンガ: テラコッタレッド */
+            actionBg: '#10b981',    /* 操作UI: エメラルドグリーン */
+            wolfRed: '#ef4444',     /* 警告・狼: 鮮やかなレッド */
+          },
+          fontFamily: {
+            sans: ['"M PLUS Rounded 1c"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      user-select: none;
+    }
+    
+    /* 破壊アニメーション用のシェイクエフェクト */
+    .shake-animation {
+      animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-2px, 0, 0); }
+      20%, 80% { transform: translate3d(4px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+      40%, 60% { transform: translate3d(8px, 0, 0); }
+    }
+
+    /* 狼の吹く風エフェクト */
+    .wind-effect {
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(239,68,68,0.3) 50%, rgba(255,255,255,0) 100%);
+      animation: windBlow 1s ease-in-out infinite;
+    }
+
+    @keyframes windBlow {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+  </style>
+</head>
+<body class="bg-amber-50/60 text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+  <!-- ================= ヘッダー領域 ================= -->
+  <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-30 px-4 py-3 border-b border-amber-200/60">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- タイトル & 進行ターン表示 -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-amber-100 text-amber-900 border border-amber-300 font-black px-3 py-1.5 rounded-full text-xs md:text-sm flex items-center gap-1 shadow-sm">
+          <i class="fa-solid fa-flag-checkered text-amber-600"></i>
+          <span>ターン <span id="current-turn" class="text-amber-700 text-base">1</span> / 7</span>
+        </div>
+        <h1 class="font-black text-base md:text-xl text-amber-950 tracking-tight flex items-center gap-2">
+          <i class="fa-solid fa-piggy-bank text-pink-500 text-xl"></i>
+          <span class="hidden sm:inline">狼なんて怖くない Online</span>
+        </h1>
+      </div>
+
+      <!-- 制限時間ゲージ & フェイズ表示 -->
+      <div class="flex-1 max-w-xs mx-2">
+        <div class="flex justify-between text-xs font-extrabold text-slate-600 mb-1">
+          <span id="phase-label" class="text-emerald-600 flex items-center gap-1">
+            <i class="fa-solid fa-hammer"></i> 建築フェイズ
+          </span>
+          <span id="timer-text" class="text-wolfRed font-bold">20s</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden shadow-inner">
+          <div id="timer-bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-1000 w-full"></div>
+        </div>
+      </div>
+
+      <!-- 対戦相手情報 & ナビボタン -->
+      <div class="flex items-center space-x-2">
+        <!-- 対戦相手アバター -->
+        <div class="flex items-center space-x-2 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 shadow-sm">
+          <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-bold">
+            <i class="fa-solid fa-user-ninja"></i>
+          </div>
+          <span class="text-xs font-bold text-slate-700 hidden md:inline">ライバル豚</span>
+        </div>
+        
+        <!-- ショップボタン -->
+        <button onclick="openModal('shop-modal')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition duration-200 flex items-center gap-1">
+          <i class="fa-solid fa-store"></i>
+          <span class="hidden sm:inline">ショップ</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= メイン対戦フィールド ================= -->
+  <main id="main-field" class="max-w-6xl w-full mx-auto p-4 flex-1 flex flex-col justify-between gap-4 relative">
+    
+    <!-- 襲撃演出用アニメーションレイヤー -->
+    <div id="attack-overlay" class="hidden absolute inset-0 bg-red-900/20 backdrop-blur-[2px] z-20 rounded-3xl flex items-center justify-center overflow-hidden pointer-events-none">
+      <div class="wind-effect absolute inset-0"></div>
+      <div class="text-center z-10 animate-bounce">
+        <i class="fa-solid fa-wolf-pack-battalion text-7xl text-wolfRed drop-shadow-lg mb-2"></i>
+        <h2 class="text-3xl font-black text-white drop-shadow-md">狼が吹き飛ばしにきた!</h2>
+      </div>
+    </div>
+
+    <!-- 中央: 完全公開情報領域(山札・公開カード・共有資材プール) -->
+    <section class="bg-white/80 border border-amber-200 rounded-2xl p-4 shadow-sm backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-extrabold text-amber-900 tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-eye text-amber-600"></i> 完全公開情報領域
+        </span>
+        <span class="text-xs font-bold text-slate-500">共通資材プール & 山札</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <!-- 藁プール -->
+        <div class="bg-amber-50 border border-amber-300 rounded-xl p-2 flex flex-col items-center justify-center shadow-sm">
+          <i class="fa-solid fa-wheat-awn text-straw text-2xl mb-1"></i>
+          <span class="text-xs font-bold text-amber-800">藁 (Straw)</span>
+          <span class="text-lg font-black text-amber-600" id="pool-straw">12</span>
+        </div>
+        <!-- 石プール -->
+        <div class="bg-slate-100 border border-slate-300 rounded-xl p-2 flex flex-col items-center justify-center shadow-sm">
+          <i class="fa-solid fa-cubes text-stoneMat text-2xl mb-1"></i>
+          <span class="text-xs font-bold text-slate-700">石 (Stone)</span>
+          <span class="text-lg font-black text-slate-600" id="pool-stone">8</span>
+        </div>
+        <!-- レンガプール -->
+        <div class="bg-red-50 border border-red-200 rounded-xl p-2 flex flex-col items-center justify-center shadow-sm">
+          <i class="fa-solid fa-cubes-stacked text-brick text-2xl mb-1"></i>
+          <span class="text-xs font-bold text-red-800">レンガ (Brick)</span>
+          <span class="text-lg font-black text-red-600" id="pool-brick">5</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 対戦フィールド: プレイヤー vs 対戦相手の建築領域 -->
+    <section class="grid md:grid-cols-2 gap-4 flex-1">
+      
+      <!-- 自分の建築領域 -->
+      <div id="player-build-area" class="bg-white border-2 border-emerald-400 rounded-2xl p-4 shadow-md flex flex-col justify-between transition-all duration-300">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-full flex items-center gap-1">
+              <i class="fa-solid fa-user-check"></i> あなたの家
+            </span>
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-500">耐久力</span>
+              <span class="text-lg font-black text-emerald-600 ml-1" id="player-hp">120</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 mb-3">
+            <div id="player-hp-bar" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 80%;"></div>
+          </div>
+        </div>
+
+        <!-- 家のビジュアル表現(藁・石・レンガの蓄積状態) -->
+        <div class="my-4 flex items-end justify-center min-h-[120px] bg-amber-50/50 rounded-xl p-4 border border-dashed border-amber-200 relative">
+          <div id="house-graphic" class="flex flex-col items-center transition-transform duration-300">
+            <!-- 屋根/構造 -->
+            <div id="house-roof" class="w-24 h-10 bg-amber-500 clip-path-triangle rounded-t-md flex items-center justify-center text-white text-xs font-bold shadow">
+              藁屋根
+            </div>
+            <!-- 壁構造 -->
+            <div id="house-body" class="w-20 h-16 bg-amber-200 border-2 border-amber-400 flex flex-col items-center justify-center rounded-b-md shadow-inner text-amber-900 text-xs font-bold">
+              <i class="fa-solid fa-house text-2xl mb-1 text-amber-700"></i>
+              <span>レベル 1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-500 flex justify-around border-t border-slate-100 pt-2">
+          <span>藁: <strong class="text-amber-600" id="built-straw">2</strong></span>
+          <span>石: <strong class="text-slate-600" id="built-stone">1</strong></span>
+          <span>レンガ: <strong class="text-red-600" id="built-brick">0</strong></span>
+        </div>
+      </div>
+
+      <!-- 対戦相手の建築領域 -->
+      <div id="opponent-build-area" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-all duration-300">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="bg-slate-100 text-slate-700 text-xs font-black px-2.5 py-1 rounded-full flex items-center gap-1">
+              <i class="fa-solid fa-robot"></i> ライバルの家
+            </span>
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-500">耐久力</span>
+              <span class="text-lg font-black text-slate-700 ml-1" id="opponent-hp">150</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 mb-3">
+            <div id="opponent-hp-bar" class="bg-slate-600 h-2 rounded-full transition-all duration-500" style="width: 90%;"></div>
+          </div>
+        </div>
+
+        <!-- 相手の家のビジュアル -->
+        <div class="my-4 flex items-end justify-center min-h-[120px] bg-slate-50/50 rounded-xl p-4 border border-dashed border-slate-200">
+          <div class="flex flex-col items-center">
+            <div class="w-24 h-10 bg-slate-500 rounded-t-md flex items-center justify-center text-white text-xs font-bold shadow">
+              石屋根
+            </div>
+            <div class="w-20 h-16 bg-slate-300 border-2 border-slate-400 flex flex-col items-center justify-center rounded-b-md shadow-inner text-slate-800 text-xs font-bold">
+              <i class="fa-solid fa-house-chimney text-2xl mb-1 text-slate-600"></i>
+              <span>レベル 2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-500 flex justify-around border-t border-slate-100 pt-2">
+          <span>藁: <strong class="text-amber-600">1</strong></span>
+          <span>石: <strong class="text-slate-600">3</strong></span>
+          <span>レンガ: <strong class="text-red-600">0</strong></span>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ================= フッター: 操作コマンド & 手札エリア ================= -->
+  <footer class="bg-white border-t border-amber-200/80 shadow-lg p-4 sticky bottom-0 z-30">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- 手札 & 資材(藁・石・レンガ)の所持数UI -->
+      <div class="flex items-center gap-3 w-full md:w-auto justify-center">
+        <span class="text-xs font-black text-slate-400 uppercase tracking-wider hidden sm:inline">所持資材:</span>
+        
+        <div class="flex items-center gap-2">
+          <!-- 藁 -->
+          <div class="bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-sm">
+            <i class="fa-solid fa-wheat-awn text-straw"></i>
+            <span class="text-xs font-bold text-amber-900">藁:</span>
+            <span id="my-straw" class="font-black text-amber-700">3</span>
+          </div>
+          <!-- 石 -->
+          <div class="bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-sm">
+            <i class="fa-solid fa-cubes text-stoneMat"></i>
+            <span class="text-xs font-bold text-slate-800">石:</span>
+            <span id="my-stone" class="font-black text-slate-700">2</span>
+          </div>
+          <!-- レンガ -->
+          <div class="bg-red-100 border border-red-200 px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-sm">
+            <i class="fa-solid fa-cubes-stacked text-brick"></i>
+            <span class="text-xs font-bold text-red-900">レンガ:</span>
+            <span id="my-brick" class="font-black text-red-700">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 直感的に選択可能なアクションコマンドボタン(資材獲得・交換・建築) -->
+      <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+        <button onclick="actionGather()" class="flex-1 md:flex-none bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow transition active:scale-95 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-hand"></i> 資材獲得
+        </button>
+        <button onclick="actionTrade()" class="flex-1 md:flex-none bg-slate-600 hover:bg-slate-700 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow transition active:scale-95 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-right-left"></i> 交換
+        </button>
+        <button onclick="actionBuild()" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow transition active:scale-95 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-hammer"></i> 建築する
+        </button>
+        <button onclick="triggerWolfAttack()" class="bg-wolfRed hover:bg-red-600 text-white font-extrabold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-1 border border-red-700">
+          <i class="fa-solid fa-wolf-pack-battalion"></i> 狼襲撃デモ
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= モーダル: 勝敗・リザルト画面 ================= -->
+  <div id="result-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl text-center relative border border-amber-200 animate-fade-in">
+      
+      <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-500 text-4xl shadow-inner">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <h2 class="text-2xl font-black text-amber-950 mb-1">VICTORY!</h2>
+      <p class="text-xs text-slate-500 mb-4">狼の襲撃に耐え抜き、堅牢な家を守り切りました!</p>
+
+      <!-- 家の生存状況と勝敗結果 -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 text-left space-y-2">
+        <div class="flex justify-between text-xs font-bold text-slate-700">
+          <span>あなたの家 (レンガ構造):</span>
+          <span class="text-emerald-600">生存 (HP 120)</span>
+        </div>
+        <div class="flex justify-between text-xs font-bold text-slate-700">
+          <span>ライバルの家 (藁構造):</span>
+          <span class="text-wolfRed">全壊 (HP 0)</span>
+        </div>
+      </div>
+
+      <!-- バイラル導線: ワンクリックSNSシェアボタン -->
+      <div class="mb-6">
+        <p class="text-xs font-bold text-slate-400 mb-2">名勝負をSNSへ共有して報酬GET!</p>
+        <div class="flex justify-center gap-3">
+          <button onclick="shareSNS('X')" class="bg-black hover:bg-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
+            <i class="fa-brands fa-x-twitter"></i>
+          </button>
+          <button onclick="shareSNS('TikTok')" class="bg-pink-600 hover:bg-pink-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
+            <i class="fa-brands fa-tiktok"></i>
+          </button>
+          <button onclick="shareSNS('YouTube')" class="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg shadow transition">
+            <i class="fa-brands fa-youtube"></i>
+          </button>
+        </div>
+      </div>
+
+      <button onclick="closeModal('result-modal')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl shadow transition">
+        次の対戦へ進む
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= モーダル: ショップ・マネタイズ画面 ================= -->
+  <div id="shop-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border border-amber-200">
+      <button onclick="closeModal('shop-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <h2 class="text-xl font-black text-amber-950 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-store text-amber-500"></i> ショップ & バトルパス
+      </h2>
+
+      <!-- タブ切り替え -->
+      <div class="flex border-b border-slate-200 mb-4">
+        <button class="pb-2 px-4 font-bold text-xs text-amber-600 border-b-2 border-amber-500">スキンカスタマイズ</button>
+        <button class="pb-2 px-4 font-bold text-xs text-slate-400">バトルパス</button>
+      </div>
+
+      <!-- スキンプレビュー -->
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-2xl bg-amber-50/30">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center text-pink-500 text-2xl">
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-800">ゴールデンピッグスキン</p>
+              <p class="text-[10px] text-slate-400">見た目を豪華な金色の豚に変更</p>
+            </div>
+          </div>
+          <button class="bg-amber-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow">¥300</button>
+        </div>
+
+        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-2xl bg-slate-50">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-500 text-2xl">
+              <i class="fa-solid fa-chess-rook"></i>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-800">城塞レンガスキン</p>
+              <p class="text-[10px] text-slate-400">レンガの家を西洋の城砦デザインに変更</p>
+            </div>
+          </div>
+          <button class="bg-amber-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow">¥500</button>
+        </div>
+      </div>
+
+      <button onclick="closeModal('shop-modal')" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
+        閉じる
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= JavaScript ロジック ================= -->
+  <script>
+    // ステート管理
+    let currentTurn = 1;
+    let myResources = { straw: 3, stone: 2, brick: 1 };
+    let playerHp = 120;
+    let opponentHp = 150;
+    let houseLevel = 1;
+
+    // アクション: 資材獲得
+    function actionGather() {
+      myResources.straw += 1;
+      updateUI();
+      showToast("藁を獲得しました!");
+    }
+
+    // アクション: 交換
+    function actionTrade() {
+      if (myResources.straw >= 2) {
+        myResources.straw -= 2;
+        myResources.stone += 1;
+        updateUI();
+        showToast("藁2個を石1個に交換しました!");
+      } else {
+        showToast("藁が足りません (必要: 2)");
+      }
+    }
+
+    // アクション: 建築
+    function actionBuild() {
+      if (myResources.stone >= 1 || myResources.brick >= 1) {
+        if (myResources.brick >= 1) {
+          myResources.brick -= 1;
+          playerHp += 30;
+        } else {
+          myResources.stone -= 1;
+          playerHp += 15;
+        }
+        houseLevel++;
+        updateUI();
+        showToast("家を強化しました!耐久力アップ!");
+      } else {
+        showToast("建築用の石またはレンガがありません");
+      }
+    }
+
+    // 狼襲撃演出の発動
+    function triggerWolfAttack() {
+      const overlay = document.getElementById('attack-overlay');
+      const mainField = document.getElementById('main-field');
+      
+      overlay.classList.remove('hidden');
+      mainField.classList.add('shake-animation');
+
+      setTimeout(() => {
+        mainField.classList.remove('shake-animation');
+        overlay.classList.add('hidden');
+        
+        // ダメージ計算(デモ)
+        opponentHp = 0;
+        updateUI();
+        openModal('result-modal');
+      }, 2000);
+    }
+
+    // UI更新関数
+    function updateUI() {
+      document.getElementById('my-straw').innerText = myResources.straw;
+      document.getElementById('my-stone').innerText = myResources.stone;
+      document.getElementById('my-brick').innerText = myResources.brick;
+      document.getElementById('player-hp').innerText = playerHp;
+      document.getElementById('opponent-hp').innerText = opponentHp;
+
+      // HPバー更新
+      document.getElementById('player-hp-bar').style.width = Math.min(100, (playerHp / 150) * 100) + '%';
+      document.getElementById('opponent-hp-bar').style.width = Math.max(0, (opponentHp / 150) * 100) + '%';
+    }
+
+    // モーダル操作
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // SNSシェア模擬関数
+    function shareSNS(platform) {
+      alert(`${platform} へ勝敗リザルトを共有しました!特別アバター素材をGET!`);
+    }
+
+    // トースト通知簡易実装
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg z-50 transition-opacity duration-300';
+      toast.innerText = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
