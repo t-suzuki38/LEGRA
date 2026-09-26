@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZeroWaste Kitchen AI</title>
-  <!-- Tailwind CSS CDN -->
+  <title>家にあるものピタッと献立AI</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="[link removed]">
@@ -17,368 +17,523 @@
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'],
-          },
           colors: {
-            brand: {
-              green: '#10B981',
-              darkgreen: '#059669',
-              lightgreen: '#ECFDF5',
-              orange: '#F97316',
-              lightorange: '#FFF7ED',
+            'warm-orange': {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+            'sage-green': {
+              50: '#f4f7f4',
+              100: '#e3eae3',
+              200: '#c7d6c7',
+              500: '#709775',
+              600: '#587a5c',
+              700: '#435e47',
             }
+          },
+          fontFamily: {
+            sans: ['Noto Sans JP', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow-orange': '0 0 25px -5px rgba(249, 115, 22, 0.4)',
+            'soft': '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
           }
         }
       }
     }
   </script>
   <style>
-    body {
-      font-family: 'Noto Sans JP', 'Inter', sans-serif;
-      background-color: #f8fafc;
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
     }
-    .custom-shadow {
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .pulse-glow {
+      animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 15px 2px rgba(249, 115, 22, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 28px 8px rgba(249, 115, 22, 0.6);
+      }
     }
   </style>
 </head>
-<body class="text-slate-800 pb-24 md:pb-10">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex justify-center items-center antialiased sm:py-6">
 
-  <!-- ヘッダーエリア -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
-    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-      <!-- 左配置: アプリロゴ -->
-      <div class="flex items-center gap-2.5 cursor-pointer">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md">
-          <i class="fa-solid fa-leaf text-lg"></i>
+  <!-- Mobile Container / App Screen Shell -->
+  <div class="w-full sm:max-w-md bg-slate-50 min-h-screen sm:min-h-[844px] sm:max-h-[920px] sm:rounded-[40px] shadow-2xl relative flex flex-col overflow-hidden border-slate-200/60 sm:border-8">
+
+    <!-- Header Area -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between shadow-sm">
+      <!-- App Logo -->
+      <div class="flex items-center space-x-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-warm-orange-500 to-warm-orange-400 flex items-center justify-center text-white shadow-md relative">
+          <i class="fa-solid fa-kitchen-set text-lg"></i>
+          <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sage-green-500 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-sage-green-500 border-2 border-white"></span>
+          </span>
         </div>
-        <div>
-          <span class="font-bold text-lg leading-none block text-slate-800">ZeroWaste Kitchen AI</span>
-          <span class="text-[10px] text-emerald-600 font-medium tracking-wider">食材廃棄ゼロ&食費削減</span>
-        </div>
+        <span class="font-extrabold text-slate-800 text-base tracking-tight">家にあるものピタッと献立AI</span>
       </div>
 
-      <!-- 右配置: 賞味期限の自動管理に関する通知アラートアイコン -->
-      <div class="relative cursor-pointer p-2.5 rounded-full hover:bg-slate-100 transition" id="notificationBtn" title="賞味期限通知アラート">
-        <i class="fa-regular fa-bell text-xl text-slate-600"></i>
-        <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-orange-500 rounded-full ring-2 ring-white"></span>
+      <!-- Right Header Actions -->
+      <div class="flex items-center space-x-2">
+        <button onclick="openModal('premiumModal')" class="flex items-center space-x-1 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 py-1.5 rounded-full transition-all">
+          <i class="fa-solid fa-crown text-amber-500"></i>
+          <span>プレミアム</span>
+        </button>
+        <button onclick="openModal('settingsModal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- 通知ドロップダウン / モーダル -->
-  <div id="notificationMenu" class="hidden fixed top-16 right-4 max-w-sm w-full bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 p-4 transition-all">
-    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-      <h4 class="font-bold text-sm text-slate-700 flex items-center gap-2">
-        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> 賞味期限アラート
-      </h4>
-      <button id="closeNotification" class="text-slate-400 hover:text-slate-600 text-xs">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-    </div>
-    <div class="space-y-2 text-xs">
-      <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between">
-        <span class="font-medium text-amber-900">豆腐 (1個)</span>
-        <span class="text-amber-600 font-bold">本日が賞味期限!</span>
-      </div>
-      <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between">
-        <span class="font-medium text-amber-900">牛乳 (500ml)</span>
-        <span class="text-amber-600 font-bold">明日まで</span>
-      </div>
-    </div>
-  </div>
+    <!-- Main Content Scroll Area -->
+    <main class="flex-1 overflow-y-auto pb-24 px-4 pt-4 space-y-5">
 
-  <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
-
-    <!-- 食材登録・ステータスエリア -->
-    <section class="bg-white rounded-3xl p-5 md:p-6 custom-shadow border border-slate-100">
-      <!-- 上部ステータス -->
-      <div class="grid grid-cols-2 gap-3 mb-5">
-        <div class="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-100/80 flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xl shrink-0">
-            <i class="fa-solid fa-carrot"></i>
-          </div>
+      <!-- Summary Card -->
+      <section class="bg-gradient-to-r from-sage-green-500 to-sage-green-600 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between relative z-10">
           <div>
-            <p class="text-xs text-emerald-700 font-medium">登録済み食材数</p>
-            <p class="text-2xl font-bold text-emerald-950">18 <span class="text-xs font-normal text-slate-500">品</span></p>
-          </div>
-        </div>
-
-        <div class="bg-orange-50/60 rounded-2xl p-4 border border-orange-100/80 flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center text-xl shrink-0">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-          </div>
-          <div>
-            <p class="text-xs text-orange-700 font-medium">賞味期限間近アラート</p>
-            <p class="text-2xl font-bold text-orange-950">2 <span class="text-xs font-normal text-slate-500">品</span></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 登録アクションボタン (2つの大型スキャンボタン) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button onclick="triggerScan('レシート撮影')" class="flex items-center justify-center gap-3 bg-slate-900 hover:bg-slate-800 text-white font-medium py-3.5 px-4 rounded-2xl shadow-md transition active:scale-[0.98]">
-          <i class="fa-solid fa-receipt text-emerald-400 text-lg"></i>
-          <span>レシート撮影</span>
-        </button>
-        <button onclick="triggerScan('バーコードスキャン')" class="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3.5 px-4 rounded-2xl shadow-md transition active:scale-[0.98]">
-          <i class="fa-solid fa-barcode text-lg"></i>
-          <span>バーコードスキャン</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- 献立生成・フィルターエリア -->
-    <section class="bg-white rounded-3xl p-5 md:p-6 custom-shadow border border-slate-100 space-y-5">
-      <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-        <i class="fa-solid fa-sliders text-emerald-600"></i> 設定パネル
-      </h2>
-
-      <!-- 持っている調理器具の厳格な絞り込み状態 -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-2">持っている調理器具 (厳格絞り込み)</label>
-        <div class="flex flex-wrap gap-2" id="utensilsContainer">
-          <button type="button" class="utensil-chip active bg-emerald-100 text-emerald-800 border-emerald-300 border text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-fire-burner"></i> フライパン
-          </button>
-          <button type="button" class="utensil-chip active bg-emerald-100 text-emerald-800 border-emerald-300 border text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-bolt"></i> 電子レンジ
-          </button>
-          <button type="button" class="utensil-chip bg-slate-100 text-slate-600 border-slate-200 border text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-kitchen-set"></i> 鍋
-          </button>
-          <button type="button" class="utensil-chip bg-slate-100 text-slate-600 border-slate-200 border text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-temperature-arrow-up"></i> オーブン
-          </button>
-        </div>
-      </div>
-
-      <!-- 使用可能な調味料の一覧設定 -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-2">使用可能な調味料の一覧</label>
-        <div class="flex flex-wrap gap-2" id="seasoningsContainer">
-          <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-200">醤油</span>
-          <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-200">みりん</span>
-          <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-200">塩コショウ</span>
-          <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-200">味噌</span>
-          <span class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-200">マヨネーズ</span>
-          <button class="text-xs text-emerald-600 font-semibold hover:underline px-1">+ 設定追加</button>
-        </div>
-      </div>
-
-      <!-- メインCTAボタン (最優先強調配置) -->
-      <div class="pt-2">
-        <button id="generateMenuBtn" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-orange-500/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2 text-base">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>今ある食材だけで献立を作成する</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- レシピ提案・コンテンツエリア -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-lg font-bold text-slate-800">冷蔵庫一掃レシピ</h2>
-          <p class="text-xs text-slate-500">賞味期限優先使用アルゴリズムによる最適選定</p>
-        </div>
-        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">レシピ提案</span>
-      </div>
-
-      <!-- ローディング表示 (ダミー) -->
-      <div id="loadingBox" class="hidden bg-white p-8 rounded-3xl text-center space-y-3 border border-slate-100">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
-        <p class="text-xs text-slate-600 font-medium">賞味期限優先アルゴリズムで献立を生成中...</p>
-      </div>
-
-      <!-- レシピリスト (カード型表示) -->
-      <div id="recipeGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- レシピカード 1 -->
-        <article class="bg-white rounded-3xl overflow-hidden custom-shadow border border-slate-100 hover:border-emerald-200 transition">
-          <div class="relative h-44 bg-slate-200">
-            <!-- 料理写真 -->
-            <img src="[link removed]" alt="豆腐とあまり野菜のシャキシャキ炒め" class="w-full h-full object-cover">
-            <span class="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">
-              <i class="fa-solid fa-fire"></i> 賞味期限優先
+            <span class="inline-block bg-white/20 backdrop-blur-md text-white text-[10px] font-semibold px-2 py-0.5 rounded-md mb-1.5">
+              <i class="fa-solid fa-sparkles mr-1"></i>AI在庫連携中
             </span>
-            <!-- 調理時間 -->
-            <span class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-              <i class="fa-regular fa-clock"></i> 15分
+            <h2 class="text-lg font-bold tracking-tight">追加買い出しゼロで作成中</h2>
+            <p class="text-xs text-sage-green-100 mt-1">自宅の材料だけで美味しくエコに節約!</p>
+          </div>
+          <div class="text-right">
+            <span id="totalItemCount" class="text-2xl font-black">12</span>
+            <span class="text-xs text-sage-green-100 block">登録アイテム</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inventory & Condition Confirmation Area -->
+      <section class="bg-white rounded-2xl p-4 border border-slate-100 shadow-soft">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-boxes-packing text-warm-orange-500"></i> 在庫・調理条件
+          </h3>
+          <span class="text-xs text-slate-400">タップで削除 / 追加可</span>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="flex bg-slate-100 p-1 rounded-xl mb-3 text-xs font-bold">
+          <button id="tab-ingredients" onclick="switchTab('ingredients')" class="flex-1 py-1.5 rounded-lg text-center transition-all bg-white text-slate-800 shadow-sm">
+            食材 <span id="badge-ingredients" class="ml-1 text-[10px] text-warm-orange-600">(6)</span>
+          </button>
+          <button id="tab-utensils" onclick="switchTab('utensils')" class="flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-700">
+            調理器具 <span id="badge-utensils" class="ml-1 text-[10px] text-slate-400">(3)</span>
+          </button>
+          <button id="tab-seasonings" onclick="switchTab('seasonings')" class="flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-700">
+            調味料 <span id="badge-seasonings" class="ml-1 text-[10px] text-slate-400">(3)</span>
+          </button>
+        </div>
+
+        <!-- Registered Item Chips List -->
+        <div id="itemList" class="flex flex-wrap gap-2 min-h-[70px] align-content-start mb-3">
+          <!-- Dynamically populated tags -->
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+          <input type="text" id="newItemInput" placeholder="新しいアイテムを追加..." class="flex-1 text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-warm-orange-500 transition-colors">
+          <button onclick="addNewItem()" class="bg-warm-orange-500 hover:bg-warm-orange-600 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-plus"></i> 追加
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Action Area -->
+      <section class="text-center py-2">
+        <button onclick="generateRecipe()" class="pulse-glow relative group inline-flex items-center justify-center w-36 h-36 bg-gradient-to-tr from-warm-orange-600 via-warm-orange-500 to-amber-400 text-white rounded-full font-black text-xl shadow-xl transform active:scale-95 transition-all">
+          <div class="flex flex-col items-center">
+            <i class="fa-solid fa-wand-magic-sparkles text-2xl mb-1 animate-bounce"></i>
+            <span>献立開始!</span>
+          </div>
+        </button>
+        <p class="text-xs font-bold text-slate-500 mt-3 flex items-center justify-center gap-1">
+          <i class="fa-solid fa-circle-check text-sage-green-500"></i> 家にある材料のみでレシピを即時生成
+        </p>
+      </section>
+
+      <!-- Recipe Results & AI Proposal Area -->
+      <section id="recipeSection" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+            <i class="fa-solid fa-utensils text-warm-orange-500"></i> AI提案レシピ
+          </h3>
+          <span class="text-xs bg-sage-green-50 text-sage-green-700 font-bold px-2.5 py-1 rounded-full border border-sage-green-200">
+            買出しゼロ判定 OK
+          </span>
+        </div>
+
+        <!-- Recipe Card 1 -->
+        <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-md transition-shadow">
+          <div class="relative h-40 bg-slate-200">
+            <img src="[link removed]" alt="豚肉と玉ねぎの極旨生姜焼き" class="w-full h-full object-cover">
+            <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+              <i class="fa-regular fa-clock text-warm-orange-400"></i> 15分
+            </span>
+            <span class="absolute top-3 right-3 bg-warm-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
+              マッチ度 100%
             </span>
           </div>
+
           <div class="p-4 space-y-3">
-            <h3 class="font-bold text-base text-slate-800">豆腐と余り野菜のコク旨甘酢炒め</h3>
-            
-            <!-- 必要な調理器具アイコン -->
-            <div class="flex items-center gap-2 text-xs text-slate-500">
-              <span>調理器具:</span>
-              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-slate-700">
-                <i class="fa-solid fa-fire-burner text-emerald-600"></i> フライパン
-              </span>
+            <div>
+              <h4 class="font-bold text-slate-800 text-base">豚肉と玉ねぎの極旨生姜焼き</h4>
+              <p class="text-xs text-slate-500 mt-0.5">フライパン1つで完成!香ばしい醤油の香りが食欲をそそる定番のおかず。</p>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <!-- プレミアム会員向け「栄養価自動計算」バッジ -->
-              <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-xl px-2.5 py-1 flex items-center gap-1.5" title="プレミアム会員限定サービス">
-                <i class="fa-solid fa-crown text-amber-500 text-xs"></i>
-                <span class="text-[11px] font-bold text-amber-900">栄養価自動計算: 320kcal</span>
+            <!-- Used Ingredients Tag Display -->
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 mb-1.5">消費できる登録アイテム:</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">豚コマ肉</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">玉ねぎ</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">フライパン</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">醤油</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">みりん</span>
               </div>
-              <button class="text-xs text-emerald-600 font-bold hover:text-emerald-700 flex items-center gap-1">
-                詳細 <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </div>
+
+            <!-- Premium Actions -->
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button onclick="saveRecipe(this)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1">
+                <i class="fa-regular fa-bookmark"></i> レシピ無制限保存
+              </button>
+              <button onclick="openNutritionModal('豚肉と玉ねぎの極旨生姜焼き')" class="flex-1 bg-sage-green-50 hover:bg-sage-green-100 text-sage-green-700 border border-sage-green-200 text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1">
+                <i class="fa-solid fa-chart-pie text-sage-green-600"></i> 栄養分析表示
               </button>
             </div>
           </div>
-        </article>
+        </div>
 
-        <!-- レシピカード 2 -->
-        <article class="bg-white rounded-3xl overflow-hidden custom-shadow border border-slate-100 hover:border-emerald-200 transition">
-          <div class="relative h-44 bg-slate-200">
-            <!-- 料理写真 -->
-            <img src="[link removed]" alt="濃厚牛乳で作る具だくさんミルクスープ" class="w-full h-full object-cover">
-            <!-- 調理時間 -->
-            <span class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-              <i class="fa-regular fa-clock"></i> 10分
+        <!-- In-Feed Ad Area (Free Plan) -->
+        <div class="bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl p-3 border border-slate-200/80 flex items-center justify-between text-xs text-slate-500">
+          <div class="flex items-center space-x-2">
+            <span class="bg-slate-300 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded">PR</span>
+            <span class="font-medium">[スポンサー]食材長持ち真空保存パックのお得情報</span>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i>
+        </div>
+
+        <!-- Recipe Card 2 -->
+        <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft hover:shadow-md transition-shadow">
+          <div class="relative h-40 bg-slate-200">
+            <img src="[link removed]" alt="シャキシャキキャベツと卵のレンジ蒸し" class="w-full h-full object-cover">
+            <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+              <i class="fa-regular fa-clock text-warm-orange-400"></i> 7分
+            </span>
+            <span class="absolute top-3 right-3 bg-sage-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
+              時短レシピ
             </span>
           </div>
+
           <div class="p-4 space-y-3">
-            <h3 class="font-bold text-base text-slate-800">あまり牛乳で作る濃厚ミルクスープ</h3>
-            
-            <!-- 必要な調理器具アイコン -->
-            <div class="flex items-center gap-2 text-xs text-slate-500">
-              <span>調理器具:</span>
-              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-slate-700">
-                <i class="fa-solid fa-bolt text-emerald-600"></i> 電子レンジ
-              </span>
+            <div>
+              <h4 class="font-bold text-slate-800 text-base">シャキシャキキャベツと卵のレンジ蒸し</h4>
+              <p class="text-xs text-slate-500 mt-0.5">電子レンジで包丁いらず!忙しい朝やあと一品ほしい時に最適。</p>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <!-- プレミアム会員向け「栄養価自動計算」バッジ -->
-              <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-xl px-2.5 py-1 flex items-center gap-1.5" title="プレミアム会員限定サービス">
-                <i class="fa-solid fa-crown text-amber-500 text-xs"></i>
-                <span class="text-[11px] font-bold text-amber-900">栄養価自動計算: 210kcal</span>
+            <div>
+              <p class="text-[11px] font-bold text-slate-400 mb-1.5">消費できる登録アイテム:</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">キャベツ</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">卵</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">電子レンジ</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">塩コショウ</span>
               </div>
-              <button class="text-xs text-emerald-600 font-bold hover:text-emerald-700 flex items-center gap-1">
-                詳細 <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button onclick="saveRecipe(this)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1">
+                <i class="fa-regular fa-bookmark"></i> レシピ無制限保存
+              </button>
+              <button onclick="openNutritionModal('シャキシャキキャベツと卵のレンジ蒸し')" class="flex-1 bg-sage-green-50 hover:bg-sage-green-100 text-sage-green-700 border border-sage-green-200 text-xs font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-1">
+                <i class="fa-solid fa-chart-pie text-sage-green-600"></i> 栄養分析表示
               </button>
             </div>
           </div>
-        </article>
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <!-- ECアフィリエイト連携エリア -->
-    <section class="bg-gradient-to-r from-slate-900 to-emerald-950 text-white rounded-3xl p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="space-y-1 text-center sm:text-left">
-        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">おすすめEC連携</span>
-        <h4 class="font-bold text-sm">キッチン便利グッズ&特選調味料ストア</h4>
-        <p class="text-xs text-slate-300">鮮度保持アイテムで食材長持ち&賢く節約</p>
-      </div>
-      <button class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl whitespace-nowrap transition">
-        商品を見る <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
-      </button>
-    </section>
+    </main>
 
-  </main>
-
-  <!-- フッター (グローバルナビゲーション) -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40">
-    <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2 text-[10px] font-medium text-slate-500">
-      <button class="flex flex-col items-center gap-1 text-emerald-600 font-bold">
+    <!-- Bottom Navigation Bar -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-3 py-2 flex justify-around items-center z-30">
+      <button onclick="navClick('home')" id="nav-home" class="flex flex-col items-center text-warm-orange-500 font-bold text-[10px] space-y-1">
         <i class="fa-solid fa-house text-lg"></i>
         <span>ホーム</span>
       </button>
-      <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
+      <button onclick="navClick('inventory')" id="nav-inventory" class="flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px] space-y-1">
         <i class="fa-solid fa-boxes-stacked text-lg"></i>
-        <span>食材・調理器具管理</span>
+        <span>在庫管理</span>
       </button>
-      <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
-        <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center -mt-4 shadow-lg ring-4 ring-white">
-          <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-        </div>
-        <span>献立AI</span>
+      <button onclick="navClick('saved')" id="nav-saved" class="flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px] space-y-1">
+        <i class="fa-solid fa-bookmark text-lg"></i>
+        <span>保存レシピ</span>
       </button>
-      <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
-        <i class="fa-solid fa-crown text-lg text-amber-500"></i>
-        <span>プレミアム</span>
-      </button>
-      <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
+      <button onclick="navClick('mypage')" id="nav-mypage" class="flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px] space-y-1">
         <i class="fa-solid fa-user text-lg"></i>
         <span>マイページ</span>
       </button>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- スキャン機能モーダル(シミュレーション用) -->
-  <div id="scanModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto">
-        <i class="fa-solid fa-camera"></i>
+  </div>
+
+  <!-- AI Generation Loading Modal -->
+  <div id="loadingModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center text-white">
+    <div class="bg-white p-6 rounded-3xl text-slate-800 text-center max-w-xs w-full shadow-2xl space-y-4">
+      <div class="w-16 h-16 border-4 border-warm-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <h3 class="font-bold text-base">AIがレシピを考案中...</h3>
+      <p class="text-xs text-slate-500">登録された食材・調理器具・調味料のみを厳選して計算しています</p>
+    </div>
+  </div>
+
+  <!-- Premium Plan Modal -->
+  <div id="premiumModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-5 relative shadow-2xl">
+      <button onclick="closeModal('premiumModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <h3 class="font-extrabold text-xl text-slate-800">プレミアムプラン</h3>
+        <p class="text-xs text-slate-500">毎日の献立作成をもっと自由に快適に!</p>
       </div>
-      <h3 id="modalTitle" class="font-bold text-lg text-slate-800">スキャン準備</h3>
-      <p class="text-xs text-slate-500">自動で食材と賞味期限を認識し登録します。</p>
-      <div class="border-2 border-dashed border-emerald-300 rounded-2xl p-8 bg-emerald-50/50">
-        <p class="text-xs text-emerald-700 font-semibold animate-pulse">カメラを起動しています...</p>
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center gap-3">
+          <i class="fa-solid fa-bookmark text-amber-500 text-base"></i>
+          <div>
+            <p class="font-bold text-slate-800">レシピ保存数が無制限!</p>
+            <p class="text-[10px] text-slate-500">お気に入りのAI献立を何個でも保存</p>
+          </div>
+        </div>
+        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center gap-3">
+          <i class="fa-solid fa-chart-pie text-amber-500 text-base"></i>
+          <div>
+            <p class="font-bold text-slate-800">詳細な栄養分析を解放</p>
+            <p class="text-[10px] text-slate-500">PFCバランスやカロリーを可視化</p>
+          </div>
+        </div>
+        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center gap-3">
+          <i class="fa-solid fa-rectangle-ad text-amber-500 text-base"></i>
+          <div>
+            <p class="font-bold text-slate-800">インフィード広告非表示</p>
+            <p class="text-[10px] text-slate-500">快適でシームレスな操作感</p>
+          </div>
+        </div>
       </div>
-      <button onclick="closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
-        閉じる
+      <button onclick="alert('プレミアムプラン体験に登録しました!')" class="w-full bg-gradient-to-r from-amber-500 to-warm-orange-500 text-white font-bold py-3 rounded-2xl shadow-lg hover:opacity-95 transition-all text-sm">
+        月額 ¥480 で始める (初月無料)
       </button>
     </div>
   </div>
 
+  <!-- Nutrition Analysis Modal -->
+  <div id="nutritionModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 relative shadow-2xl">
+      <button onclick="closeModal('nutritionModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+        <div class="w-8 h-8 bg-sage-green-100 text-sage-green-600 rounded-xl flex items-center justify-center font-bold">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm text-slate-800" id="nutritionModalTitle">栄養分析表示</h3>
+          <p class="text-[10px] text-slate-400">1人分の推定栄養成分データ</p>
+        </div>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between items-center py-1.5 border-b border-slate-100">
+          <span class="text-slate-600">エネルギー</span>
+          <span class="font-bold text-slate-800">420 kcal</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5 border-b border-slate-100">
+          <span class="text-slate-600">タンパク質 (P)</span>
+          <span class="font-bold text-slate-800">22.5 g</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5 border-b border-slate-100">
+          <span class="text-slate-600">脂質 (F)</span>
+          <span class="font-bold text-slate-800">18.2 g</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5 border-b border-slate-100">
+          <span class="text-slate-600">炭水化物 (C)</span>
+          <span class="font-bold text-slate-800">38.0 g</span>
+        </div>
+        <div class="flex justify-between items-center py-1.5">
+          <span class="text-slate-600">食塩相当量</span>
+          <span class="font-bold text-slate-800">1.8 g</span>
+        </div>
+      </div>
+      <div class="bg-sage-green-50 p-3 rounded-xl border border-sage-green-100 text-[11px] text-sage-green-800">
+        <i class="fa-solid fa-circle-info mr-1"></i> 家にある材料のみでバランスの良い献立が完成しています!
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 relative shadow-2xl">
+      <button onclick="closeModal('settingsModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="font-bold text-base text-slate-800 border-b border-slate-100 pb-2">設定・環境</h3>
+      <div class="space-y-3 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">アレルギー・苦手食材の自動除外</span>
+          <input type="checkbox" checked class="accent-warm-orange-500">
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">調理時間の短縮を優先</span>
+          <input type="checkbox" checked class="accent-warm-orange-500">
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">おすすめ献立通知</span>
+          <input type="checkbox" class="accent-warm-orange-500">
+        </div>
+      </div>
+      <button onclick="closeModal('settingsModal')" class="w-full bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs">
+        設定を保存する
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Code -->
   <script>
-    // 通知アラートの開閉
-    const notificationBtn = document.getElementById('notificationBtn');
-    const notificationMenu = document.getElementById('notificationMenu');
-    const closeNotification = document.getElementById('closeNotification');
+    // Registered item state management
+    const inventory = {
+      ingredients: ['豚コマ肉', '玉ねぎ', 'キャベツ', '卵', '豆腐', '人参'],
+      utensils: ['フライパン', '電子レンジ', '包丁・まな板'],
+      seasonings: ['醤油', 'みりん', '塩コショウ']
+    };
 
-    notificationBtn.addEventListener('click', () => {
-      notificationMenu.classList.toggle('hidden');
-    });
+    let currentCategory = 'ingredients';
 
-    closeNotification.addEventListener('click', () => {
-      notificationMenu.classList.add('hidden');
-    });
+    function renderItems() {
+      const container = document.getElementById('itemList');
+      container.innerHTML = '';
 
-    // 調理器具トグル切り替え
-    document.querySelectorAll('.utensil-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        chip.classList.toggle('active');
-        if (chip.classList.contains('active')) {
-          chip.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
-          chip.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+      const items = inventory[currentCategory];
+      items.forEach((item, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer group border border-slate-200/60';
+        chip.innerHTML = `
+          <span>${item}</span>
+          <i class="fa-solid fa-xmark text-[10px] text-slate-400 group-hover:text-red-500"></i>
+        `;
+        chip.onclick = () => removeItem(index);
+        container.appendChild(chip);
+      });
+
+      // Update badge counts
+      document.getElementById('badge-ingredients').innerText = `(${inventory.ingredients.length})`;
+      document.getElementById('badge-utensils').innerText = `(${inventory.utensils.length})`;
+      document.getElementById('badge-seasonings').innerText = `(${inventory.seasonings.length})`;
+
+      const total = inventory.ingredients.length + inventory.utensils.length + inventory.seasonings.length;
+      document.getElementById('totalItemCount').innerText = total;
+    }
+
+    function switchTab(category) {
+      currentCategory = category;
+      const tabs = ['ingredients', 'utensils', 'seasonings'];
+      
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        if (tab === category) {
+          btn.className = 'flex-1 py-1.5 rounded-lg text-center transition-all bg-white text-slate-800 shadow-sm';
         } else {
-          chip.classList.remove('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
-          chip.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+          btn.className = 'flex-1 py-1.5 rounded-lg text-center transition-all text-slate-500 hover:text-slate-700';
         }
       });
-    });
 
-    // 献立作成アクション (擬似アニメーション)
-    const generateBtn = document.getElementById('generateMenuBtn');
-    const loadingBox = document.getElementById('loadingBox');
-    const recipeGrid = document.getElementById('recipeGrid');
+      renderItems();
+    }
 
-    generateBtn.addEventListener('click', () => {
-      loadingBox.classList.remove('hidden');
-      recipeGrid.classList.add('opacity-40');
-      
+    function addNewItem() {
+      const input = document.getElementById('newItemInput');
+      const val = input.value.trim();
+      if (val) {
+        inventory[currentCategory].push(val);
+        input.value = '';
+        renderItems();
+      }
+    }
+
+    function removeItem(index) {
+      inventory[currentCategory].splice(index, 1);
+      renderItems();
+    }
+
+    function generateRecipe() {
+      openModal('loadingModal');
       setTimeout(() => {
-        loadingBox.classList.add('hidden');
-        recipeGrid.classList.remove('opacity-40');
-        recipeGrid.scrollIntoView({ behavior: 'smooth' });
-      }, 800);
+        closeModal('loadingModal');
+        const recipeSec = document.getElementById('recipeSection');
+        recipeSec.scrollIntoView({ behavior: 'smooth' });
+      }, 1000);
+    }
+
+    function saveRecipe(btn) {
+      if (btn.classList.contains('bg-warm-orange-500')) {
+        btn.classList.remove('bg-warm-orange-500', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+        btn.innerHTML = '<i class="fa-regular fa-bookmark"></i> レシピ無制限保存';
+      } else {
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+        btn.classList.add('bg-warm-orange-500', 'text-white');
+        btn.innerHTML = '<i class="fa-solid fa-bookmark"></i> 保存完了';
+      }
+    }
+
+    function openNutritionModal(title) {
+      document.getElementById('nutritionModalTitle').innerText = title + ' - 栄養分析';
+      openModal('nutritionModal');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function navClick(target) {
+      const navBtns = ['home', 'inventory', 'saved', 'mypage'];
+      navBtns.forEach(nav => {
+        const btn = document.getElementById(`nav-${nav}`);
+        if (nav === target) {
+          btn.className = 'flex flex-col items-center text-warm-orange-500 font-bold text-[10px] space-y-1';
+        } else {
+          btn.className = 'flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px] space-y-1';
+        }
+      });
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderItems();
     });
-
-    // スキャンモーダル制御
-    function triggerScan(type) {
-      document.getElementById('modalTitle').innerText = type + '機能';
-      document.getElementById('scanModal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('scanModal').classList.add('hidden');
-    }
   </script>
 </body>
 </html>
