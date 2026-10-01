@@ -3,22 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>詰みリバーシ・クロニクル</title>
+  <title>食材ロスゼロ!残りものパズル & 1週間完全使い切り献立ルートジェネレーター</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            slateBg: '#020617',
-            slateCard: '#0F172A',
-            emeraldPrimary: '#10B981',
-            blueSecondary: '#2563EB',
-            amberAccent: '#F59E0B',
+            avocado: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+            },
+            warmorange: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+            alertyellow: {
+              100: '#fef9c3',
+              400: '#facc15',
+              500: '#eab308',
+            }
           },
           fontFamily: {
-            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
-            mono: ['Monospace', 'Courier New', 'monospace'],
+            sans: ['"Noto Sans JP"', '"Plus Jakarta Sans"', 'sans-serif'],
           }
         }
       }
@@ -26,488 +43,454 @@
   </script>
   <style>
     body {
-      background-color: #020617;
-      color: #f8fafc;
-      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-family: 'Noto Sans JP', 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
     }
-    .board-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: repeat(8, 1fr);
-      gap: 4px;
-      background-color: #1e293b;
-      padding: 6px;
-      border-radius: 12px;
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
     }
-    .cell {
-      background-color: #0f172a;
-      aspect-ratio: 1;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      transition: background-color 0.2s ease;
+    .chip-drag {
+      touch-action: none;
+      user-select: none;
     }
-    .cell:hover {
-      background-color: #1e293b;
+    .gradient-btn {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #f97316 100%);
+      transition: all 0.3s ease;
     }
-    .disc {
-      width: 80%;
-      height: 80%;
-      border-radius: 50%;
-      transition: transform 0.3s ease, background-color 0.3s ease;
+    .gradient-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
     }
-    .disc.black {
-      background: linear-gradient(145deg, #1f2937, #111827);
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.8);
-      border: 1px solid #374151;
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
     }
-    .disc.white {
-      background: linear-gradient(145deg, #ffffff, #e2e8f0);
-      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.5);
-    }
-    .valid-move::after {
-      content: '';
-      width: 28%;
-      height: 28%;
-      border-radius: 50%;
-      background-color: rgba(16, 185, 129, 0.4);
-      box-shadow: 0 0 8px #10B981;
-    }
-    .hint-move::after {
-      content: '';
-      width: 35%;
-      height: 35%;
-      border-radius: 50%;
-      background-color: rgba(37, 99, 235, 0.8);
-      box-shadow: 0 0 12px #2563EB;
-    }
-    .turn-glow {
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-      border-color: #10B981;
+    .accordion-content.open {
+      max-height: 1000px;
+      transition: max-height 0.5s ease-in-out;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+<body class="text-slate-800 min-h-screen flex flex-col selection:bg-avocado-500 selection:text-white">
 
-  <!-- ヘッダーエリア -->
-  <header class="max-w-4xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 border-b border-slate-800 pb-4">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emeraldPrimary to-blueSecondary flex items-center justify-center text-slateBg shadow-lg shadow-emerald-500/20">
-        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H9v2H7v-2H5v-2h2V9h2v2h2v2zm4.5 1c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-avocado-600 to-warmorange-500 flex items-center justify-center text-white shadow-md shadow-avocado-500/20">
+          <i class="fa-solid fa-puzzle-piece text-xl"></i>
+        </div>
+        <div>
+          <span class="text-lg font-black tracking-tight bg-gradient-to-r from-avocado-700 via-avocado-600 to-warmorange-600 bg-clip-text text-transparent">
+            残りものパズル
+          </span>
+          <span class="hidden sm:inline-block text-xs text-slate-500 ml-2 font-medium">1週間使い切り献立ルート</span>
+        </div>
       </div>
-      <div>
-        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          詰みリバーシ・クロニクル
-        </h1>
-        <p class="text-xs text-slate-400">1分完結の爽快脳トレパズル</p>
+      <div class="flex items-center gap-3">
+        <button onclick="toggleModal('premium-modal')" class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 transition border border-amber-300">
+          <i class="fa-solid fa-crown text-amber-600"></i>
+          <span>プレミアムプラン</span>
+        </button>
+        <button class="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+          <i class="fa-regular fa-user"></i>
+        </button>
       </div>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="inline-flex rounded-lg bg-slateCard p-1 border border-slate-800 text-xs">
-        <button id="btnEasy" onclick="setDifficulty('EASY')" class="px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition">EASY</button>
-        <button id="btnNormal" onclick="setDifficulty('NORMAL')" class="px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition">NORMAL</button>
-        <button id="btnHard" onclick="setDifficulty('HARD')" class="px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition">HARD</button>
-      </div>
-      <button id="soundToggle" onclick="toggleSound()" class="w-9 h-9 rounded-lg bg-slateCard border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition">
-        <svg id="soundIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-      </button>
     </div>
   </header>
 
-  <!-- メインエリア -->
-  <main class="max-w-xl mx-auto w-full flex-grow flex flex-col gap-5">
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
-    <!-- デイリーミッションバー -->
-    <div class="bg-slateCard border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs sm:text-sm">
-      <div class="flex items-center gap-2">
-        <span class="bg-amberAccent/20 text-amberAccent px-2 py-0.5 rounded font-bold text-[10px] tracking-wider uppercase">Mission</span>
-        <span class="text-slate-200">本日の対戦を1回クリアしよう</span>
+    <!-- HERO Area -->
+    <section class="relative rounded-3xl bg-gradient-to-br from-avocado-800 via-avocado-700 to-emerald-900 text-white p-8 sm:p-12 overflow-hidden shadow-xl shadow-avocado-900/10">
+      <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none">
+        <i class="fa-solid fa-utensils"></i>
       </div>
-      <span class="font-mono font-bold text-emeraldPrimary" id="missionProgress">0/1 完了</span>
-    </div>
+      <div class="relative z-10 max-w-2xl space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-200 text-xs font-semibold border border-white/20">
+          <i class="fa-solid fa-leaf text-avocado-200"></i>
+          <span>追加買い出しゼロで節約 & フードロス削減</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black leading-tight tracking-tight text-white">
+          追加買い出しゼロ!<br class="hidden sm:inline" />手元の食材で1週間使い切り
+        </h1>
+        <p class="text-sm sm:text-base text-emerald-100 leading-relaxed">
+          週1回の簡単操作で献立の悩みを完全解消。冷蔵庫の残りものをパズルのように組み合わせて、無駄のない最適な1週間ルートを自動生成します。
+        </p>
+      </div>
+    </section>
 
-    <!-- スコアボード -->
-    <div class="grid grid-cols-2 gap-4">
-      <!-- YOU -->
-      <div id="playerCard" class="bg-slateCard border border-emeraldPrimary rounded-xl p-3 flex items-center justify-between turn-glow transition-all">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-emeraldPrimary">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          </div>
-          <div>
-            <div class="text-xs text-slate-400 font-bold">YOU (黒)</div>
-            <div class="text-xs text-emeraldPrimary font-medium" id="playerStatus">あなたの手番</div>
+    <!-- 食材パズル登録エリア -->
+    <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200/60 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-shapes text-avocado-600"></i>
+            1. 冷蔵庫の食材をパズル登録
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">手元にある食材をタップまたは入力して追加してください</p>
+        </div>
+        
+        <!-- Category Tabs -->
+        <div class="flex bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto text-xs font-bold text-slate-600">
+          <button onclick="filterCategory('all')" class="cat-tab active px-3 py-1.5 rounded-lg bg-white shadow-sm text-avocado-700">すべて</button>
+          <button onclick="filterCategory('veg')" class="cat-tab px-3 py-1.5 rounded-lg hover:text-slate-900">🥦 野菜</button>
+          <button onclick="filterCategory('meat')" class="cat-tab px-3 py-1.5 rounded-lg hover:text-slate-900">🥩 肉・魚</button>
+          <button onclick="filterCategory('processed')" class="cat-tab px-3 py-1.5 rounded-lg hover:text-slate-900">🥚 加工品</button>
+          <button onclick="filterCategory('seasoning')" class="cat-tab px-3 py-1.5 rounded-lg hover:text-slate-900">🧂 調味料</button>
+        </div>
+      </div>
+
+      <!-- Input Form -->
+      <div class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <input type="text" id="ingredient-input" placeholder="例: キャベツ, 豚こま肉, 卵" class="flex-grow px-4 py-2 rounded-lg text-sm bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-avocado-500">
+        <select id="ingredient-cat" class="px-3 py-2 rounded-lg text-sm bg-white border border-slate-200 font-medium text-slate-700">
+          <option value="veg">野菜</option>
+          <option value="meat">肉・魚</option>
+          <option value="processed">加工品</option>
+          <option value="seasoning">調味料</option>
+        </select>
+        <button onclick="addCustomIngredient()" class="bg-avocado-600 hover:bg-avocado-700 text-white font-bold px-5 py-2 rounded-lg text-sm transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-plus"></i> 追加
+        </button>
+      </div>
+
+      <!-- Ingredient Chips Display Zone -->
+      <div class="space-y-3">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録された食材パズル</span>
+        <div id="ingredient-chips" class="flex flex-wrap gap-2.5 min-h-[80px] p-4 bg-slate-50/70 rounded-xl border border-dashed border-slate-300 items-center">
+          <!-- Default Chips generated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ルート生成・条件設定 -->
+    <section class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200/60 space-y-6">
+      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-sliders text-warmorange-500"></i>
+        2. 生成条件・オプション設定
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Days Selector -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-600">自炊日数</label>
+          <div class="flex items-center gap-2">
+            <input type="range" id="days-range" min="1" max="7" value="7" oninput="updateDaysLabel(this.value)" class="w-full accent-avocado-600">
+            <span class="text-lg font-black text-avocado-700 w-12 text-center" id="days-val">7日</span>
           </div>
         </div>
-        <div class="text-2xl font-black font-mono text-white" id="scoreBlack">2</div>
-      </div>
 
-      <!-- CPU -->
-      <div id="cpuCard" class="bg-slateCard border border-slate-800 rounded-xl p-3 flex items-center justify-between transition-all">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-900">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v2H2v2h2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9h2zm-4 10H6V5h12v14zm-9-7c.83 0 1.5-.67 1.5-1.5S9.83 9 9 9s-1.5.67-1.5 1.5S8.17 12 9 12zm6 0c.83 0 1.5-.67 1.5-1.5S15.83 9 15 9s-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-7 3h8v2H8v-2z"/></svg>
-          </div>
-          <div>
-            <div class="text-xs text-slate-400 font-bold">CPU (白)</div>
-            <div class="text-xs text-slate-500 font-medium" id="cpuStatus">待機中</div>
+        <!-- Filter Options -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-600">優先フィルター</label>
+          <div class="flex flex-wrap gap-2">
+            <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-200 border border-transparent has-[:checked]:bg-avocado-100 has-[:checked]:text-avocado-800 has-[:checked]:border-avocado-300">
+              <input type="checkbox" checked class="hidden">
+              <i class="fa-solid fa-clock text-slate-400"></i> 調理時間20分以内
+            </label>
+            <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-200 border border-transparent has-[:checked]:bg-avocado-100 has-[:checked]:text-avocado-800 has-[:checked]:border-avocado-300">
+              <input type="checkbox" class="hidden">
+              <i class="fa-solid fa-fire text-slate-400"></i> 低カロリー
+            </label>
+            <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-200 border border-transparent has-[:checked]:bg-avocado-100 has-[:checked]:text-avocado-800 has-[:checked]:border-avocado-300">
+              <input type="checkbox" checked class="hidden">
+              <i class="fa-solid fa-triangle-exclamation text-slate-400"></i> 賞味期限優先消費
+            </label>
           </div>
         </div>
-        <div class="text-2xl font-black font-mono text-white" id="scoreWhite">2</div>
       </div>
-    </div>
 
-    <!-- 8x8 オセロ盤面 -->
-    <div id="board" class="board-grid shadow-2xl"></div>
+      <!-- Main CTA Button -->
+      <div class="pt-4">
+        <button onclick="generateMealRoute()" class="w-full gradient-btn text-white font-extrabold text-lg py-4 rounded-2xl shadow-lg flex items-center justify-center gap-3">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-xl"></i>
+          <span>1週間使い切り献立ルートを自動生成</span>
+        </button>
+      </div>
+    </section>
 
-    <!-- ステータス & アシスト操作コントローラー -->
-    <div class="bg-slateCard border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
-      <div class="text-center text-sm font-semibold text-slate-300" id="statusMessage">
-        あなたの番です
+    <!-- 可視化ダッシュボード (結果表示エリア) -->
+    <section id="dashboard-section" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie text-avocado-600"></i>
+          使い切りルートダッシュボード
+        </h2>
+        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800">最適化完了</span>
       </div>
-      <div class="grid grid-cols-4 gap-2">
-        <button onclick="undoMove()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
-          <span>待った</span>
-        </button>
-        <button onclick="showHint()" class="bg-slate-800 hover:bg-slate-700 text-blueSecondary border border-blueSecondary/40 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
-          <svg class="w-3.5 h-3.5 fill-amberAccent" viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-          <span>ヒント</span>
-        </button>
-        <button onclick="passTurn()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
-          <span>パス</span>
-        </button>
-        <button onclick="resetGame()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 py-2 rounded-lg text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-1">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-          <span>リセット</span>
+
+      <!-- Metrics KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass-card rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-recycle"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 font-bold">食材ロス削減率</div>
+            <div class="text-2xl font-black text-slate-800">100<span class="text-sm font-bold text-emerald-600">%</span></div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-piggy-bank"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 font-bold">節約予測額(今週)</div>
+            <div class="text-2xl font-black text-slate-800">¥4,200<span class="text-xs font-bold text-amber-600"> 相当浮きます</span></div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 font-bold">消費パズル数</div>
+            <div class="text-2xl font-black text-slate-800"><span id="consumed-count">8</span><span class="text-sm font-bold text-slate-500"> / 全品</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Meals Accordions -->
+      <div class="space-y-4" id="timeline-container">
+        <!-- Dynamic Meal List Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 収益化・共有枠 (ボトムエリア) -->
+    <section class="space-y-6">
+      <!-- Sponsor Banner Mock -->
+      <div class="rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-amber-400 text-2xl">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">スポンサータイアップ</span>
+            <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">近所のスーパー「エコマルシェ」で使える10%OFFクーポン配布中!</h3>
+          </div>
+        </div>
+        <button class="whitespace-nowrap px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-xl transition">
+          詳細を見る
         </button>
       </div>
-    </div>
+
+      <!-- Share Box -->
+      <div class="glass-card rounded-2xl p-6 text-center space-y-4 border border-slate-200/80">
+        <h3 class="text-sm font-bold text-slate-700">1週間の使い切りルーティンをSNSでシェアしよう!</h3>
+        <div class="flex items-center justify-center gap-3">
+          <button onclick="shareSNS('X')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white text-xs font-bold hover:opacity-80 transition">
+            <i class="fa-brands fa-x-twitter"></i> Xで共有
+          </button>
+          <button onclick="shareSNS('Instagram')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500 text-white text-xs font-bold hover:opacity-80 transition">
+            <i class="fa-brands fa-instagram"></i> Instagram
+          </button>
+          <button onclick="shareSNS('TikTok')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:opacity-80 transition">
+            <i class="fa-brands fa-tiktok"></i> TikTok
+          </button>
+        </div>
+      </div>
+    </section>
 
   </main>
 
-  <!-- フッター -->
-  <footer class="max-w-4xl mx-auto w-full mt-8 pt-4 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-3">
-    <div>&copy; 2026 詰みリバーシ・クロニクル. All rights reserved.</div>
-    <div class="flex items-center gap-4 text-base">
-      <span class="hover:text-emeraldPrimary cursor-pointer transition">Share</span>
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      <p>© 2026 食材ロスゼロ!残りものパズル Project. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- 勝敗リザルトモーダル -->
-  <div id="resultModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
-    <div class="bg-slateCard border border-slate-700 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl flex flex-col gap-4">
-      <div id="resultTitle" class="text-3xl font-black text-emeraldPrimary tracking-wide">YOU WIN!</div>
-      <div class="text-sm text-slate-300">最終獲得枚数</div>
-      <div class="flex justify-center items-center gap-6 my-2">
-        <div class="flex flex-col items-center">
-          <span class="text-xs text-slate-400 mb-1">YOU (黒)</span>
-          <span id="finalBlack" class="text-3xl font-mono font-bold text-white">0</span>
+  <!-- Modal Mock for Premium -->
+  <div id="premium-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl relative">
+      <button onclick="toggleModal('premium-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+          <i class="fa-solid fa-crown"></i>
         </div>
-        <span class="text-xl font-bold text-slate-600">-</span>
-        <div class="flex flex-col items-center">
-          <span class="text-xs text-slate-400 mb-1">CPU (白)</span>
-          <span id="finalWhite" class="text-3xl font-mono font-bold text-white">0</span>
-        </div>
+        <h3 class="text-lg font-bold text-slate-800">プレミアムカスタマイズ機能</h3>
+        <p class="text-xs text-slate-500">PFCバランス自動計算、栄養アドバイザーAI診断、家族人数に応じた自動倍量計算が使い放題。</p>
       </div>
-      <div class="flex flex-col gap-2 mt-2">
-        <button onclick="resetGame()" class="w-full bg-emeraldPrimary hover:bg-emerald-600 text-slateBg font-extrabold py-3 rounded-xl shadow-lg shadow-emerald-500/20 transition">
-          もう一度プレイ
-        </button>
-        <button onclick="shareResult()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
-          SNSへ解答をシェア
-        </button>
+      <div class="bg-slate-50 p-4 rounded-xl text-center">
+        <span class="text-2xl font-black text-slate-800">¥480</span><span class="text-xs text-slate-500"> / 月</span>
       </div>
+      <button onclick="toggleModal('premium-modal')" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition">
+        7日間無料で試す
+      </button>
     </div>
   </div>
 
   <script>
-    const EMPTY = 0, BLACK = 1, WHITE = 2;
-    let board = [];
-    let currentPlayer = BLACK;
-    let historyStack = [];
-    let soundEnabled = true;
-    let difficulty = 'NORMAL';
-    let hintCell = null;
-
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [ 0, -1],          [ 0, 1],
-      [ 1, -1], [ 1, 0], [ 1, 1]
+    // Initial State Data
+    let ingredients = [
+      { id: 1, name: "キャベツ", category: "veg", alert: "あと2日", alertColor: "bg-amber-100 text-amber-800 border-amber-300" },
+      { id: 2, name: "豚こま切れ肉", category: "meat", alert: "本日中", alertColor: "bg-rose-100 text-rose-800 border-rose-300" },
+      { id: 3, name: "卵", category: "processed", alert: "あと5日", alertColor: "bg-slate-100 text-slate-700 border-slate-200" },
+      { id: 4, name: "豆腐", category: "processed", alert: "あと1日", alertColor: "bg-amber-100 text-amber-800 border-amber-300" },
+      { id: 5, name: "玉ねぎ", category: "veg", alert: "あと7日", alertColor: "bg-slate-100 text-slate-700 border-slate-200" },
+      { id: 6, name: "人参", category: "veg", alert: "あと6日", alertColor: "bg-slate-100 text-slate-700 border-slate-200" },
+      { id: 7, name: "味噌", category: "seasoning", alert: "余裕あり", alertColor: "bg-slate-100 text-slate-700 border-slate-200" },
+      { id: 8, name: "醤油", category: "seasoning", alert: "余裕あり", alertColor: "bg-slate-100 text-slate-700 border-slate-200" }
     ];
 
-    function initBoard() {
-      board = Array(8).fill(null).map(() => Array(8).fill(EMPTY));
-      board[3][3] = WHITE;
-      board[3][4] = BLACK;
-      board[4][3] = BLACK;
-      board[4][4] = WHITE;
-      currentPlayer = BLACK;
-      historyStack = [];
-      hintCell = null;
-      renderBoard();
-      updateStatus();
-    }
+    const mealTemplates = [
+      { day: "月曜日", title: "豚肉とキャベツの濃厚味噌炒め 定食", time: "15分", ingredientsUsed: ["豚こま切れ肉", "キャベツ", "味噌"], desc: "賞味期限が近い豚肉とキャベツを優先的に消費。強火で炒めてしゃきしゃき感をキープします。" },
+      { day: "火曜日", title: "ふわふわ豆腐卵とじ & 野菜スープ", time: "10分", ingredientsUsed: ["豆腐", "卵", "玉ねぎ", "人参"], desc: "期限間近の豆腐を贅沢に使ったヘルシー主菜。玉ねぎと人参の出汁が効いたスープを添えて。" },
+      { day: "水曜日", title: "シャキシャキ野菜炒め 醤油風味", time: "12分", ingredientsUsed: ["キャベツ", "玉ねぎ", "人参", "醤油"], desc: "残りの野菜を一気に消費!シンプルながら香ばしい醤油の香りで食欲をそそります。" },
+      { day: "木曜日", title: "和風オムライス & 簡単サラダ", time: "20分", ingredientsUsed: ["卵", "玉ねぎ", "醤油"], desc: "卵をふんだんに使ったまろやか和風風味。身近な調味料で本格的な味わいに。" },
+      { day: "金曜日", title: "残り野菜具だくさん味噌汁 & 豆腐ステーキ", time: "15分", ingredientsUsed: ["豆腐", "人参", "キャベツ", "味噌"], desc: "週末前に残った冷蔵庫の微量野菜をすべて投入!完璧な使い切りを達成します。" }
+    ];
 
-    function renderBoard() {
-      const boardEl = document.getElementById('board');
-      boardEl.innerHTML = '';
-      const validMoves = getValidMoves(board, currentPlayer);
+    // Render Ingredient Chips
+    function renderIngredients(filter = 'all') {
+      const container = document.getElementById('ingredient-chips');
+      container.innerHTML = '';
 
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
+      const filtered = filter === 'all' ? ingredients : ingredients.filter(i => i.category === filter);
 
-          if (board[r][c] !== EMPTY) {
-            const disc = document.createElement('div');
-            disc.className = `disc ${board[r][c] === BLACK ? 'black' : 'white'}`;
-            cell.appendChild(disc);
-          } else {
-            const isValid = validMoves.some(m => m.r === r && m.c === c);
-            if (isValid && currentPlayer === BLACK) {
-              cell.classList.add('valid-move');
-              cell.onclick = () => handleCellClick(r, c);
-            }
-            if (hintCell && hintCell.r === r && hintCell.c === c) {
-              cell.classList.add('hint-move');
-            }
-          }
-          boardEl.appendChild(cell);
-        }
-      }
-      updateScores();
-    }
-
-    function getValidMoves(b, player) {
-      const moves = [];
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          if (b[r][c] === EMPTY) {
-            const flips = getFlips(b, r, c, player);
-            if (flips.length > 0) moves.push({ r, c, flips });
-          }
-        }
-      }
-      return moves;
-    }
-
-    function getFlips(b, r, c, player) {
-      const opponent = player === BLACK ? WHITE : BLACK;
-      let totalFlips = [];
-
-      for (const [dr, dc] of directions) {
-        let nr = r + dr;
-        let nc = c + dc;
-        let currentFlips = [];
-
-        while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && b[nr][nc] === opponent) {
-          currentFlips.push({ r: nr, c: nc });
-          nr += dr;
-          nc += dc;
-        }
-
-        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && b[nr][nc] === player && currentFlips.length > 0) {
-          totalFlips = totalFlips.concat(currentFlips);
-        }
-      }
-      return totalFlips;
-    }
-
-    function handleCellClick(r, c) {
-      if (currentPlayer !== BLACK) return;
-      const validMoves = getValidMoves(board, BLACK);
-      const move = validMoves.find(m => m.r === r && m.c === c);
-      if (!move) return;
-
-      saveHistory();
-      makeMove(r, c, move.flips, BLACK);
-      hintCell = null;
-
-      if (checkGameOver()) return;
-
-      currentPlayer = WHITE;
-      renderBoard();
-      updateStatus();
-
-      setTimeout(cpuTurn, 600);
-    }
-
-    function cpuTurn() {
-      if (currentPlayer !== WHITE) return;
-      const validMoves = getValidMoves(board, WHITE);
-
-      if (validMoves.length === 0) {
-        document.getElementById('statusMessage').innerText = 'CPUはパスしました';
-        currentPlayer = BLACK;
-        renderBoard();
-        updateStatus();
-        checkGameOver();
+      if (filtered.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-400">該当する食材がありません</span>';
         return;
       }
 
-      let selectedMove = validMoves[0];
-      if (difficulty === 'EASY') {
-        selectedMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-      } else {
-        selectedMove = validMoves.reduce((prev, current) => 
-          (current.flips.length > prev.flips.length) ? current : prev
-        );
-      }
+      filtered.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = "chip-drag inline-flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl shadow-sm border border-slate-200/80 text-xs font-bold text-slate-700 group hover:border-avocado-400 transition";
+        chip.innerHTML = `
+          <i class="fa-solid fa-puzzle-piece text-avocado-500"></i>
+          <span>${item.name}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full border ${item.alertColor}">${item.alert}</span>
+          <button onclick="removeIngredient(${item.id})" class="text-slate-300 hover:text-rose-500 transition ml-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        container.appendChild(chip);
+      });
 
-      makeMove(selectedMove.r, selectedMove.c, selectedMove.flips, WHITE);
-
-      if (checkGameOver()) return;
-
-      currentPlayer = BLACK;
-      renderBoard();
-      updateStatus();
+      document.getElementById('consumed-count').innerText = ingredients.length;
     }
 
-    function makeMove(r, c, flips, player) {
-      board[r][c] = player;
-      flips.forEach(f => {
-        board[f.r][f.c] = player;
+    // Add Custom Ingredient
+    function addCustomIngredient() {
+      const input = document.getElementById('ingredient-input');
+      const cat = document.getElementById('ingredient-cat').value;
+      if (!input.value.trim()) return;
+
+      const newItem = {
+        id: Date.now(),
+        name: input.value.trim(),
+        category: cat,
+        alert: "あと3日",
+        alertColor: "bg-slate-100 text-slate-700 border-slate-200"
+      };
+
+      ingredients.push(newItem);
+      input.value = '';
+      renderIngredients();
+    }
+
+    // Remove Ingredient
+    function removeIngredient(id) {
+      ingredients = ingredients.filter(i => i.id !== id);
+      renderIngredients();
+    }
+
+    // Category Filter Buttons
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-tab').forEach(btn => {
+        btn.classList.remove('bg-white', 'shadow-sm', 'text-avocado-700');
+        btn.classList.add('hover:text-slate-900');
+      });
+      event.target.classList.add('bg-white', 'shadow-sm', 'text-avocado-700');
+      renderIngredients(cat);
+    }
+
+    // Days Slider Value Label
+    function updateDaysLabel(val) {
+      document.getElementById('days-val').innerText = val + '日';
+    }
+
+    // Render Dashboard Timeline
+    function renderTimeline() {
+      const container = document.getElementById('timeline-container');
+      container.innerHTML = '';
+
+      const daysVal = parseInt(document.getElementById('days-range').value) || 5;
+      const displayMeals = mealTemplates.slice(0, daysVal);
+
+      displayMeals.forEach((meal, idx) => {
+        const item = document.createElement('div');
+        item.className = "glass-card rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition";
+        item.innerHTML = `
+          <div onclick="toggleAccordion('acc-${idx}')" class="p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50/80 transition">
+            <div class="flex items-center gap-4">
+              <span class="w-16 text-center text-xs font-black px-2.5 py-1.5 rounded-xl bg-avocado-100 text-avocado-800">${meal.day}</span>
+              <div>
+                <h4 class="text-sm sm:text-base font-bold text-slate-800">${meal.title}</h4>
+                <div class="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                  <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i>${meal.time}</span>
+                  <span class="hidden sm:inline"><i class="fa-solid fa-cubes text-avocado-500 mr-1"></i>消費食材: ${meal.ingredientsUsed.join(', ')}</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-slate-400">
+              <i id="icon-acc-${idx}" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+            </div>
+          </div>
+          <div id="acc-${idx}" class="accordion-content border-t border-slate-100 bg-slate-50/50">
+            <div class="p-5 space-y-3 text-xs text-slate-600">
+              <p class="leading-relaxed font-medium text-slate-700">${meal.desc}</p>
+              <div class="flex flex-wrap gap-1.5 items-center pt-2">
+                <span class="font-bold text-slate-400 mr-1">この料理で消えるパズル:</span>
+                ${meal.ingredientsUsed.map(ing => `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">${ing}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
       });
     }
 
-    function saveHistory() {
-      historyStack.push(JSON.parse(JSON.stringify(board)));
+    // Toggle Accordion
+    function toggleAccordion(id) {
+      const content = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      content.classList.toggle('open');
+      icon.classList.toggle('rotate-180');
     }
 
-    function undoMove() {
-      if (historyStack.length === 0 || currentPlayer !== BLACK) return;
-      board = historyStack.pop();
-      currentPlayer = BLACK;
-      hintCell = null;
-      renderBoard();
-      updateStatus();
+    // Generate Route Action
+    function generateMealRoute() {
+      const dash = document.getElementById('dashboard-section');
+      dash.scrollIntoView({ behavior: 'smooth' });
+      renderTimeline();
     }
 
-    function showHint() {
-      if (currentPlayer !== BLACK) return;
-      const validMoves = getValidMoves(board, BLACK);
-      if (validMoves.length === 0) return;
-      
-      const bestMove = validMoves.reduce((prev, current) => 
-        (current.flips.length > prev.flips.length) ? current : prev
-      );
-      hintCell = bestMove;
-      renderBoard();
+    // Modal Control
+    function toggleModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.toggle('hidden');
     }
 
-    function passTurn() {
-      if (currentPlayer !== BLACK) return;
-      const validMoves = getValidMoves(board, BLACK);
-      if (validMoves.length === 0) {
-        currentPlayer = WHITE;
-        renderBoard();
-        updateStatus();
-        setTimeout(cpuTurn, 600);
-      }
+    // SNS Share Simulation
+    function shareSNS(platform) {
+      alert(`${platform}へ「1週間完全使い切り献立」の成果をシェアします!`);
     }
 
-    function updateScores() {
-      let bCount = 0, wCount = 0;
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          if (board[r][c] === BLACK) bCount++;
-          if (board[r][c] === WHITE) wCount++;
-        }
-      }
-      document.getElementById('scoreBlack').innerText = bCount;
-      document.getElementById('scoreWhite').innerText = wCount;
-      return { bCount, wCount };
-    }
-
-    function updateStatus() {
-      const pCard = document.getElementById('playerCard');
-      const cCard = document.getElementById('cpuCard');
-      const msg = document.getElementById('statusMessage');
-      const pStatus = document.getElementById('playerStatus');
-      const cStatus = document.getElementById('cpuStatus');
-
-      if (currentPlayer === BLACK) {
-        pCard.classList.add('turn-glow', 'border-emeraldPrimary');
-        pCard.classList.remove('border-slate-800');
-        cCard.classList.remove('turn-glow', 'border-emeraldPrimary');
-        cCard.classList.add('border-slate-800');
-        msg.innerText = 'あなたの番です';
-        pStatus.innerText = 'あなたの手番';
-        cStatus.innerText = '待機中';
-      } else {
-        cCard.classList.add('turn-glow', 'border-emeraldPrimary');
-        cCard.classList.remove('border-slate-800');
-        pCard.classList.remove('turn-glow', 'border-emeraldPrimary');
-        pCard.classList.add('border-slate-800');
-        msg.innerText = 'CPUが考え中...';
-        pStatus.innerText = '待機中';
-        cStatus.innerText = '思考中...';
-      }
-    }
-
-    function checkGameOver() {
-      const blackMoves = getValidMoves(board, BLACK);
-      const whiteMoves = getValidMoves(board, WHITE);
-
-      if (blackMoves.length === 0 && whiteMoves.length === 0) {
-        endGame();
-        return true;
-      }
-      return false;
-    }
-
-    function endGame() {
-      const { bCount, wCount } = updateScores();
-      document.getElementById('finalBlack').innerText = bCount;
-      document.getElementById('finalWhite').innerText = wCount;
-      
-      const titleEl = document.getElementById('resultTitle');
-      if (bCount > wCount) {
-        titleEl.innerText = 'YOU WIN!';
-        titleEl.className = 'text-3xl font-black text-emeraldPrimary tracking-wide';
-        document.getElementById('missionProgress').innerText = '1/1 完了';
-      } else if (wCount > bCount) {
-        titleEl.innerText = 'CPU WIN!';
-        titleEl.className = 'text-3xl font-black text-rose-500 tracking-wide';
-      } else {
-        titleEl.innerText = 'DRAW!';
-        titleEl.className = 'text-3xl font-black text-amberAccent tracking-wide';
-      }
-
-      document.getElementById('resultModal').classList.remove('hidden');
-    }
-
-    function resetGame() {
-      document.getElementById('resultModal').classList.add('hidden');
-      initBoard();
-    }
-
-    function setDifficulty(diff) {
-      difficulty = diff;
-      document.getElementById('btnEasy').className = diff === 'EASY' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
-      document.getElementById('btnNormal').className = diff === 'NORMAL' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
-      document.getElementById('btnHard').className = diff === 'HARD' ? 'px-3 py-1.5 rounded-md font-bold bg-emeraldPrimary text-slateBg transition' : 'px-3 py-1.5 rounded-md font-bold text-slate-400 hover:text-white transition';
-    }
-
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      const icon = document.getElementById('soundIcon');
-      icon.style.opacity = soundEnabled ? '1' : '0.3';
-    }
-
-    function shareResult() {
-      const b = document.getElementById('finalBlack').innerText;
-      const w = document.getElementById('finalWhite').innerText;
-      alert(`【詰みリバーシ・クロニクル】\nスコア YOU: ${b} vs CPU: ${w}\nSNSへのシェア準備が完了しました!`);
-    }
-
-    window.onload = initBoard;
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderIngredients();
+      renderTimeline();
+    });
   </script>
 </body>
 </html>
