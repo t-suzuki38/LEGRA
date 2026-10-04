@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>オープンアリーナ:宝石開拓記 | Gem Arena</title>
+  <title>ピタッと献立AI 〜追加買い出しゼロのあまりものレシピ〜</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome -->
@@ -12,23 +12,19 @@
   <link rel="preconnect" href="[link removed]">
   <link rel="preconnect" href="[link removed]" crossorigin>
   <link href="[link removed]" rel="stylesheet">
-  
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans JP"', 'sans-serif'],
-          },
           colors: {
-            gem: {
-              emerald: '#10b981',
-              sapphire: '#3b82f6',
-              ruby: '#ef4444',
-              diamond: '#38bdf8',
-              onyx: '#64748b',
-              gold: '#f59e0b',
+            brand: {
+              orange: '#f97316',
+              sage: '#709775',
+              bg: '#f8fafc',
             }
+          },
+          fontFamily: {
+            sans: ['Noto Sans JP', '-apple-system', 'sans-serif'],
           }
         }
       }
@@ -36,702 +32,298 @@
   </script>
   <style>
     body {
-      background-color: #030712;
-      color: #f3f4f6;
-      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
-      overflow-x: hidden;
+      background-color: #f8fafc;
+      font-family: 'Noto Sans JP', -apple-system, sans-serif;
     }
-    .glass-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .glass-card-active {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(245, 158, 11, 0.5);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
-    }
-    .glow-gold {
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
-    }
-    .glow-emerald {
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-    }
-    .card-affordable {
-      border: 2px solid #10b981 !important;
-      box-shadow: 0 0 18px rgba(16, 185, 129, 0.35);
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(100, 116, 139, 0.5);
-      border-radius: 3px;
+    .chip-active {
+      background-color: #709775 !important;
+      color: #ffffff !important;
+      border-color: #709775 !important;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
+<body class="text-slate-800 pb-24 min-h-screen">
 
   <!-- ヘッダー -->
-  <header class="w-full bg-slate-950/80 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-      
-      <!-- [左]: ルームID / URLコピーボタン -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-slate-400 font-mono">ROOM: <strong class="text-slate-200" id="roomIdDisplay">GEM-8839</strong></span>
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- 左側: アプリロゴ -->
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+          <i class="fa-solid fa-utensils text-lg"></i>
         </div>
-        <button onclick="copyInviteUrl()" class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg shadow-md hover:shadow-amber-500/20 transition duration-200">
-          <i class="fa-solid fa-link"></i>
-          <span>URLをコピーして招待</span>
+        <span class="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1">
+          ピタッと献立<span class="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-md font-bold">AI</span>
+        </span>
+      </div>
+      <!-- 右側: プレミアム案内・設定 -->
+      <div class="flex items-center gap-3">
+        <button onclick="openModal('premiumModal')" class="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium px-3 py-1.5 rounded-full shadow-sm hover:opacity-95 transition">
+          <i class="fa-solid fa-crown text-yellow-200 mr-1"></i>プレミアム
+        </button>
+        <button class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-gear text-lg"></i>
         </button>
       </div>
-
-      <!-- [中央]: プレイヤー対戦状況 -->
-      <div class="flex items-center gap-4 bg-slate-900/90 border border-slate-800 px-4 py-1.5 rounded-full">
-        <!-- プレイヤー1 (自分) -->
-        <div class="flex items-center gap-2" id="p1Status">
-          <div class="w-8 h-8 rounded-full bg-emerald-600/30 border border-emerald-500 flex items-center justify-center text-emerald-400 font-bold text-xs">
-            YOU
-          </div>
-          <div class="text-left">
-            <div class="text-[10px] text-slate-400 font-medium">あなた</div>
-            <div class="text-sm font-extrabold text-amber-400"><span id="p1Score">0</span> <span class="text-[10px] text-slate-400 font-normal">pts</span></div>
-          </div>
-        </div>
-
-        <div class="px-2 py-0.5 text-xs font-black italic bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded">
-          VS
-        </div>
-
-        <!-- プレイヤー2 (相手/AI) -->
-        <div class="flex items-center gap-2 opacity-60" id="p2Status">
-          <div class="text-right">
-            <div class="text-[10px] text-slate-400 font-medium">対戦相手</div>
-            <div class="text-sm font-extrabold text-amber-400"><span id="p2Score">0</span> <span class="text-[10px] text-slate-400 font-normal">pts</span></div>
-          </div>
-          <div class="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500 flex items-center justify-center text-blue-400 font-bold text-xs">
-            OPP
-          </div>
-        </div>
-      </div>
-
-      <!-- [右]: ターン表示 -->
-      <div class="flex items-center gap-3">
-        <div class="text-right hidden sm:block">
-          <div class="text-[10px] text-slate-400 uppercase tracking-wider">現在のターン</div>
-          <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5" id="turnIndicator">
-            <i class="fa-solid fa-circle-play animate-bounce"></i> あなたのターン
-          </div>
-        </div>
-      </div>
-
     </div>
   </header>
 
-  <!-- メイン対戦盤面エリア -->
-  <main class="max-w-7xl mx-auto w-full px-4 py-4 flex-1 flex flex-col gap-4">
-    
-    <!-- トップエリア: 資源アシスト&アクションログ -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      
-      <!-- 資源計算アシスト領域 -->
-      <div class="md:col-span-3 glass-card rounded-xl p-3.5 flex items-center justify-between border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-          </div>
-          <div>
-            <h2 class="text-xs font-bold text-slate-200 flex items-center gap-2">
-              資源計算自動アシスト
-              <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30">Active</span>
-            </h2>
-            <p class="text-[11px] text-slate-400 mt-0.5" id="assistMessage">所持リソースで購入可能なカードが緑枠で自動ハイライト通知されます。</p>
-          </div>
-        </div>
+  <!-- メインコンテンツ -->
+  <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
 
-        <div class="flex items-center gap-2" id="affordableStats">
-          <span class="text-xs text-slate-400">購入可能:</span>
-          <span class="text-sm font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1 rounded-lg" id="affordableCount">0枚</span>
-        </div>
+    <!-- ヒーローバナー -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-5 text-white shadow-lg shadow-orange-500/10">
+      <div class="relative z-10">
+        <span class="inline-block px-2.5 py-0.5 bg-white/20 backdrop-blur-md text-xs font-semibold rounded-full mb-2">追加買い出しゼロ</span>
+        <h1 class="text-xl font-bold leading-snug">余りものだけで<br>最高の献立をつくろう</h1>
+        <p class="text-xs text-orange-100 mt-1">手元にある食材・調味料・器具をAIが最適化</p>
       </div>
-
-      <!-- アクション可視化レーン (行動ログ) -->
-      <div class="glass-card rounded-xl p-3 border-slate-800 flex flex-col justify-between max-h-24">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-          <i class="fa-solid fa-bolt text-amber-400"></i> アクションログ
-        </div>
-        <div class="text-xs text-slate-300 overflow-y-auto custom-scrollbar my-1 pr-1" id="actionLog">
-          <div class="text-slate-500 italic text-[11px]">対戦が開始されました。</div>
-        </div>
-      </div>
+      <i class="fa-solid fa-wand-magic-sparkles absolute -right-3 -bottom-3 text-7xl text-white/10 rotate-12"></i>
     </div>
 
-    <!-- 宝石マーケット (カードスロット) -->
-    <section class="flex-1 flex flex-col justify-center">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-gem text-amber-400"></i> 宝石マーケット (カード場札)
+    <!-- メインビジュアル & 入力エリア (在庫UI) -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+          <i class="fa-solid fa-boxes-packing text-brand-sage"></i>
+          家にあるものをチェック
         </h2>
-        <span class="text-[11px] text-slate-400">購入可能なカードを選択してください</span>
+        <span class="text-xs text-slate-400">タップで選択/解除</span>
       </div>
 
-      <!-- カードスロットグリッド -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3.5" id="cardMarket">
-        <!-- JSで動的生成 -->
+      <!-- カテゴリ切り替えタブ -->
+      <div class="flex border-b border-slate-100 gap-4 text-xs font-medium text-slate-400">
+        <button id="tab-ingredients" class="pb-2 text-brand-sage border-b-2 border-brand-sage font-bold" onclick="switchCategory('ingredients')">食材</button>
+        <button id="tab-seasonings" class="pb-2 hover:text-slate-600" onclick="switchCategory('seasonings')">調味料</button>
+        <button id="tab-tools" class="pb-2 hover:text-slate-600" onclick="switchCategory('tools')">調理器具</button>
+      </div>
+
+      <!-- チップUI (食材) -->
+      <div id="category-ingredients" class="flex flex-wrap gap-2 pt-1">
+        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🍅</span> トマト
+        </button>
+        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🥚</span> 卵
+        </button>
+        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🧅</span> 玉ねぎ
+        </button>
+        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🥓</span> 豚肉
+        </button>
+        <button onclick="toggleChip(this)" class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🥦</span> ブロッコリー
+        </button>
+        <button onclick="toggleChip(this)" class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
+          <span>🧀</span> チーズ
+        </button>
+        <button class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-400 border-dashed flex items-center gap-1 hover:border-slate-400">
+          <i class="fa-solid fa-plus text-xs"></i> 追加
+        </button>
+      </div>
+
+      <!-- 条件設定: 代替調味料トグル -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-repeat text-slate-400 text-xs"></i>
+          <span class="text-xs font-medium text-slate-700">代替調味料を許可する</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+        </label>
       </div>
     </section>
 
-    <!-- フィールド共通宝石サプライ -->
-    <section class="glass-card rounded-xl p-3.5 border-slate-800">
-      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-        <span><i class="fa-solid fa-cubes text-emerald-400"></i> フィールド宝石プール (タップして獲得選択)</span>
-        <span class="text-[10px] text-slate-500">異色3個 または 同色2個を選択可能</span>
+    <!-- メインアクションエリア -->
+    <div class="text-center pt-1">
+      <button onclick="generateRecipe()" class="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-orange-500/30 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 text-base">
+        <i class="fa-solid fa-bolt"></i>
+        追加買い出しゼロで献立を作成
+      </button>
+    </div>
+
+    <!-- レシピ提案カード表示エリア -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <i class="fa-solid fa-sparkles text-amber-500"></i>
+          AI提案レシピ
+        </h2>
+        <span class="text-xs text-slate-400">100% 手元食材のみ</span>
       </div>
-      <div class="flex flex-wrap gap-2 sm:gap-4 justify-between items-center" id="poolGems">
-        <!-- JSで動的生成 -->
+
+      <!-- 提案レシピカード -->
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 transition hover:shadow-md">
+        <!-- 完成イメージ画像 -->
+        <div class="relative h-48 bg-slate-100">
+          <img src="[link removed]" alt="完成料理" class="w-full h-full object-cover">
+          <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <i class="fa-regular fa-clock text-orange-400"></i> 15分
+          </div>
+          <div class="absolute bottom-3 left-3 bg-orange-500/90 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-full font-bold">
+            余りもの活用度 100%
+          </div>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- レシピ名 & 概要 -->
+          <div>
+            <h3 class="font-bold text-lg text-slate-900 leading-tight">フレッシュトマトとふんわり卵の彩り炒め</h3>
+            <p class="text-xs text-slate-500 mt-1">手元のトマトと卵でサッと作れる絶品時短おかず。</p>
+          </div>
+
+          <!-- 消費できる手元食材リスト -->
+          <div class="bg-slate-50 rounded-xl p-3">
+            <span class="text-xs font-bold text-slate-600 block mb-1.5"><i class="fa-solid fa-check text-brand-sage mr-1"></i>消費する手元食材:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">トマト 2個</span>
+              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">卵 2個</span>
+              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">玉ねぎ 1/2個</span>
+            </div>
+          </div>
+
+          <!-- 代替調味料のアドバイス枠 -->
+          <div class="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2.5">
+            <i class="fa-solid fa-lightbulb text-amber-500 text-sm mt-0.5"></i>
+            <div>
+              <span class="font-bold block">AIの代替アドバイス:</span>
+              <span>醤油がない場合は「めんつゆ 小さじ1」で美味しく代用可能です!</span>
+            </div>
+          </div>
+
+          <!-- 詳細栄養分析表示タブ (プレミアム機能) -->
+          <div class="border-t border-slate-100 pt-3">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="font-bold text-slate-700 flex items-center gap-1">
+                <i class="fa-solid fa-chart-pie text-brand-sage"></i> 詳細栄養分析
+              </span>
+              <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">PREMIUM</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <span class="text-[10px] text-slate-400 block">カロリー</span>
+                <span class="font-bold text-slate-800">320 kcal</span>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <span class="text-[10px] text-slate-400 block">たんぱく質</span>
+                <span class="font-bold text-slate-800">14.2 g</span>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <span class="text-[10px] text-slate-400 block">脂質</span>
+                <span class="font-bold text-slate-800">18.5 g</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ソーシャル・アクション -->
+          <div class="pt-2 flex gap-2">
+            <button onclick="shareResult()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-share-nodes"></i>
+              作れた料理をSNSにシェア
+            </button>
+            <button class="px-3 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition">
+              <i class="fa-regular fa-bookmark"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ボトム (自陣・手札エリア & 操作) -->
-  <footer class="w-full bg-slate-950/90 border-t border-slate-800/80 backdrop-blur-md sticky bottom-0 z-40 p-3 sm:p-4">
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
-      
-      <!-- 所持リソース表示 -->
-      <div class="w-full lg:w-auto flex-1">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-2">
-          <span>あなたの所持リソース & カードボーナス</span>
-          <span class="text-[10px] text-amber-400 font-mono">(宝石数: <span id="totalGemCount">0</span>/10)</span>
-        </div>
-        <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="playerInventory">
-          <!-- JSで動的生成 -->
-        </div>
-      </div>
-
-      <!-- アクション操作ボタン -->
-      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
-        <button id="btnTakeGems" onclick="executeTakeGems()" disabled class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition duration-200 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed">
-          <i class="fa-solid fa-hand-holding-hand"></i>
-          <span>選択した宝石を獲得</span>
-        </button>
-
-        <button id="btnPass" onclick="passTurn()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-medium text-xs border border-slate-800 transition duration-200">
-          パス
-        </button>
-      </div>
-
+  <!-- 画面下部固定ナビゲーションバー -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40">
+    <div class="max-w-md mx-auto flex justify-around py-2">
+      <a href="#" class="flex flex-col items-center gap-1 text-orange-500">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-bold">ホーム</span>
+      </a>
+      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-boxes-stacked text-lg"></i>
+        <span class="text-[10px]">在庫管理</span>
+      </a>
+      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+        <i class="fa-regular fa-bookmark text-lg"></i>
+        <span class="text-[10px]">レシピ保存</span>
+      </a>
+      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+        <i class="fa-regular fa-user text-lg"></i>
+        <span class="text-[10px]">マイページ</span>
+      </a>
     </div>
-  </footer>
+  </nav>
 
-  <!-- Toast 通知 -->
-  <div id="toast" class="fixed top-16 right-4 bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-lg border border-amber-300 transform translate-x-full transition-transform duration-300 z-50 flex items-center gap-2 text-xs">
-    <i class="fa-solid fa-circle-check"></i>
-    <span id="toastMsg">URLをコピーしました</span>
-  </div>
-
-  <!-- 勝敗判定・リザルトオーバーレイ -->
-  <div id="resultOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 hidden">
-    <div class="max-w-md w-full glass-card border border-amber-500/40 rounded-2xl p-6 text-center shadow-2xl relative overflow-hidden">
-      <!-- 背景発光エフェクト -->
-      <div class="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl"></div>
-
-      <div class="relative z-10">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-400 text-3xl flex items-center justify-center mx-auto mb-4 glow-gold">
-          <i class="fa-solid fa-trophy"></i>
-        </div>
-
-        <h2 class="text-2xl font-black text-white mb-1" id="resultTitle">VICTORY!</h2>
-        <p class="text-xs text-slate-400 mb-6">宝石開拓の覇者が決定しました</p>
-
-        <!-- スコア結果 -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 mb-6 flex justify-around items-center">
-          <div>
-            <div class="text-[10px] text-slate-400 font-bold uppercase">あなた</div>
-            <div class="text-2xl font-extrabold text-amber-400" id="finalP1Score">15</div>
-          </div>
-          <div class="text-slate-600 font-bold text-lg">VS</div>
-          <div>
-            <div class="text-[10px] text-slate-400 font-bold uppercase">対戦相手</div>
-            <div class="text-2xl font-extrabold text-slate-400" id="finalP2Score">10</div>
-          </div>
-        </div>
-
-        <!-- 特大SNS共有ボタン -->
-        <div class="flex flex-col gap-3">
-          <a id="btnShareX" target="_blank" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition text-xs shadow-md">
-            <i class="fa-brands fa-x-twitter text-base"></i>
-            <span>結果をX (旧Twitter) でシェア</span>
-          </a>
-
-          <a id="btnShareLine" target="_blank" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition text-xs shadow-md">
-            <i class="fa-brands fa-line text-base"></i>
-            <span>LINEで友達に挑戦状を送る</span>
-          </a>
-
-          <button onclick="resetGame()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs mt-2 transition">
-            もう一度対戦する
-          </button>
-        </div>
-
+  <!-- プレミアムプランモーダル -->
+  <div id="premiumModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 text-center relative">
+      <button onclick="closeModal('premiumModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-amber-500 text-xl">
+        <i class="fa-solid fa-crown"></i>
       </div>
+      <h3 class="text-lg font-bold text-slate-900">プレミアムプラン</h3>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        レシピ保存無制限・詳細栄養分析・広告非表示など、毎日の料理をもっと便利にする機能が使い放題!
+      </p>
+      <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-orange-800 font-bold text-sm">
+        月額 プレミアムプラン
+      </div>
+      <button class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-md hover:opacity-95 transition">
+        今すぐ登録する
+      </button>
     </div>
   </div>
 
   <script>
-    // 宝石定義
-    const GEM_TYPES = [
-      { id: 'emerald', name: 'エメラルド', color: 'emerald', bg: 'bg-emerald-500', text: 'text-emerald-400', icon: 'fa-gem' },
-      { id: 'sapphire', name: 'サファイア', color: 'blue', bg: 'bg-blue-500', text: 'text-blue-400', icon: 'fa-gem' },
-      { id: 'ruby', name: 'ルビー', color: 'red', bg: 'bg-red-500', text: 'text-red-400', icon: 'fa-gem' },
-      { id: 'diamond', name: 'ダイヤ', color: 'sky', bg: 'bg-sky-300', text: 'text-sky-300', icon: 'fa-diamond' },
-      { id: 'onyx', name: 'オニキス', color: 'purple', bg: 'bg-purple-900', text: 'text-purple-400', icon: 'fa-gem' },
-      { id: 'gold', name: 'ゴールド', color: 'amber', bg: 'bg-amber-400', text: 'text-amber-400', icon: 'fa-coins' },
-    ];
-
-    // ゲーム状態
-    let gameState = {
-      p1: { score: 0, gems: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0, gold: 0 }, bonuses: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 } },
-      p2: { score: 0, gems: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0, gold: 0 }, bonuses: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 } },
-      pool: { emerald: 4, sapphire: 4, ruby: 4, diamond: 4, onyx: 4, gold: 5 },
-      selectedGems: [],
-      currentTurn: 'p1',
-      cards: [],
-      winningScore: 12
-    };
-
-    // 初期化
-    function initGame() {
-      generateCards();
-      renderMarket();
-      renderPool();
-      renderInventory();
-      updateUI();
+    // チップUIの選択トグル
+    function toggleChip(element) {
+      element.classList.toggle('chip-active');
     }
 
-    // カード生成
-    function generateCards() {
-      const cardPool = [];
-      const gemKeys = ['emerald', 'sapphire', 'ruby', 'diamond', 'onyx'];
-
-      for (let i = 0; i < 8; i++) {
-        const bonusType = gemKeys[Math.floor(Math.random() * gemKeys.length)];
-        const points = Math.floor(Math.random() * 4) + (i > 3 ? 2 : 0);
-        
-        const cost = { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 };
-        let totalCostNeeded = points === 0 ? 3 : points * 2 + 1;
-        
-        while (totalCostNeeded > 0) {
-          const randomGem = gemKeys[Math.floor(Math.random() * gemKeys.length)];
-          cost[randomGem] = (cost[randomGem] || 0) + 1;
-          totalCostNeeded--;
-        }
-
-        cardPool.push({
-          id: 'card-' + i,
-          points: points,
-          bonus: bonusType,
-          cost: cost
-        });
-      }
-      gameState.cards = cardPool;
-    }
-
-    // マーケット描画 (資源アシストハイライト)
-    function renderMarket() {
-      const container = document.getElementById('cardMarket');
-      container.innerHTML = '';
-
-      let affordableCount = 0;
-
-      gameState.cards.forEach((card, index) => {
-        const isAffordable = checkAffordable(gameState.p1, card);
-        if (isAffordable && gameState.currentTurn === 'p1') affordableCount++;
-
-        const gemConfig = GEM_TYPES.find(g => g.id === card.bonus);
-
-        const cardEl = document.createElement('div');
-        cardEl.className = `glass-card rounded-xl p-3 flex flex-col justify-between transition-all duration-300 relative group ${
-          isAffordable && gameState.currentTurn === 'p1' ? 'card-affordable' : 'border-slate-800'
-        }`;
-
-        let costHtml = '';
-        Object.keys(card.cost).forEach(gemKey => {
-          const req = card.cost[gemKey];
-          if (req > 0) {
-            const gMeta = GEM_TYPES.find(g => g.id === gemKey);
-            const playerHas = (gameState.p1.gems[gemKey] || 0) + (gameState.p1.bonuses[gemKey] || 0);
-            const missing = Math.max(0, req - playerHas);
-
-            costHtml += `
-              <div class="flex items-center justify-between text-[10px] bg-slate-900/90 rounded px-1.5 py-0.5 border border-slate-800">
-                <span class="${gMeta.text} font-bold flex items-center gap-1">
-                  <i class="fa-solid ${gMeta.icon}"></i> ${gMeta.name}
-                </span>
-                <span class="${missing > 0 ? 'text-slate-400' : 'text-emerald-400 font-bold'}">
-                  ${req} ${missing > 0 ? `<span class="text-[9px] text-red-400 font-normal">(-${missing})</span>` : ''}
-                </span>
-              </div>
-            `;
-          }
-        });
-
-        cardEl.innerHTML = `
-          ${isAffordable && gameState.currentTurn === 'p1' ? `
-            <div class="absolute -top-2.5 -right-2 bg-emerald-500 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-full shadow-md animate-bounce z-10 flex items-center gap-1">
-              <i class="fa-solid fa-check"></i> 購入可能
-            </div>
-          ` : ''}
-
-          <div class="flex justify-between items-start mb-2">
-            <div class="text-xl font-extrabold text-amber-400 font-mono">${card.points > 0 ? card.points + ' <span class="text-[10px] font-normal text-slate-400">pts</span>' : ''}</div>
-            <div class="w-7 h-7 rounded-lg ${gemConfig.bg} text-slate-950 flex items-center justify-center font-bold text-xs shadow-md">
-              <i class="fa-solid ${gemConfig.icon}"></i>
-            </div>
-          </div>
-
-          <div class="space-y-1 my-2">
-            ${costHtml}
-          </div>
-
-          <button 
-            onclick="buyCard(${index})" 
-            ${!isAffordable || gameState.currentTurn !== 'p1' ? 'disabled' : ''} 
-            class="w-full py-1.5 mt-1 rounded-lg text-xs font-bold transition duration-200 ${
-              isAffordable && gameState.currentTurn === 'p1'
-                ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md glow-emerald'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-            }">
-            ${isAffordable ? 'カードを購入' : '資源不足'}
-          </button>
-        `;
-
-        container.appendChild(cardEl);
-      });
-
-      document.getElementById('affordableCount').innerText = affordableCount + '枚';
-    }
-
-    // 資源購入可否の判定
-    function checkAffordable(player, card) {
-      let neededGold = 0;
-      for (let gemKey in card.cost) {
-        const required = card.cost[gemKey];
-        const owned = (player.gems[gemKey] || 0) + (player.bonuses[gemKey] || 0);
-        if (owned < required) {
-          neededGold += (required - owned);
-        }
-      }
-      return player.gems.gold >= neededGold;
-    }
-
-    // プール宝石描画
-    function renderPool() {
-      const container = document.getElementById('poolGems');
-      container.innerHTML = '';
-
-      GEM_TYPES.forEach(gem => {
-        const count = gameState.pool[gem.id] || 0;
-        const isSelected = gameState.selectedGems.filter(g => g === gem.id).length;
-
-        const btn = document.createElement('button');
-        btn.onclick = () => selectGemFromPool(gem.id);
-        btn.disabled = count === 0 || gem.id === 'gold' || gameState.currentTurn !== 'p1';
-        btn.className = `flex-1 min-w-[90px] p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all duration-200 relative ${
-          isSelected > 0 ? 'bg-slate-800 border-amber-500 ring-2 ring-amber-500/50 scale-105' : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-        } ${count === 0 ? 'opacity-30 cursor-not-allowed' : ''}`;
-
-        btn.innerHTML = `
-          ${isSelected > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-amber-500 text-slate-950 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow">${isSelected}</span>` : ''}
-          <i class="fa-solid ${gem.icon} ${gem.text} text-base"></i>
-          <span class="text-[11px] font-medium text-slate-300">${gem.name}</span>
-          <span class="text-[10px] font-mono text-slate-500">残: ${count}</span>
-        `;
-
-        container.appendChild(btn);
-      });
-    }
-
-    // 所持品描画
-    function renderInventory() {
-      const container = document.getElementById('playerInventory');
-      container.innerHTML = '';
-
-      let totalCount = 0;
-
-      GEM_TYPES.forEach(gem => {
-        const gemCount = gameState.p1.gems[gem.id] || 0;
-        const bonusCount = gameState.p1.bonuses[gem.id] || 0;
-        totalCount += gemCount;
-
-        const box = document.createElement('div');
-        box.className = `glass-card rounded-lg p-2 border-slate-800/80 flex flex-col items-center justify-center text-center`;
-        box.innerHTML = `
-          <div class="flex items-center gap-1 ${gem.text} text-xs font-bold">
-            <i class="fa-solid ${gem.icon}"></i>
-            <span>${gem.name}</span>
-          </div>
-          <div class="mt-1 flex items-baseline gap-1">
-            <span class="text-sm font-extrabold text-white">${gemCount}</span>
-            ${bonusCount > 0 ? `<span class="text-[10px] text-amber-400 font-bold">(+${bonusCount})</span>` : ''}
-          </div>
-        `;
-        container.appendChild(box);
-      });
-
-      document.getElementById('totalGemCount').innerText = totalCount;
-    }
-
-    // 宝石の選択操作
-    function selectGemFromPool(gemId) {
-      if (gameState.currentTurn !== 'p1') return;
-
-      const currentSelected = gameState.selectedGems;
-      const countOfThis = currentSelected.filter(g => g === gemId).length;
-
-      if (countOfThis > 0 && currentSelected.length === 1 && gameState.pool[gemId] >= 4) {
-        gameState.selectedGems.push(gemId);
-      } else if (countOfThis === 0 && currentSelected.length < 3 && !currentSelected.some(g => currentSelected.filter(x => x === g).length > 1)) {
-        gameState.selectedGems.push(gemId);
-      } else {
-        gameState.selectedGems = [gemId];
-      }
-
-      renderPool();
-      updateTakeGemsButton();
-    }
-
-    function updateTakeGemsButton() {
-      const btn = document.getElementById('btnTakeGems');
-      if (gameState.selectedGems.length > 0) {
-        btn.disabled = false;
-        btn.classList.add('bg-emerald-500', 'text-slate-950', 'hover:bg-emerald-400', 'glow-emerald');
-        btn.classList.remove('bg-slate-800', 'text-slate-400');
-      } else {
-        btn.disabled = true;
-        btn.classList.remove('bg-emerald-500', 'text-slate-950', 'hover:bg-emerald-400', 'glow-emerald');
-        btn.classList.add('bg-slate-800', 'text-slate-400');
-      }
-    }
-
-    // 宝石獲得実行
-    function executeTakeGems() {
-      if (gameState.selectedGems.length === 0) return;
-
-      gameState.selectedGems.forEach(gemId => {
-        gameState.p1.gems[gemId] = (gameState.p1.gems[gemId] || 0) + 1;
-        gameState.pool[gemId]--;
-      });
-
-      logAction(`あなたが宝石 [${gameState.selectedGems.map(g => GEM_TYPES.find(x => x.id === g).name).join(', ')}] を獲得しました。`);
-      gameState.selectedGems = [];
-
-      endTurn();
-    }
-
-    // カード購入実行
-    function buyCard(cardIndex) {
-      const card = gameState.cards[cardIndex];
-      const player = gameState.p1;
-
-      for (let gemKey in card.cost) {
-        const req = card.cost[gemKey];
-        const bonus = player.bonuses[gemKey] || 0;
-        const netReq = Math.max(0, req - bonus);
-
-        if (netReq > 0) {
-          if (player.gems[gemKey] >= netReq) {
-            player.gems[gemKey] -= netReq;
-            gameState.pool[gemKey] += netReq;
+    // カテゴリ切替機能 (簡易表示切替)
+    function switchCategory(cat) {
+      const tabs = ['ingredients', 'seasonings', 'tools'];
+      tabs.forEach(t => {
+        const tabEl = document.getElementById(`tab-${t}`);
+        if (tabEl) {
+          if (t === cat) {
+            tabEl.className = 'pb-2 text-brand-sage border-b-2 border-brand-sage font-bold';
           } else {
-            const rem = netReq - player.gems[gemKey];
-            gameState.pool[gemKey] += player.gems[gemKey];
-            player.gems[gemKey] = 0;
-            player.gems.gold -= rem;
-            gameState.pool.gold += rem;
+            tabEl.className = 'pb-2 hover:text-slate-600';
           }
         }
-      }
-
-      player.score += card.points;
-      player.bonuses[card.bonus] = (player.bonuses[card.bonus] || 0) + 1;
-
-      logAction(`あなたが [${GEM_TYPES.find(g => g.id === card.bonus).name}] カード(${card.points} pts)を購入しました!`);
-
-      replaceCard(cardIndex);
-      endTurn();
-    }
-
-    function replaceCard(index) {
-      const gemKeys = ['emerald', 'sapphire', 'ruby', 'diamond', 'onyx'];
-      const bonusType = gemKeys[Math.floor(Math.random() * gemKeys.length)];
-      const points = Math.floor(Math.random() * 4) + 1;
-      const cost = { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 };
-      let totalCostNeeded = points * 2;
-      
-      while (totalCostNeeded > 0) {
-        const randomGem = gemKeys[Math.floor(Math.random() * gemKeys.length)];
-        cost[randomGem] = (cost[randomGem] || 0) + 1;
-        totalCostNeeded--;
-      }
-
-      gameState.cards[index] = {
-        id: 'card-' + Date.now(),
-        points: points,
-        bonus: bonusType,
-        cost: cost
-      };
-    }
-
-    function passTurn() {
-      logAction('あなたがターンをパスしました。');
-      endTurn();
-    }
-
-    function endTurn() {
-      updateUI();
-
-      if (checkWinCondition()) return;
-
-      if (gameState.currentTurn === 'p1') {
-        gameState.currentTurn = 'p2';
-        updateTurnDisplay();
-        setTimeout(simulateAITurn, 1200);
-      } else {
-        gameState.currentTurn = 'p1';
-        updateTurnDisplay();
-      }
-    }
-
-    // 相手ターン(AI思考)
-    function simulateAITurn() {
-      let bought = false;
-      for (let i = 0; i < gameState.cards.length; i++) {
-        if (checkAffordable(gameState.p2, gameState.cards[i])) {
-          const card = gameState.cards[i];
-          gameState.p2.score += card.points;
-          gameState.p2.bonuses[card.bonus] = (gameState.p2.bonuses[card.bonus] || 0) + 1;
-          logAction(`対戦相手がカード(${card.points} pts)を購入しました。`);
-          replaceCard(i);
-          bought = true;
-          break;
-        }
-      }
-
-      if (!bought) {
-        const availableGems = Object.keys(gameState.pool).filter(k => k !== 'gold' && gameState.pool[k] > 0);
-        if (availableGems.length > 0) {
-          const picked = availableGems[Math.floor(Math.random() * availableGems.length)];
-          gameState.p2.gems[picked] = (gameState.p2.gems[picked] || 0) + 1;
-          gameState.pool[picked]--;
-          logAction(`対戦相手が宝石 [${GEM_TYPES.find(g => g.id === picked).name}] を獲得しました。`);
-        } else {
-          logAction('対戦相手がパスしました。');
-        }
-      }
-
-      endTurn();
-    }
-
-    function checkWinCondition() {
-      if (gameState.p1.score >= gameState.winningScore || gameState.p2.score >= gameState.winningScore) {
-        showResultModal();
-        return true;
-      }
-      return false;
-    }
-
-    function showResultModal() {
-      const overlay = document.getElementById('resultOverlay');
-      const title = document.getElementById('resultTitle');
-      document.getElementById('finalP1Score').innerText = gameState.p1.score;
-      document.getElementById('finalP2Score').innerText = gameState.p2.score;
-
-      const isWin = gameState.p1.score >= gameState.p2.score;
-      title.innerText = isWin ? 'VICTORY!' : 'DEFEAT...';
-      title.className = isWin ? 'text-3xl font-black text-amber-400 mb-1' : 'text-3xl font-black text-slate-400 mb-1';
-
-      const shareText = `【オープンアリーナ:宝石開拓記】スコア ${gameState.p1.score}pt で${isWin ? '勝利' : '敗北'}しました!Webで即対戦!`;
-      const currentUrl = window.location.href;
-
-      document.getElementById('btnShareX').href = `[link removed]{encodeURIComponent(shareText)}&url=${encodeURIComponent(currentUrl)}`;
-      document.getElementById('btnShareLine').href = `[link removed]{encodeURIComponent(currentUrl)}`;
-
-      overlay.classList.remove('hidden');
-    }
-
-    function resetGame() {
-      document.getElementById('resultOverlay').classList.add('hidden');
-      gameState.p1 = { score: 0, gems: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0, gold: 0 }, bonuses: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 } };
-      gameState.p2 = { score: 0, gems: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0, gold: 0 }, bonuses: { emerald: 0, sapphire: 0, ruby: 0, diamond: 0, onyx: 0 } };
-      gameState.pool = { emerald: 4, sapphire: 4, ruby: 4, diamond: 4, onyx: 4, gold: 5 };
-      gameState.selectedGems = [];
-      gameState.currentTurn = 'p1';
-      initGame();
-    }
-
-    function updateUI() {
-      document.getElementById('p1Score').innerText = gameState.p1.score;
-      document.getElementById('p2Score').innerText = gameState.p2.score;
-
-      renderMarket();
-      renderPool();
-      renderInventory();
-      updateTakeGemsButton();
-    }
-
-    function updateTurnDisplay() {
-      const el = document.getElementById('turnIndicator');
-      if (gameState.currentTurn === 'p1') {
-        el.className = 'text-xs font-bold text-emerald-400 flex items-center gap-1.5';
-        el.innerHTML = '<i class="fa-solid fa-circle-play animate-bounce"></i> あなたのターン';
-        document.getElementById('p1Status').classList.remove('opacity-60');
-        document.getElementById('p2Status').classList.add('opacity-60');
-      } else {
-        el.className = 'text-xs font-bold text-blue-400 flex items-center gap-1.5';
-        el.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 相手の思考中...';
-        document.getElementById('p1Status').classList.add('opacity-60');
-        document.getElementById('p2Status').classList.remove('opacity-60');
-      }
-    }
-
-    function logAction(msg) {
-      const logBox = document.getElementById('actionLog');
-      const item = document.createElement('div');
-      item.className = 'my-0.5 text-[11px] border-l-2 border-amber-500 pl-1.5 py-0.5 text-slate-200';
-      item.innerText = msg;
-      logBox.prepend(item);
-    }
-
-    function copyInviteUrl() {
-      const dummyUrl = window.location.href;
-      navigator.clipboard.writeText(dummyUrl).then(() => {
-        showToast('招待URLをコピーしました!');
-      }).catch(() => {
-        showToast('招待URLをコピーしました!');
       });
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMsg').innerText = msg;
-      toast.classList.remove('translate-x-full');
-      setTimeout(() => {
-        toast.classList.add('translate-x-full');
-      }, 2500);
+    // AI献立生成アクション
+    function generateRecipe() {
+      alert('AIが選択中のあまりもの食材を分析し、最適なレシピを生成しました!');
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      initGame();
-    });
+    // SNSシェアアクション
+    function shareResult() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'ピタッと献立AI',
+          text: '追加買い出しゼロ!あまりもの食材だけで「フレッシュトマトとふんわり卵の彩り炒め」を作りました! #ピタッと献立AI',
+          url: window.location.href,
+        }).catch(() => {});
+      } else {
+        alert('SNSシェア用テキストをコピーしました!');
+      }
+    }
+
+    // モーダル制御
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
   </script>
 </body>
 </html>
