@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>あまりものワンタップ献立診断</title>
+  <title>Family Gems (ファミリー・ジェムズ)</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts: Poppins, Noto Sans JP -->
   <link rel="preconnect" href="[link removed]">
   <link rel="preconnect" href="[link removed]" crossorigin>
   <link href="[link removed]" rel="stylesheet">
@@ -14,16 +17,17 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              orange: '#f97316',
-              'orange-hover': '#ea580c',
-              sage: '#84a98c',
-              'sage-dark': '#52796f',
-              bg: '#f8fafc'
-            }
+            sapphire: {
+              DEFAULT: '#0b1329',
+              light: '#172242',
+              card: '#1e2d53',
+            },
+            ruby: '#e63946',
+            gold: '#ffb703',
+            emeraldCustom: '#10b981',
           },
           fontFamily: {
-            sans: ['"Noto Sans JP"', 'sans-serif']
+            sans: ['Poppins', 'Noto Sans JP', 'sans-serif'],
           }
         }
       }
@@ -31,318 +35,518 @@
   </script>
   <style>
     body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: #f8fafc;
+      background-color: #0b1329;
+      color: #f8fafc;
+      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
     }
-    .chip-active {
-      background-color: #f97316 !important;
-      color: #ffffff !important;
-      border-color: #f97316 !important;
+    .glow-gold {
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.4);
+    }
+    .glow-card {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold selection:text-slate-900">
 
   <!-- ヘッダーエリア -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 bg-brand-orange text-white rounded-lg flex items-center justify-center font-bold text-lg shadow-sm">
-          <i class="fa-solid fa-utensils"></i>
+  <header class="bg-sapphire-light border-b border-slate-700/60 px-4 py-3 sticky top-0 z-30 shadow-md">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <!-- 左: プロダクトロゴ -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-500 flex items-center justify-center shadow-lg transform rotate-3">
+          <i class="fa-solid font-bold fa-gem text-white text-xl"></i>
         </div>
-        <h1 class="font-bold text-base md:text-lg text-slate-800 tracking-tight">あまりものワンタップ献立診断</h1>
+        <div>
+          <h1 class="font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-emerald-300 to-cyan-300">
+            FAMILY GEMS
+          </h1>
+          <p class="text-[10px] text-slate-400 font-medium -mt-1">ファミリー・ジェムズ</p>
+        </div>
       </div>
-      <!-- 画面スリープ防止トグル -->
-      <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-        <i class="fa-solid fa-mobile-screen-button text-slate-500 text-sm"></i>
-        <span class="text-xs font-medium text-slate-600 hidden sm:inline">スリープ防止</span>
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="wakeLockToggle" class="sr-only peer" onchange="toggleWakeLock(this)">
-          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-sage"></div>
-        </label>
+
+      <!-- 中央: ルームID & 招待リンク -->
+      <div class="hidden md:flex items-center bg-sapphire-card px-4 py-1.5 rounded-full border border-slate-600/50 shadow-inner">
+        <span class="text-xs text-slate-400 mr-2 font-mono">ROOM: <strong class="text-amber-400 font-bold">#GEM-8821</strong></span>
+        <button onclick="copyInviteLink()" class="ml-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-medium transition duration-200 flex items-center space-x-1 shadow">
+          <i class="fa-regular fa-copy"></i>
+          <span>招待リンクをコピー</span>
+        </button>
+      </div>
+
+      <!-- 右: ヘルプ / アシストガイド -->
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleModal('helpModal')" class="bg-slate-700/80 hover:bg-slate-600 text-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-2 border border-slate-600 transition">
+          <i class="fa-solid fa-circle-question text-amber-400 text-sm"></i>
+          <span class="hidden sm:inline">簡易ガイド</span>
+        </button>
+        <button onclick="toggleModal('resultModal')" class="bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow-md transition">
+          <i class="fa-solid fa-trophy mr-1"></i> リザルト試観
+        </button>
       </div>
     </div>
   </header>
 
   <!-- メインコンテンツ -->
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 md:py-8 space-y-8">
-    
-    <!-- ヒーロー&メイン操作エリア -->
-    <section class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 text-center space-y-6">
-      <div class="inline-block bg-orange-50 text-brand-orange text-xs font-bold px-3 py-1 rounded-full border border-orange-100 mb-1">
-        追加買い出しゼロ!思考コストゼロ!
-      </div>
-      <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 leading-tight">
-        余り物食材を<span class="text-brand-orange">ワンタップ</span>で献立化
-      </h2>
-      <p class="text-sm md:text-base text-slate-600 max-w-xl mx-auto">
-        冷蔵庫にある食材を選び、わずか3ステップの爆速レシピを提案します。
-      </p>
+  <main class="max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-6 flex-1">
 
-      <!-- ステップ1: メイン食材選択 -->
-      <div class="text-left space-y-3 pt-2">
-        <label class="block text-sm font-bold text-slate-700 flex items-center gap-2">
-          <span class="bg-brand-orange text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">1</span>
-          メイン食材を選択(複数選択可)
-        </label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5" id="ingredientGrid">
-          <button type="button" onclick="toggleIngredient(this, '豚肉')" class="ingredient-chip flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-slate-100 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-drumstick-bite text-slate-400"></i> 豚肉
-          </button>
-          <button type="button" onclick="toggleIngredient(this, '玉ねぎ')" class="ingredient-chip flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-slate-100 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-seedling text-slate-400"></i> 玉ねぎ
-          </button>
-          <button type="button" onclick="toggleIngredient(this, 'キャベツ')" class="ingredient-chip flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-slate-100 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-leaf text-slate-400"></i> キャベツ
-          </button>
-          <button type="button" onclick="toggleIngredient(this, '豆腐')" class="ingredient-chip flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-slate-100 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-cube text-slate-400"></i> 豆腐
-          </button>
-          <button type="button" onclick="toggleIngredient(this, '卵')" class="ingredient-chip flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-700 hover:bg-slate-100 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-egg text-slate-400"></i> 卵
-          </button>
+    <!-- 上部: 他プレイヤー情報エリア (完全公開型) -->
+    <section class="bg-sapphire-light/60 backdrop-blur rounded-2xl p-4 border border-slate-700/50 shadow-lg">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2">
+        <h2 class="text-xs font-bold text-slate-400 tracking-wider uppercase flex items-center gap-2">
+          <i class="fa-solid fa-users text-indigo-400"></i> 対戦相手の盤面 (公開中)
+        </h2>
+        <span class="text-xs bg-indigo-950 text-indigo-300 border border-indigo-700/50 px-2.5 py-0.5 rounded-full font-mono">2 / 4 参加中</span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- プレイヤー 2 -->
+        <div class="bg-sapphire-card/80 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-400 flex items-center justify-center font-bold text-blue-300 text-sm">P2</div>
+              <div>
+                <span class="font-bold text-sm text-slate-200">アレックス</span>
+                <span class="ml-2 text-xs text-amber-400 font-semibold"><i class="fa-solid fa-star text-xs"></i> 11pt</span>
+              </div>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">手番待機</span>
+          </div>
+          <!-- 相手の資産一覧 -->
+          <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-700/50">
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-700/40">
+              <span class="text-slate-400 block text-[10px] mb-1">保有宝石トークン</span>
+              <div class="flex space-x-1.5 font-bold">
+                <span class="text-emerald-400">💎2</span>
+                <span class="text-rose-400">🔴1</span>
+                <span class="text-blue-400">🔷3</span>
+                <span class="text-slate-300">⚪0</span>
+              </div>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-700/40">
+              <span class="text-slate-400 block text-[10px] mb-1">獲得カード (全5枚)</span>
+              <div class="flex space-x-1.5 font-bold">
+                <span class="text-emerald-400">🟩2</span>
+                <span class="text-rose-400">🟥1</span>
+                <span class="text-amber-400">🟨2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- プレイヤー 3 (BOT) -->
+        <div class="bg-sapphire-card/80 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between opacity-80">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400 flex items-center justify-center font-bold text-purple-300 text-sm">P3</div>
+              <div>
+                <span class="font-bold text-sm text-slate-200">エマ (AI)</span>
+                <span class="ml-2 text-xs text-amber-400 font-semibold"><i class="fa-solid fa-star text-xs"></i> 8pt</span>
+              </div>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">手番待機</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-700/50">
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-700/40">
+              <span class="text-slate-400 block text-[10px] mb-1">保有宝石トークン</span>
+              <div class="flex space-x-1.5 font-bold">
+                <span class="text-emerald-400">💎1</span>
+                <span class="text-amber-400">🟡2</span>
+                <span class="text-slate-300">⚪2</span>
+              </div>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-700/40">
+              <span class="text-slate-400 block text-[10px] mb-1">獲得カード (全3枚)</span>
+              <div class="flex space-x-1.5 font-bold">
+                <span class="text-blue-400">🟦2</span>
+                <span class="text-slate-300">⬜1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中央: サプライ・場札エリア & トークン取得 -->
+    <section class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- 獲得可能カード -->
+      <div class="lg:col-span-3 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-emerald-400"></i> 場札カード(サプライ)
+          </h2>
+          <span class="text-xs text-slate-400">タップしてカードを購入またはキープ</span>
+        </div>
+
+        <!-- カードグリッド -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          
+          <!-- カード 1 (推奨ハイライトつき) -->
+          <div class="bg-slate-800 rounded-xl p-3 border-2 border-amber-400/90 shadow-lg relative transform hover:-translate-y-1 transition duration-200 cursor-pointer glow-gold">
+            <div class="absolute -top-2.5 -right-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> おすすめ!
+            </div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-amber-400">3 pt</span>
+              <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow">
+                💎
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-700/50 font-bold">エメラルドx2</span>
+                <span class="bg-blue-950 text-blue-300 px-1.5 py-0.5 rounded border border-blue-700/50 font-bold">サファイアx1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- カード 2 -->
+          <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 shadow hover:border-slate-500 transform hover:-translate-y-1 transition duration-200 cursor-pointer">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-amber-400">2 pt</span>
+              <div class="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center text-white text-xs font-bold shadow">
+                🔴
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded border border-rose-700/50 font-bold">ルビーx3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- カード 3 -->
+          <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 shadow hover:border-slate-500 transform hover:-translate-y-1 transition duration-200 cursor-pointer">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-amber-400">1 pt</span>
+              <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shadow">
+                🔷
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded border border-slate-600 font-bold">ダイヤx2</span>
+                <span class="bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded border border-amber-700/50 font-bold">ゴールドx1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- カード 4 -->
+          <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 shadow hover:border-slate-500 transform hover:-translate-y-1 transition duration-200 cursor-pointer">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-amber-400">4 pt</span>
+              <div class="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 text-xs font-bold shadow">
+                🟡
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-700/50 font-bold">エメラルドx4</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- カード 5 -->
+          <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 shadow hover:border-slate-500 transform hover:-translate-y-1 transition duration-200 cursor-pointer">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-slate-500">0 pt</span>
+              <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-900 text-xs font-bold shadow">
+                ⚪
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded border border-rose-700/50 font-bold">ルビーx1</span>
+                <span class="bg-blue-950 text-blue-300 px-1.5 py-0.5 rounded border border-blue-700/50 font-bold">サファイアx1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- カード 6 -->
+          <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700 shadow hover:border-slate-500 transform hover:-translate-y-1 transition duration-200 cursor-pointer">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xl font-black text-amber-400">2 pt</span>
+              <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold shadow">
+                💎
+              </div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 text-xs space-y-1 border border-slate-700/60">
+              <div class="text-[10px] text-slate-400 mb-1">必要コスト</div>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded border border-amber-700/50 font-bold">ゴールドx2</span>
+                <span class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded border border-slate-600 font-bold">ダイヤx1</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- ステップ2: 条件カスタマイズ拡張 (アコーディオン) -->
-      <div class="text-left border border-slate-200 rounded-xl overflow-hidden">
-        <button type="button" onclick="toggleAccordion()" class="w-full bg-slate-50 px-4 py-3 text-left font-medium text-sm text-slate-700 flex justify-between items-center hover:bg-slate-100 transition">
-          <span class="flex items-center gap-2">
-            <span class="bg-brand-sage text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">2</span>
-            手持ちの調味料・器具で絞り込み(オプション)
-          </span>
-          <i id="accordionIcon" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
-        </button>
-        <div id="accordionContent" class="hidden p-4 bg-white border-t border-slate-100 space-y-3 text-sm">
+      <!-- 宝石トークンサプライ -->
+      <div class="bg-sapphire-light/80 rounded-2xl p-4 border border-slate-700/60 flex flex-col justify-between shadow-lg">
+        <div>
+          <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-coins text-amber-400"></i> 取得可能トークン
+          </h2>
+          <p class="text-xs text-slate-400 mb-4">異なる3種、または同種2個を獲得できます。</p>
+          
+          <div class="space-y-2.5">
+            <button class="w-full flex items-center justify-between bg-slate-800/90 hover:bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl transition group">
+              <div class="flex items-center space-x-3">
+                <span class="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400 text-sm">💎</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-emerald-300">エメラルド</span>
+              </div>
+              <span class="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded font-mono border border-slate-700">残 4</span>
+            </button>
+
+            <button class="w-full flex items-center justify-between bg-slate-800/90 hover:bg-rose-950/60 border border-rose-500/30 p-2.5 rounded-xl transition group">
+              <div class="flex items-center space-x-3">
+                <span class="w-7 h-7 rounded-full bg-rose-500/20 border border-rose-400 flex items-center justify-center text-rose-400 text-sm">🔴</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-rose-300">ルビー</span>
+              </div>
+              <span class="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded font-mono border border-slate-700">残 5</span>
+            </button>
+
+            <button class="w-full flex items-center justify-between bg-slate-800/90 hover:bg-blue-950/60 border border-blue-500/30 p-2.5 rounded-xl transition group">
+              <div class="flex items-center space-x-3">
+                <span class="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-400 flex items-center justify-center text-blue-400 text-sm">🔷</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-blue-300">サファイア</span>
+              </div>
+              <span class="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded font-mono border border-slate-700">残 2</span>
+            </button>
+
+            <button class="w-full flex items-center justify-between bg-slate-800/90 hover:bg-amber-950/60 border border-amber-500/30 p-2.5 rounded-xl transition group">
+              <div class="flex items-center space-x-3">
+                <span class="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-400 text-sm">🟡</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-amber-300">ゴールド</span>
+              </div>
+              <span class="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded font-mono border border-slate-700">残 3</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-700/60 text-center">
+          <span class="text-[11px] text-slate-400">現在選択中: <strong class="text-amber-400">2 / 3 個</strong></span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 下部: 自分の操作・資産エリア & ヒントアシストUI -->
+    <section class="bg-gradient-to-r from-sapphire-card via-slate-900 to-sapphire-card border-2 border-emerald-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl relative">
+      
+      <!-- 手番バッジ -->
+      <div class="absolute -top-3 left-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-black px-3 py-0.5 rounded-full shadow flex items-center space-x-1">
+        <i class="fa-solid fa-play text-[10px]"></i>
+        <span>あなた(P1)のターンです</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        
+        <!-- 左: 自分ステータス & 勝利点 -->
+        <div class="flex items-center space-x-4 border-b md:border-b-0 md:border-r border-slate-700/60 pb-4 md:pb-0 pr-0 md:pr-4">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-400 to-cyan-500 flex items-center justify-center font-black text-2xl text-slate-950 shadow-lg">
+            P1
+          </div>
           <div>
-            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-2">調味料</span>
-            <div class="flex flex-wrap gap-3">
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" checked class="rounded text-brand-orange focus:ring-brand-orange"> 醤油・みりん
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" checked class="rounded text-brand-orange focus:ring-brand-orange"> 味噌
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" class="rounded text-brand-orange focus:ring-brand-orange"> めんつゆ
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" class="rounded text-brand-orange focus:ring-brand-orange"> 中華だし・ガラスープ
-              </label>
+            <div class="text-xs text-slate-400 font-medium">現在の勝利点</div>
+            <div class="text-3xl font-black text-amber-400 flex items-baseline gap-1">
+              12 <span class="text-xs text-slate-400 font-normal">/ 15 pt (勝利目標)</span>
             </div>
-          </div>
-          <div class="pt-2 border-t border-slate-100">
-            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider block mb-2">調理器具</span>
-            <div class="flex flex-wrap gap-3">
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" checked class="rounded text-brand-orange focus:ring-brand-orange"> フライパン
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" class="rounded text-brand-orange focus:ring-brand-orange"> 電子レンジのみ
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-slate-600">
-                <input type="checkbox" class="rounded text-brand-orange focus:ring-brand-orange"> 両手鍋
-              </label>
+            <div class="mt-1 text-[11px] text-emerald-400 font-medium">
+              <i class="fa-solid fa-circle-check"></i> あと 3点 で勝利!
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- メインCTAボタン -->
-      <button type="button" onclick="diagnoseRecipe()" class="w-full py-4 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
-        <i class="fa-solid fa-bolt"></i> 3ステップレシピを爆速診断
+        <!-- 中央: 保有トークン & カード保有数 -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold text-slate-300 flex items-center justify-between">
+            <span>手元の宝石トークン (計 5個)</span>
+            <span class="text-[10px] text-slate-400">上限 10個</span>
+          </div>
+          <div class="flex space-x-2">
+            <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-emerald-500/40 text-center flex-1">
+              <span class="block text-[10px] text-slate-400">エメラルド</span>
+              <span class="text-sm font-black text-emerald-400">💎 2</span>
+            </div>
+            <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-rose-500/40 text-center flex-1">
+              <span class="block text-[10px] text-slate-400">ルビー</span>
+              <span class="text-sm font-black text-rose-400">🔴 1</span>
+            </div>
+            <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-blue-500/40 text-center flex-1">
+              <span class="block text-[10px] text-slate-400">サファイア</span>
+              <span class="text-sm font-black text-blue-400">🔷 1</span>
+            </div>
+            <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-amber-500/40 text-center flex-1">
+              <span class="block text-[10px] text-slate-400">ゴールド</span>
+              <span class="text-sm font-black text-amber-400">🟡 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右: AIヒントアシストUI (初心者向け) -->
+        <div class="bg-amber-950/30 border border-amber-500/40 rounded-xl p-3 flex flex-col justify-between">
+          <div class="flex items-center space-x-2 text-amber-300 mb-1">
+            <i class="fa-solid fa-lightbulb text-sm animate-bounce"></i>
+            <span class="text-xs font-bold">初心者ヒントアシスト</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            場の「3pt エメラルドカード」を購入する条件がそろっています![カードを購入] ボタンを押すのが一番有利です。
+          </p>
+          <div class="mt-2 text-right">
+            <span class="text-[10px] text-amber-400 font-medium">💡 推奨: 「3ptカードを購入」</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- アクション・コントロールエリア (メインアクション) -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <button class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm sm:text-base transform active:scale-95">
+        <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+        <span>宝石トークンを獲得する</span>
       </button>
-    </section>
 
-    <!-- 診断結果表示エリア -->
-    <section id="resultArea" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 space-y-6">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
-          <div>
-            <span class="text-xs font-bold text-brand-sage uppercase tracking-wider">診断結果</span>
-            <h3 id="recipeTitle" class="text-xl md:text-2xl font-bold text-slate-800">豚肉とキャベツの甘辛炒め</h3>
-          </div>
-          <div class="flex items-center gap-3 text-xs text-slate-500">
-            <span class="bg-slate-100 px-2.5 py-1 rounded-full"><i class="fa-regular fa-clock mr-1"></i>調理時間: 約10分</span>
-            <span class="bg-slate-100 px-2.5 py-1 rounded-full"><i class="fa-solid fa-fire mr-1"></i>難易度: ★☆☆</span>
-          </div>
-        </div>
+      <button class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-xl transition duration-200 flex items-center justify-center space-x-2 text-sm sm:text-base glow-gold transform active:scale-95">
+        <i class="fa-solid fa-cart-shopping text-lg"></i>
+        <span>カードを購入する (推奨)</span>
+      </button>
 
-        <!-- レシピ概要 & 材料 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="md:col-span-1">
-            <img id="recipeImage" src="[link removed]" alt="完成イメージ" class="w-full h-48 md:h-full object-cover rounded-xl shadow-inner">
-          </div>
-          <div class="md:col-span-2 space-y-3">
-            <h4 class="font-bold text-sm text-slate-700 flex items-center gap-1.5">
-              <i class="fa-solid fa-basket-shopping text-brand-sage"></i> 必要な手持ち材料
-            </h4>
-            <ul id="ingredientList" class="bg-slate-50 rounded-xl p-4 text-sm text-slate-700 space-y-1.5 border border-slate-100">
-              <!-- 動的挿入 -->
-            </ul>
-          </div>
-        </div>
-
-        <!-- 3ステップレシピ手順 -->
-        <div class="space-y-3 pt-2">
-          <h4 class="font-bold text-sm text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-list-check text-brand-orange"></i> 爆速3ステップ手順
-          </h4>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="stepCards">
-            <!-- 動的挿入 -->
-          </div>
-        </div>
-
-        <!-- SNS共有ボタン -->
-        <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p class="text-xs text-slate-500">簡単だったらSNSで共有しよう!</p>
-          <button type="button" onclick="shareResult()" class="w-full sm:w-auto bg-black hover:bg-slate-800 text-white font-medium px-5 py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 transition">
-            <i class="fa-brands fa-x-twitter"></i> 「本日のズボラ飯」としてXに投稿
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 収益化・広告枠エリア -->
-    <section class="space-y-4">
-      <!-- インフィード広告枠 -->
-      <div class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center">
-        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">スポンサーリンク</span>
-        <div class="flex items-center justify-center gap-4 text-slate-600 text-xs py-2">
-          <i class="fa-solid fa-kitchen-set text-xl text-slate-400"></i>
-          <span class="font-medium">調理時短家電・最新ノンフライヤー特集【Web広告スペース】</span>
-        </div>
-      </div>
-
-      <!-- サブスク誘導バナー -->
-      <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="space-y-1 text-center md:text-left">
-          <span class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">月額サブスクプラン</span>
-          <h4 class="font-bold text-lg md:text-xl">週間あまり物使い切りプランナー</h4>
-          <p class="text-xs text-emerald-100">買い出し管理から食品ロスゼロまで、1週間分を自動最適化!</p>
-        </div>
-        <button type="button" class="whitespace-nowrap bg-white text-emerald-800 hover:bg-emerald-50 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow">
-          詳しく見る <i class="fa-solid fa-arrow-right ml-1"></i>
-        </button>
-      </div>
+      <button class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3.5 px-4 rounded-xl border border-slate-600 shadow transition duration-200 flex items-center justify-center space-x-2 text-sm sm:text-base transform active:scale-95">
+        <i class="fa-solid fa-bookmark text-lg text-indigo-400"></i>
+        <span>カードを1枚キープ</span>
+      </button>
     </section>
 
   </main>
 
-  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-    <p>&copy; 2026 あまりものワンタップ献立診断 - LEGRA</p>
+  <!-- フッター -->
+  <footer class="bg-sapphire-light border-t border-slate-800 mt-8 py-4 text-center text-xs text-slate-500">
+    <p>© 2026 Family Gems Project - LEGRA Web Board Game Engine</p>
   </footer>
 
-  <script>
-    let selectedIngredients = [];
-    let wakeLock = null;
+  <!-- モーダル: 簡易ガイド (インスト不要アシスト) -->
+  <div id="helpModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-sapphire-card border border-slate-600 rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+      <button onclick="toggleModal('helpModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
 
-    function toggleIngredient(btn, name) {
-      if (selectedIngredients.includes(name)) {
-        selectedIngredients = selectedIngredients.filter(i => i !== name);
-        btn.classList.remove('chip-active');
-      } else {
-        selectedIngredients.push(name);
-        btn.classList.add('chip-active');
-      }
-    }
+      <div class="flex items-center space-x-3 border-b border-slate-700 pb-3">
+        <i class="fa-solid fa-book-open text-amber-400 text-xl"></i>
+        <h3 class="font-bold text-lg text-slate-100">1分でわかるルールガイド</h3>
+      </div>
 
-    function toggleAccordion() {
-      const content = document.getElementById('accordionContent');
-      const icon = document.getElementById('accordionIcon');
-      content.classList.toggle('hidden');
-      icon.classList.toggle('rotate-180');
-    }
-
-    async function toggleWakeLock(checkbox) {
-      if (checkbox.checked) {
-        try {
-          if ('wakeLock' in navigator) {
-            wakeLock = await navigator.wakeLock.request('screen');
-          } else {
-            alert('お使いのブラウザは画面スリープ防止機能に対応していません。');
-            checkbox.checked = false;
-          }
-        } catch (err) {
-          console.error(err);
-          checkbox.checked = false;
-        }
-      } else {
-        if (wakeLock !== null) {
-          await wakeLock.release();
-          wakeLock = null;
-        }
-      }
-    }
-
-    const recipeDB = {
-      '豚肉': {
-        title: '豚肉とキャベツの爆速甘辛炒め',
-        img: '[link removed]',
-        ingredients: ['豚肉: 150g', 'キャベツ: 2枚(ざく切り)', '醤油・みりん: 各大さじ1', 'ごま油: 少々'],
-        steps: [
-          { num: 'Step 1', title: '下ごしらえ', desc: '豚肉とキャベツを食べやすい一口大にカットします。' },
-          { num: 'Step 2', title: '強火で炒める', desc: 'フライパンにごま油を熱し、豚肉とキャベツを強火で一気に炒めます。' },
-          { num: 'Step 3', title: '味付け', desc: '醤油・みりんを回しかけ、全体になじんだら完成!' }
-        ]
-      },
-      '卵': {
-        title: 'ふわとろ卵と豆腐のレンジ蒸し',
-        img: '[link removed]',
-        ingredients: ['卵: 2個', '豆腐: 150g', 'めんつゆ: 大さじ1', '水: 50ml'],
-        steps: [
-          { num: 'Step 1', title: '混ぜる', desc: '耐熱容器で卵、豆腐、めんつゆ、水をよく崩しながら混ぜます。' },
-          { num: 'Step 2', title: 'レンチン', desc: 'ラップをふんわりかけ、600Wのレンジで約2分半加熱します。' },
-          { num: 'Step 3', title: '仕上げ', desc: 'お好みでネギやごま油を垂らして出来上がり!' }
-        ]
-      },
-      'default': {
-        title: 'ワンタップで作る具だくさんズボラ炒め',
-        img: '[link removed]',
-        ingredients: ['選択した手持ち食材', '醤油・塩コショウ: 適量', 'サラダ油: 少々'],
-        steps: [
-          { num: 'Step 1', title: 'カット', desc: '手元にある食材を火が通りやすい大きさにカットします。' },
-          { num: 'Step 2', title: '炒める', desc: '油を引いたフライパンで火の通りにくい順に炒めます。' },
-          { num: 'Step 3', title: '調味', desc: '塩コショウや醤油でシンプルに味を調えて完成!' }
-        ]
-      }
-    };
-
-    function diagnoseRecipe() {
-      const resultArea = document.getElementById('resultArea');
-      const recipeTitle = document.getElementById('recipeTitle');
-      const recipeImage = document.getElementById('recipeImage');
-      const ingredientList = document.getElementById('ingredientList');
-      const stepCards = document.getElementById('stepCards');
-
-      let recipe = recipeDB['default'];
-      if (selectedIngredients.includes('豚肉')) {
-        recipe = recipeDB['豚肉'];
-      } else if (selectedIngredients.includes('卵')) {
-        recipe = recipeDB['卵'];
-      }
-
-      recipeTitle.textContent = recipe.title;
-      recipeImage.src = recipe.img;
-
-      ingredientList.innerHTML = recipe.ingredients.map(i => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-orange text-xs"></i>${i}</li>`).join('');
-
-      stepCards.innerHTML = recipe.steps.map(s => `
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-          <span class="text-xs font-bold text-brand-orange bg-orange-100 px-2 py-0.5 rounded-md">${s.num}</span>
-          <h5 class="font-bold text-sm text-slate-800">${s.title}</h5>
-          <p class="text-xs text-slate-600 leading-relaxed">${s.desc}</p>
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+          <span class="font-bold text-amber-400 block mb-1">🎯 目的: 15ポイントを先取しよう!</span>
+          カードを購入すると勝利点(pt)が増えます。15点に達したプレイヤーの勝利です。
         </div>
-      `).join('');
 
-      resultArea.classList.remove('hidden');
-      resultArea.scrollIntoView({ behavior: 'smooth' });
+        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+          <span class="font-bold text-emerald-400 block mb-1">💎 あなたのターンでできること (1つ選択):</span>
+          <ul class="list-disc list-inside space-y-1 text-slate-300">
+            <li><strong>トークン獲得:</strong> 場の宝石を最大3個まで手元に追加</li>
+            <li><strong>カード購入:</strong> 手元の宝石を使ってカードを獲得(ボーナス付与)</li>
+            <li><strong>キープ:</strong> カードをキープして後で購入</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+          <span class="font-bold text-cyan-400 block mb-1">👁️ 完全公開型ルール:</span>
+          全員の手札・宝石が常に画面上に見えています。相手の狙いを見破りましょう!
+        </div>
+      </div>
+
+      <button onclick="toggleModal('helpModal')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition text-sm">
+        了解!プレイに戻る
+      </button>
+    </div>
+  </div>
+
+  <!-- モーダル: ゲーム終了 / リザルトモーダル -->
+  <div id="resultModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-sapphire-card border-2 border-amber-400/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-6 text-center">
+      
+      <!-- 王冠アイコン -->
+      <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 flex items-center justify-center shadow-lg border-4 border-amber-300 text-slate-950 text-3xl font-black">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+
+      <div>
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">VICTORY!</span>
+        <h2 class="text-2xl font-black text-slate-100 mt-1">あなたが勝利しました!</h2>
+        <p class="text-xs text-slate-400 mt-1">素晴らしい戦術で15ポイントに到達しました。</p>
+      </div>
+
+      <!-- プレイサマリー -->
+      <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-700 text-left space-y-2 text-xs">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">最終スコア:</span>
+          <span class="font-black text-amber-400 text-sm">15 pt</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+          <span class="text-slate-400">経過ターン数:</span>
+          <span class="font-bold text-slate-200">12 ターン</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">獲得カード枚数:</span>
+          <span class="font-bold text-slate-200">7 枚</span>
+        </div>
+      </div>
+
+      <!-- SNSシェア&招待ボタン -->
+      <div class="space-y-2.5">
+        <button onclick="shareResult()" class="w-full bg-slate-900 hover:bg-slate-800 border border-cyan-400/50 text-cyan-300 font-bold py-3 rounded-xl shadow transition flex items-center justify-center space-x-2 text-sm">
+          <i class="fa-brands fa-x-twitter text-base"></i>
+          <span>結果をSNSにシェアする</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="toggleModal('resultModal')" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> もう一度遊ぶ
+          </button>
+          <button onclick="copyInviteLink()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl text-xs border border-slate-600 transition">
+            <i class="fa-solid fa-user-plus mr-1"></i> 友達を招待
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // モーダル開閉トグル関数
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.toggle('hidden');
+      }
     }
 
+    // 招待リンクのコピー処理
+    function copyInviteLink() {
+      const dummyUrl = window.location.href + "?room=GEM-8821";
+      navigator.clipboard.writeText(dummyUrl).then(() => {
+        alert("招待リンクをクリップボードにコピーしました!\n" + dummyUrl);
+      }).catch(err => {
+        alert("コピーに失敗しました。");
+      });
+    }
+
+    // SNSシェア処理
     function shareResult() {
-      const title = document.getElementById('recipeTitle').textContent;
-      const text = encodeURIComponent(`【本日のズボラ飯】があまりものワンタップ献立診断で決定!\n今日のメニュー:「${title}」\n#ズボラ飯 #あまりものワンタップ献立診断 #時短レシピ`);
-      window.open(`[link removed]{text}`, '_blank');
+      const shareText = encodeURIComponent("💎 【Family Gems】で勝利しました!スコア: 15pt (12ターン)\n完全公開型の初心者向け宝石カードゲーム!一緒に遊ぼう!\n#FamilyGems #ボードゲーム");
+      const shareUrl = `[link removed]{shareText}`;
+      window.open(shareUrl, '_blank');
     }
   </script>
 </body>
