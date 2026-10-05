@@ -3,379 +3,561 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>賞味期限アラート&amp;あまり物AIフォトショット</title>
-  <!-- Tailwind CSS CDN -->
+  <title>SleepRhythm - ワンタップ睡眠&自律神経ケア</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="[link removed]">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            freshGreen: '#2ECC71',
-            warmOrange: '#FF7E47',
-            offWhite: '#FAFAFA',
+            midnight: '#0B132B',
+            darknavy: '#1C2541',
+            lavender: '#C77DFF',
+            lavenderDark: '#7B2CBF',
+            softGlow: '#E0AFA0',
           },
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'breathe': 'breathe 8s ease-in-out infinite',
+            'aurora': 'aurora 10s ease infinite alternate',
+          },
+          keyframes: {
+            breathe: {
+              '0%, 100%': { transform: 'scale(1)', opacity: '0.3' },
+              '50%': { transform: 'scale(1.4)', opacity: '0.8' },
+            },
+            aurora: {
+              '0%': { backgroundPosition: '0% 50%' },
+              '100%': { backgroundPosition: '100% 50%' },
+            }
           }
         }
       }
     }
   </script>
   <style>
+    @import url('[link removed]');
+    
     body {
-      background-color: #FAFAFA; /* ベースカラー: オフホワイト */
-      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background-color: #050811;
+      color: #ffffff;
+      -webkit-tap-highlight-color: transparent;
     }
+
+    .aurora-bg {
+      background: linear-gradient(135deg, rgba(11, 19, 43, 0.95), rgba(28, 37, 65, 0.9), rgba(199, 125, 255, 0.25), rgba(11, 19, 43, 0.95));
+      background-size: 300% 300%;
+      animation: aurora 12s ease infinite alternate;
+    }
+
+    .glow-btn {
+      box-shadow: 0 0 30px rgba(199, 125, 255, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glow-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 15px rgba(199, 125, 255, 0.7);
+    }
+
     .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(28, 37, 65, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .custom-shadow {
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    .pulse-alert {
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .6; }
+
+    .slide-up {
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
-<body class="bg-[#FAFAFA] text-gray-800 antialiased pb-20 md:pb-10 min-h-screen">
+<body class="flex items-center justify-center min-h-screen sm:py-6 sm:px-4">
 
-  <!-- アプリケーションコンテナ -->
-  <div class="max-w-md md:max-w-4xl mx-auto min-h-screen flex flex-col justify-between relative shadow-2xl md:my-6 md:rounded-3xl overflow-hidden bg-[#FAFAFA]">
+  <!-- Mobile Container -->
+  <div class="w-full max-w-md h-[100vh] sm:h-[844px] bg-midnight sm:rounded-[48px] shadow-2xl flex flex-col justify-between overflow-hidden relative border border-slate-800/80">
 
-    <!-- [ヘッダーエリア] -->
-    <header class="sticky top-0 z-30 glass-card border-b border-gray-100/80 px-4 py-3 flex items-center justify-between">
-      <!-- 左: アプリロゴ -->
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#2ECC71] to-[#27ae60] flex items-center justify-center text-white shadow-md shadow-[#2ECC71]/20">
-          <i class="fa-solid fa-camera-retro text-lg"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-sm md:text-base leading-tight text-gray-900 tracking-tight">
-            賞味期限アラート<span class="text-[#FF7E47]">&amp;</span>あまり物AIフォトショット <!-- -->
-          </h1>
-          <p class="text-[10px] text-gray-400 tracking-wider font-semibold">SMART KITCHEN AI</p>
-        </div>
+    <!-- HEADER -->
+    <header class="pt-12 px-6 pb-4 flex items-center justify-between z-20 bg-midnight/60 backdrop-blur-md border-b border-white/5">
+      <button onclick="toggleModal('profileModal')" class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-slate-300 hover:text-white hover:border-lavender/40 transition">
+        <i class="fa-solid fa-user-gear text-sm"></i>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-lavender animate-pulse"></div>
+        <span class="font-bold tracking-wider text-sm bg-gradient-to-r from-white via-purple-100 to-lavender bg-clip-text text-transparent">SleepRhythm</span>
       </div>
 
-      <!-- 右: 通知ベルアイコン / マイページ -->
-      <div class="flex items-center gap-2">
-        <!-- 通知ベルアイコン(賞味期限リマインド通知) -->
-        <button onclick="toggleNotifications()" class="relative p-2.5 rounded-full hover:bg-gray-100 text-gray-600 transition-colors" title="賞味期限リマインド通知">
-          <i class="fa-regular fa-bell text-xl"></i>
-          <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#FF7E47] rounded-full ring-2 ring-white"></span>
-        </button>
-        <!-- マイページ(月額プレミアムプラン管理・決済機能への動線) -->
-        <button onclick="openPremiumModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-[#FF7E47] to-[#e66f3e] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:opacity-90 transition-all">
-          <i class="fa-solid fa-crown text-yellow-200"></i>
-          <span class="hidden sm:inline">プレミアム</span> <!-- -->
-        </button>
+      <div class="flex items-center gap-1.5 text-xs text-purple-200/90 bg-purple-950/40 px-3 py-1.5 rounded-full border border-purple-500/20">
+        <i class="fa-regular fa-clock text-lavender"></i>
+        <span>07:00 AM</span>
       </div>
     </header>
 
-    <!-- メインコンテンツ -->
-    <main class="flex-1 p-4 md:p-6 space-y-6">
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="flex-1 overflow-y-auto no-scrollbar relative z-10">
 
-      <!-- [メインビジュアル / クイックアクションエリア] -->
-      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2ECC71]/10 via-[#FAFAFA] to-[#FF7E47]/10 p-5 md:p-8 border border-gray-100 custom-shadow">
-        <div class="text-center max-w-xl mx-auto space-y-3">
-          <span class="inline-block px-3 py-1 bg-[#2ECC71]/15 text-[#27ae60] rounded-full text-xs font-semibold tracking-wide">
-            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>高精度画像識別AI搭載
-          </span>
-          <!-- キャッチコピー -->
-          <h2 class="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">
-            「冷蔵庫を撮影するだけであまり物を解消」 <!-- -->
-          </h2>
-          <p class="text-xs md:text-sm text-gray-500">
-            写真を1枚撮影するだけで食材を自動識別・賞味期限を管理。献立選択の負担と廃棄をゼロへ。
+      <!-- TAB 1: HOME -->
+      <section id="tab-home" class="h-full flex flex-col justify-between p-6 aurora-bg">
+        
+        <!-- Score & Condition Card -->
+        <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-xs font-medium text-purple-200/60 uppercase tracking-widest">Last Night</p>
+              <h2 class="text-xl font-bold text-white mt-0.5">昨夜の睡眠スコア</h2>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+              <i class="fa-solid fa-heart-pulse text-[10px]"></i> 整い度 良好
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <div class="flex items-baseline gap-1">
+              <span class="text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">88</span>
+              <span class="text-sm font-medium text-purple-300/70">/ 100</span>
+            </div>
+
+            <!-- Mini Progress Indicator -->
+            <div class="relative w-16 h-16 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="text-lavender" stroke-dasharray="88, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <i class="fa-solid fa-moon text-lavender absolute text-xs"></i>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300/80 mt-3 border-t border-white/5 pt-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-sparkles text-lavender text-xs"></i> 自律神経のリセット完了。深い休息が得られました。
           </p>
         </div>
 
-        <!-- 中央撮影エリア: 高精度画像識別AIを起動するための大きなカメラビュー枠 -->
-        <div class="mt-6 max-w-md mx-auto">
-          <div class="relative group cursor-pointer border-2 border-dashed border-[#2ECC71]/40 hover:border-[#2ECC71] rounded-3xl p-6 bg-white/80 backdrop-blur-sm transition-all duration-300 text-center hover:shadow-xl" onclick="triggerCamera()">
-            <div class="w-20 h-20 mx-auto rounded-full bg-[#2ECC71]/10 text-[#2ECC71] flex items-center justify-center text-3xl mb-3 group-hover:scale-110 transition-transform">
-              <i class="fa-solid fa-camera"></i>
-            </div>
-            <!-- アクションボタン: [冷蔵庫を撮影して自動識別] -->
-            <button class="w-full bg-[#2ECC71] hover:bg-[#27ae60] text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-[#2ECC71]/30 transition-all flex items-center justify-center gap-2 text-sm md:text-base">
-              <i class="fa-solid fa-expand"></i>
-              <span>冷蔵庫を撮影して自動識別</span> <!-- -->
-            </button>
-            <p class="text-[11px] text-gray-400 mt-2.5">ワンタップで高精度AI識別を実行します</p>
-          </div>
-        </div>
-      </section>
+        <!-- One-Tap Action Button -->
+        <div class="my-8 flex flex-col items-center justify-center relative">
+          <!-- Outer Pulsing Rings -->
+          <div class="absolute w-56 h-56 rounded-full bg-lavender/10 animate-pulse-slow pointer-events-none"></div>
+          <div class="absolute w-44 h-44 rounded-full bg-purple-600/15 animate-ping pointer-events-none" style="animation-duration: 3s;"></div>
 
-      <!-- [賞味期限アラート・リストエリア] -->
-      <section class="space-y-4">
-        <div class="flex items-center justify-between">
-          <!-- セクションタイトル: 「優先消費が必要な食材」 -->
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full bg-[#FF7E47] pulse-alert"></div>
-            <h3 class="font-bold text-base md:text-lg text-gray-900">優先消費が必要な食材</h3> <!-- -->
-          </div>
-          <span class="text-xs font-semibold text-[#FF7E47] bg-[#FF7E47]/10 px-2.5 py-1 rounded-full">アラート 3件</span>
-        </div>
-
-        <!-- 食材カードリスト (ワンタップで登録された食材の画像、AI識別名、賞味期限までの残り日数カウントダウン) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="foodCardList">
-          
-          <!-- 食材カード 1 -->
-          <div class="bg-white p-4 rounded-2xl border border-gray-100 custom-shadow flex md:flex-col items-center md:items-start justify-between gap-3">
-            <div class="flex items-center gap-3 md:w-full">
-              <div class="w-12 h-12 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center text-2xl flex-shrink-0">
-                🥬
-              </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">AI識別</span>
-                  <h4 class="font-bold text-gray-800 text-sm">キャベツ (1/2個)</h4> <!-- -->
-                </div>
-                <p class="text-xs text-[#FF7E47] font-medium mt-0.5">
-                  <i class="fa-regular fa-clock mr-1"></i>賞味期限: 本日まで
-                </p>
-              </div>
-            </div>
-            <div class="flex flex-col md:w-full items-end md:items-stretch">
-              <span class="text-xs font-bold text-red-500 bg-red-50 px-2.5 py-1 rounded-full md:text-center">残り 0 日</span>
-            </div>
-          </div>
-
-          <!-- 食材カード 2 -->
-          <div class="bg-white p-4 rounded-2xl border border-gray-100 custom-shadow flex md:flex-col items-center md:items-start justify-between gap-3">
-            <div class="flex items-center gap-3 md:w-full">
-              <div class="w-12 h-12 rounded-xl bg-yellow-50 border border-yellow-100 flex items-center justify-center text-2xl flex-shrink-0">
-                🥚
-              </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">AI識別</span>
-                  <h4 class="font-bold text-gray-800 text-sm">卵 (4個)</h4> <!-- -->
-                </div>
-                <p class="text-xs text-[#FF7E47] font-medium mt-0.5">
-                  <i class="fa-regular fa-clock mr-1"></i>賞味期限: 明日まで
-                </p>
-              </div>
-            </div>
-            <div class="flex flex-col md:w-full items-end md:items-stretch">
-              <span class="text-xs font-bold text-[#FF7E47] bg-orange-50 px-2.5 py-1 rounded-full md:text-center">残り 1 日</span>
-            </div>
-          </div>
-
-          <!-- 食材カード 3 -->
-          <div class="bg-white p-4 rounded-2xl border border-gray-100 custom-shadow flex md:flex-col items-center md:items-start justify-between gap-3">
-            <div class="flex items-center gap-3 md:w-full">
-              <div class="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-2xl flex-shrink-0">
-                🥓
-              </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">AI識別</span>
-                  <h4 class="font-bold text-gray-800 text-sm">ハーフベーコン</h4> <!-- -->
-                </div>
-                <p class="text-xs text-gray-500 font-medium mt-0.5">
-                  <i class="fa-regular fa-clock mr-1"></i>賞味期限: 3日後
-                </p>
-              </div>
-            </div>
-            <div class="flex flex-col md:w-full items-end md:items-stretch">
-              <span class="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full md:text-center">残り 3 日</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- サブボタン: [優先消費アイデア・保存術を見る] -->
-        <div class="text-center pt-1">
-          <button onclick="scrollToRecipes()" class="w-full md:w-auto bg-white hover:bg-gray-50 text-[#FF7E47] font-bold border-2 border-[#FF7E47] px-6 py-2.5 rounded-2xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 mx-auto">
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>優先消費アイデア・保存術を見る</span> <!-- -->
+          <button onclick="startSleepMode()" class="glow-btn w-40 h-40 rounded-full bg-gradient-to-tr from-lavenderDark via-lavender to-purple-300 text-midnight font-bold flex flex-col items-center justify-center gap-2 relative z-10 cursor-pointer group border border-white/40">
+            <i class="fa-solid fa-power-off text-3xl text-midnight group-hover:scale-110 transition-transform"></i>
+            <span class="tracking-wider text-sm font-extrabold text-midnight">START SLEEP</span>
           </button>
+          <p class="text-xs text-purple-200/60 mt-4 tracking-wide">ワンタップで計測 & 調整音を開始</p>
+        </div>
+
+        <!-- Quick Selector Carousel -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-xs font-medium text-slate-400">入眠サウンド / 呼吸ガイド</span>
+            <span class="text-[11px] text-lavender font-medium cursor-pointer" onclick="switchTab('sound')">すべて見る <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
+          </div>
+
+          <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+            <!-- Item 1 -->
+            <div onclick="selectSound('波の音 & 自律神経整流')" class="glass-card glass-card-hover min-w-[140px] p-3 rounded-2xl cursor-pointer border-lavender/40 flex-shrink-0">
+              <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-lavender flex items-center justify-center mb-2">
+                <i class="fa-solid fa-water text-xs"></i>
+              </div>
+              <p class="text-xs font-semibold text-white truncate">波の音 & 96Hz</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">自律神経ケア</p>
+            </div>
+
+            <!-- Item 2 -->
+            <div onclick="selectSound('4-7-8 呼吸法ガイド')" class="glass-card glass-card-hover min-w-[140px] p-3 rounded-2xl cursor-pointer flex-shrink-0">
+              <div class="w-8 h-8 rounded-xl bg-pink-500/20 text-pink-300 flex items-center justify-center mb-2">
+                <i class="fa-solid fa-lungs text-xs"></i>
+              </div>
+              <p class="text-xs font-semibold text-white truncate">4-7-8 呼吸法</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">副交感神経優位</p>
+            </div>
+
+            <!-- Item 3 -->
+            <div onclick="selectSound('静寂の夜雨')" class="glass-card glass-card-hover min-w-[140px] p-3 rounded-2xl cursor-pointer flex-shrink-0">
+              <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center mb-2">
+                <i class="fa-solid fa-cloud-rain text-xs"></i>
+              </div>
+              <p class="text-xs font-semibold text-white truncate">静寂の夜雨</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">環境音</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB 2: REPORT -->
+      <section id="tab-report" class="hidden p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-purple-300/70">Sleep Analysis</p>
+            <h1 class="text-2xl font-bold text-white">睡眠レポート</h1>
+          </div>
+          <span class="text-xs text-slate-400 bg-darknavy px-3 py-1 rounded-full border border-white/5">2026.10.05 夜</span>
+        </div>
+
+        <!-- Main Score Box -->
+        <div class="glass-card rounded-3xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400">総合スコア分析</span>
+            <span class="text-xs font-bold text-lavender bg-purple-950/60 px-2.5 py-1 rounded-full border border-lavender/30">優秀 (88点)</span>
+          </div>
+
+          <!-- SVG Chart -->
+          <div class="w-full h-32 relative pt-2">
+            <svg class="w-full h-full overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#C77DFF" stop-opacity="0.4" />
+                  <stop offset="100%" stop-color="#C77DFF" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
+              <path d="M 0,30 Q 30,80 60,40 T 120,90 T 180,20 T 240,70 T 300,30 L 300,100 L 0,100 Z" fill="url(#chartGradient)" />
+              <path d="M 0,30 Q 30,80 60,40 T 120,90 T 180,20 T 240,70 T 300,30" fill="none" stroke="#C77DFF" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <div class="flex justify-between text-[10px] text-slate-400 mt-2">
+              <span>23:00</span>
+              <span>01:30 (レム睡眠)</span>
+              <span>04:00 (ノンレム)</span>
+              <span>07:00</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-2 text-center border-t border-white/5">
+            <div class="p-2 rounded-xl bg-midnight/50">
+              <p class="text-[10px] text-slate-400">睡眠時間</p>
+              <p class="text-sm font-bold text-white mt-0.5">7時間12分</p>
+            </div>
+            <div class="p-2 rounded-xl bg-midnight/50">
+              <p class="text-[10px] text-slate-400">入眠時間</p>
+              <p class="text-sm font-bold text-emerald-400 mt-0.5">約8分</p>
+            </div>
+            <div class="p-2 rounded-xl bg-midnight/50">
+              <p class="text-[10px] text-slate-400">深い睡眠</p>
+              <p class="text-sm font-bold text-lavender mt-0.5">2時間45分</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advice Box -->
+        <div class="glass-card rounded-3xl p-5 border-l-4 border-l-lavender">
+          <h3 class="text-xs font-bold text-lavender flex items-center gap-1.5 mb-1">
+            <i class="fa-solid fa-user-doctor"></i> 自律神経コンディション・アドバイス
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            入眠後最初の90分間に非常に深いノンレム睡眠が記録されています。自律神経の切り替え(交感神経→副交感神経)がスムーズに行われました。今日も素晴らしいコンディションです。
+          </p>
+        </div>
+
+        <!-- Social Share Button -->
+        <button onclick="openModal('shareModal')" class="w-full py-3.5 rounded-2xl glass-card glass-card-hover font-semibold text-xs text-white flex items-center justify-center gap-2 border-purple-500/30">
+          <i class="fa-solid fa-share-nodes text-lavender"></i>
+          <span>スコアをSNSでシェア(画像生成)</span>
+        </button>
+
+        <!-- Subscription Banner (PRO) -->
+        <div class="p-5 rounded-3xl bg-gradient-to-r from-purple-900/60 to-darknavy border border-lavender/30 relative overflow-hidden">
+          <div class="relative z-10 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-lavender uppercase tracking-widest bg-lavender/10 px-2 py-0.5 rounded-full border border-lavender/30">SleepRhythm PRO</span>
+              <h4 class="text-sm font-bold text-white mt-1">詳細な自律神経ログと全音源の解放</h4>
+              <p class="text-[11px] text-slate-300 mt-0.5">月額 ¥480(7日間無料体験)</p>
+            </div>
+            <button onclick="openModal('profileModal')" class="px-3.5 py-2 rounded-xl bg-lavender text-midnight font-bold text-xs shadow-lg hover:bg-purple-200 transition">
+              詳細
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- [AIおすすめ献立・保存術エリア] -->
-      <section id="recipeSection" class="space-y-4 pt-2">
-        <div class="flex items-center justify-between">
-          <h3 class="font-bold text-base md:text-lg text-gray-900 flex items-center gap-2">
-            <i class="fa-solid fa-utensils text-[#2ECC71]"></i>
-            AIおすすめ献立 &amp; 保存術 <!-- -->
-          </h3>
-          <span class="text-xs text-gray-400">あまり物活用案</span>
+      <!-- TAB 3: SOUND LIBRARY -->
+      <section id="tab-sound" class="hidden p-6 space-y-4">
+        <div>
+          <p class="text-xs text-purple-300/70">Sound & Guide</p>
+          <h1 class="text-2xl font-bold text-white">サウンドライブラリ</h1>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
-          <!-- あまり物を組み合わせた献立案カード -->
-          <div class="bg-white rounded-2xl p-5 border border-gray-100 custom-shadow flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="bg-[#2ECC71]/15 text-[#27ae60] text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <i class="fa-solid fa-fire"></i> 優先消費レシピ
-                </span>
-                <span class="text-xs text-gray-400"><i class="fa-regular fa-clock mr-1"></i>10分</span>
+        <div class="space-y-3">
+          <!-- Sound item 1 -->
+          <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-lavender/20 text-lavender flex items-center justify-center">
+                <i class="fa-solid fa-water"></i>
               </div>
-              <h4 class="font-bold text-base text-gray-800 mb-1">キャベツとベーコンの巣ごもり卵炒め</h4> <!-- -->
-              <p class="text-xs text-gray-500">優先消費食材(キャベツ・卵・ベーコン)をまとめて活用できる簡単献立提案。</p>
+              <div>
+                <h4 class="text-xs font-bold text-white">波の音 & 96Hz 調整音</h4>
+                <p class="text-[10px] text-slate-400">自律神経ケア / 30分タイマー</p>
+              </div>
             </div>
-            <button onclick="showRecipeDetail()" class="w-full bg-gray-50 hover:bg-[#2ECC71] hover:text-white text-gray-700 font-semibold py-2.5 rounded-xl text-xs transition-all border border-gray-200 hover:border-transparent flex items-center justify-center gap-1">
-              <span>レシピを見る</span>
-              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button onclick="selectSound('波の音 & 96Hz 調整音')" class="w-8 h-8 rounded-full bg-lavender/20 text-lavender hover:bg-lavender hover:text-midnight flex items-center justify-center transition">
+              <i class="fa-solid fa-play text-xs"></i>
             </button>
           </div>
 
-          <!-- 長期保存術ガイドカード(高度な保存術を提供するプレミアム連携エリア) -->
-          <div class="bg-gradient-to-br from-amber-500/10 via-white to-amber-50 rounded-2xl p-5 border border-amber-200/60 custom-shadow flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="bg-amber-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                  <i class="fa-solid fa-crown text-yellow-200"></i> プレミアムガイド <!-- -->
-                </span>
-                <span class="text-xs font-semibold text-amber-700">保存期間 +2週間</span>
+          <!-- Sound item 2 -->
+          <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-300 flex items-center justify-center">
+                <i class="fa-solid fa-lungs"></i>
               </div>
-              <h4 class="font-bold text-base text-gray-800 mb-1">キャベツの芯抜き&ぬれペーパー保存術</h4> <!-- -->
-              <p class="text-xs text-gray-600">新鮮さを損なわずに長持ちさせるプロ仕様の高度な保存術ガイド。</p>
+              <div>
+                <h4 class="text-xs font-bold text-white">4-7-8 呼吸法音声ガイド</h4>
+                <p class="text-[10px] text-slate-400">副交感神経優位 / 15分</p>
+              </div>
             </div>
-            <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-[#FF7E47] to-[#e66f3e] hover:opacity-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-lock"></i>
-              <span>高度な長期保存術ガイドを見る</span> <!-- -->
+            <button onclick="selectSound('4-7-8 呼吸法ガイド')" class="w-8 h-8 rounded-full bg-lavender/20 text-lavender hover:bg-lavender hover:text-midnight flex items-center justify-center transition">
+              <i class="fa-solid fa-play text-xs"></i>
             </button>
           </div>
 
+          <!-- Sound item 3 -->
+          <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center">
+                <i class="fa-solid fa-cloud-rain"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">静寂の夜雨と焚き火</h4>
+                <p class="text-[10px] text-slate-400">環境音 / 60分</p>
+              </div>
+            </div>
+            <button onclick="selectSound('静寂の夜雨と焚き火')" class="w-8 h-8 rounded-full bg-lavender/20 text-lavender hover:bg-lavender hover:text-midnight flex items-center justify-center transition">
+              <i class="fa-solid fa-play text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Sound item 4 (PRO) -->
+          <div class="glass-card p-4 rounded-2xl flex items-center justify-between opacity-80 border-amber-500/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center">
+                <i class="fa-solid fa-crown text-xs"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="text-xs font-bold text-white">Deep Alpha Sleep Wave</h4>
+                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-bold">PRO</span>
+                </div>
+                <p class="text-[10px] text-slate-400">バイノーラルビート / 90分</p>
+              </div>
+            </div>
+            <button onclick="openModal('profileModal')" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center">
+              <i class="fa-solid fa-lock text-xs"></i>
+            </button>
+          </div>
         </div>
       </section>
 
     </main>
 
-    <!-- [ボトムナビゲーションバー] -->
-    <nav class="fixed md:sticky bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-lg border-t border-gray-200/80 max-w-md md:max-w-4xl mx-auto">
-      <div class="flex justify-around items-center h-16 px-2">
-        <!-- [ホーム] -->
-        <button class="flex flex-col items-center justify-center w-full h-full text-[#2ECC71] font-semibold text-[11px] gap-1">
-          <i class="fa-solid fa-house text-lg"></i>
-          <span>ホーム</span> <!-- -->
-        </button>
-        <!-- [カメラ撮影] -->
-        <button onclick="triggerCamera()" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-[#2ECC71] text-[11px] gap-1 transition-colors">
-          <i class="fa-solid fa-camera text-lg"></i>
-          <span>カメラ撮影</span> <!-- -->
-        </button>
-        <!-- [食材管理] -->
-        <button class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-[#2ECC71] text-[11px] gap-1 transition-colors">
-          <i class="fa-solid fa-boxes-packing text-lg"></i>
-          <span>食材管理</span> <!-- -->
-        </button>
-        <!-- [レシピ提案] -->
-        <button onclick="scrollToRecipes()" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-[#2ECC71] text-[11px] gap-1 transition-colors">
-          <i class="fa-solid fa-book-open text-lg"></i>
-          <span>レシピ提案</span> <!-- -->
-        </button>
-        <!-- [プレミアム機能] -->
-        <button onclick="openPremiumModal()" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-[#FF7E47] text-[11px] gap-1 transition-colors">
-          <i class="fa-solid fa-crown text-lg"></i>
-          <span>プレミアム機能</span> <!-- -->
-        </button>
-      </div>
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="h-20 px-8 bg-midnight/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around z-20">
+      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1 text-lavender">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-medium">ホーム</span>
+      </button>
+
+      <button onclick="switchTab('report')" id="nav-report" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-chart-pie text-lg"></i>
+        <span class="text-[10px] font-medium">レポート</span>
+      </button>
+
+      <button onclick="switchTab('sound')" id="nav-sound" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-music text-lg"></i>
+        <span class="text-[10px] font-medium">サウンド</span>
+      </button>
     </nav>
 
-  </div>
+    <!-- FULLSCREEN MODAL: ACTIVE SLEEP MODE (OLED Ultra-Dark UI) -->
+    <div id="sleepActiveModal" class="hidden absolute inset-0 bg-black z-50 flex flex-col justify-between p-8 text-center slide-up">
+      <!-- Top status -->
+      <div class="pt-8 flex items-center justify-center gap-2 text-slate-600 text-xs tracking-widest uppercase">
+        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/60 animate-ping"></div>
+        <span>Sleep Rhythm Tracking Active</span>
+      </div>
 
-  <!-- モーダル: AIカメラ撮影スキャンモーダル -->
-  <div id="cameraModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 text-center custom-shadow">
-      <div class="w-16 h-16 rounded-full bg-[#2ECC71]/10 text-[#2ECC71] mx-auto flex items-center justify-center text-2xl">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <!-- Center Digital Clock & Breathing Guide -->
+      <div class="flex flex-col items-center justify-center space-y-6">
+        <div id="liveClock" class="text-6xl font-extralight tracking-widest text-slate-200/90 font-mono">
+          00:00
+        </div>
+
+        <div class="relative w-48 h-48 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full bg-lavender/10 animate-breathe"></div>
+          <div class="w-28 h-28 rounded-full border border-lavender/30 flex items-center justify-center">
+            <span id="breathText" class="text-xs text-purple-200/80 tracking-widest">ゆっくり息を吸って</span>
+          </div>
+        </div>
+
+        <p id="currentPlayingSound" class="text-xs text-slate-500 flex items-center gap-1.5">
+          <i class="fa-solid fa-compact-disc animate-spin"></i> 波の音 & 96Hz 調整音 再生中
+        </p>
       </div>
-      <h3 class="font-bold text-lg text-gray-900">AIが冷蔵庫をスキャン中...</h3> <!-- -->
-      <p class="text-xs text-gray-500">高精度画像識別AIが食材を分析し、賞味期限を自動登録します。</p>
-      <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-        <div id="scanBar" class="bg-[#2ECC71] h-2 rounded-full w-0 transition-all duration-1000"></div>
+
+      <!-- Bottom Slide/Click to Stop -->
+      <div class="pb-8">
+        <button onclick="stopSleepMode()" class="w-full py-4 rounded-full bg-darknavy/80 border border-red-500/30 text-red-400 font-bold text-xs tracking-wider hover:bg-red-950/30 transition">
+          <i class="fa-solid fa-stop mr-1.5"></i> タップして起床 (STOP)
+        </button>
       </div>
-      <button onclick="closeCameraModal()" class="w-full bg-gray-100 text-gray-700 font-bold py-2 rounded-xl text-xs hover:bg-gray-200 transition-colors">
-        閉じる
-      </button>
     </div>
-  </div>
 
-  <!-- モーダル: 月額プレミアムプラン管理・決済モーダル -->
-  <div id="premiumModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-md w-full space-y-5 custom-shadow relative">
-      <button onclick="closePremiumModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-        <i class="fa-solid fa-xmark text-xl"></i>
-      </button>
-      <div class="text-center space-y-1.5">
-        <span class="inline-block px-3 py-1 bg-amber-100 text-amber-700 font-bold rounded-full text-xs">
-          <i class="fa-solid fa-crown text-amber-500 mr-1"></i>月額プレミアムプラン
-        </span>
-        <h3 class="font-extrabold text-xl text-gray-900">高度な機能でフードロス削減</h3> <!-- -->
-        <p class="text-xs text-gray-500">プロ仕様の保存術と高精度解析をご利用いただけます</p>
+    <!-- MODAL: SHARE CARD -->
+    <div id="shareModal" class="hidden absolute inset-0 bg-midnight/90 backdrop-blur-md z-40 flex items-center justify-center p-6">
+      <div class="glass-card w-full p-6 rounded-3xl text-center space-y-4 border-lavender/30">
+        <div class="flex justify-between items-center text-slate-400">
+          <span class="text-xs font-bold text-lavender">SNS Share Preview</span>
+          <button onclick="closeModal('shareModal')"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="bg-gradient-to-br from-midnight via-darknavy to-purple-950 p-6 rounded-2xl border border-white/10 text-left space-y-3 shadow-xl">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-white">SleepRhythm Score</span>
+            <span class="text-[10px] text-purple-300">2026.10.05</span>
+          </div>
+          <div class="text-4xl font-extrabold text-lavender">88 <span class="text-xs text-slate-400 font-normal">/ 100</span></div>
+          <p class="text-[11px] text-slate-300">自律神経バランス良好。ワンタップで心身をリセット。</p>
+          <div class="text-[9px] text-slate-500 tracking-wider">#SleepRhythm #自律神経ケア #睡眠改善</div>
+        </div>
+
+        <button onclick="alert('シェア用画像を保存しました'); closeModal('shareModal');" class="w-full py-3 rounded-xl bg-lavender text-midnight font-bold text-xs">
+          画像を保存してX/Instagramで共有
+        </button>
       </div>
-      <div class="space-y-2.5 bg-amber-50/60 p-4 rounded-2xl border border-amber-100 text-xs text-gray-700">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-circle-check text-[#2ECC71]"></i>
-          <span>高精度画像識別AIエンジンの優先アクセス</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-circle-check text-[#2ECC71]"></i>
-          <span>高度な長期保存術ガイドの完全提供</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-circle-check text-[#2ECC71]"></i>
-          <span>フードロス削減関連グッズプロモーション特典</span>
-        </div>
-      </div>
-      <button onclick="alert('プレミアムプラン決済へ移行します'); closePremiumModal();" class="w-full bg-gradient-to-r from-[#FF7E47] to-[#e66f3e] text-white font-bold py-3 rounded-2xl shadow-lg shadow-[#FF7E47]/30 hover:opacity-95 transition-all text-sm">
-        月額プレミアムプランに登録する
-      </button>
     </div>
+
+    <!-- MODAL: PROFILE & SUBSCRIPTION -->
+    <div id="profileModal" class="hidden absolute inset-0 bg-midnight/90 backdrop-blur-md z-40 flex items-center justify-center p-6">
+      <div class="glass-card w-full p-6 rounded-3xl space-y-5 border-lavender/30 max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center text-slate-400">
+          <h3 class="text-sm font-bold text-white">アカウント & PRO登録</h3>
+          <button onclick="closeModal('profileModal')"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="flex items-center gap-3 border-b border-white/5 pb-4">
+          <div class="w-12 h-12 rounded-full bg-lavender/20 flex items-center justify-center text-lavender text-xl">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-white">鈴木 崚永</h4>
+            <p class="text-xs text-slate-400">Free Plan ユーザー</p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-lavender uppercase tracking-wider">PROプランの特徴</h4>
+          <ul class="text-xs space-y-2 text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 高精度な自律神経・心拍変動グラフ分析</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> すべての入眠環境音・バイノーラル音源解放</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> AIによるパーソナライズ睡眠アドバイス</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-purple-900/80 to-darknavy border border-lavender/40 text-center space-y-2">
+          <p class="text-xs font-bold text-white">月額サブスクリプション</p>
+          <p class="text-2xl font-extrabold text-lavender">¥480 <span class="text-xs font-normal text-slate-400">/ 月</span></p>
+          <p class="text-[10px] text-slate-300">最初の7日間は完全無料</p>
+          <button onclick="alert('PROプランの7日間無料体験を開始します'); closeModal('profileModal');" class="w-full py-2.5 rounded-xl bg-lavender text-midnight font-bold text-xs hover:bg-purple-200 transition">
+            7日間無料で体験する
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- JavaScript ロジック -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    function triggerCamera() {
-      const modal = document.getElementById('cameraModal');
-      const bar = document.getElementById('scanBar');
-      modal.classList.remove('hidden');
-      bar.style.width = '0%';
-      setTimeout(() => { bar.style.width = '60%'; }, 200);
-      setTimeout(() => { bar.style.width = '100%'; }, 800);
-      setTimeout(() => {
-        closeCameraModal();
-        alert('AI識別完了: キャベツ、卵、ハーフベーコンがワンタップ登録されました!');
-      }, 1300);
+    let activeSoundName = "波の音 & 96Hz 調整音";
+
+    // Navigation Tab Switcher
+    function switchTab(tabName) {
+      const tabs = ['home', 'report', 'sound'];
+      tabs.forEach(tab => {
+        const targetEl = document.getElementById(`tab-${tab}`);
+        const navBtn = document.getElementById(`nav-${tab}`);
+        
+        if (tab === tabName) {
+          targetEl.classList.remove('hidden');
+          navBtn.classList.add('text-lavender');
+          navBtn.classList.remove('text-slate-500');
+        } else {
+          targetEl.classList.add('hidden');
+          navBtn.classList.remove('text-lavender');
+          navBtn.classList.add('text-slate-500');
+        }
+      });
     }
 
-    function closeCameraModal() {
-      document.getElementById('cameraModal').classList.add('hidden');
+    // Modal Control
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.toggle('hidden');
     }
 
-    function openPremiumModal() {
-      document.getElementById('premiumModal').classList.remove('hidden');
+    // Select Sound
+    function selectSound(soundName) {
+      activeSoundName = soundName;
+      alert(`「${soundName}」を選択しました。START SLEEPを押すと再生されます。`);
     }
 
-    function closePremiumModal() {
-      document.getElementById('premiumModal').classList.add('hidden');
+    // Sleep Mode Start & End
+    function startSleepMode() {
+      document.getElementById('currentPlayingSound').innerHTML = `<i class="fa-solid fa-compact-disc animate-spin"></i> ${activeSoundName} 再生中`;
+      document.getElementById('sleepActiveModal').classList.remove('hidden');
+      updateClock();
+      startBreathingAnimation();
     }
 
-    function scrollToRecipes() {
-      document.getElementById('recipeSection').scrollIntoView({ behavior: 'smooth' });
+    function stopSleepMode() {
+      document.getElementById('sleepActiveModal').classList.add('hidden');
+      switchTab('report');
     }
 
-    function toggleNotifications() {
-      alert('【賞味期限リマインド通知】\n・キャベツ (本日中)\n・卵 (明日まで)');
+    // Live Clock for Sleep Screen
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const clockEl = document.getElementById('liveClock');
+      if (clockEl) {
+        clockEl.textContent = `${hours}:${minutes}`;
+      }
     }
+    setInterval(updateClock, 1000);
 
-    function showRecipeDetail() {
-      alert('【キャベツとベーコンの巣ごもり卵炒め】\n1. キャベツとベーコンを炒めます。\n2. 中央に凹みを作って卵を落とします。\n3. 蓋をして弱火で蒸し焼きにして完成!');
+    // Breathing Animation Text Cycle
+    function startBreathingAnimation() {
+      const breathText = document.getElementById('breathText');
+      let step = 0;
+      const steps = [
+        "ゆっくり息を吸って",
+        "息を止めて...",
+        "ゆっくり息を吐いて...",
+        "脱力してリラックス"
+      ];
+      setInterval(() => {
+        step = (step + 1) % steps.length;
+        if (breathText) {
+          breathText.textContent = steps[step];
+        }
+      }, 3000);
     }
   </script>
 </body>
