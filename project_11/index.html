@@ -1,551 +1,457 @@
 <!DOCTYPE html>
-<html lang="ja" class="h-full">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- ダンジョン・マージ・クロニクル フロントエンド実装 -->
-  <title>ダンジョン・マージ・クロニクル</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <title>ピタッとあまりもの献立AI</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- FontAwesome CDN -->
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="[link removed]">
-  
-  <!-- Google Fonts: レトロファンタジー用ピクセルフォント & モックUI用フォント -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
+  <!-- Google Fonts -->
   <link href="[link removed]" rel="stylesheet">
-  
-  <!-- カラーパレット・フォントの設定 -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            dungeon: {
-              bg: '#121020',       /* ディープダンジョンネイビー */
-              card: '#1a162b',
-              border: '#2e274a',
-              panel: '#251f3d'
-            },
-            emerald: {
-              custom: '#2A9D8F',   /* メインハイライト */
-              glow: '#3cd0bf',
-              dark: '#1e6f65'
-            },
-            crimson: {
-              custom: '#E63946',   /* アクセントカラー */
-              dark: '#a8202d',
-              glow: '#ff5c6a'
-            }
+            brandGreen: '#4CAF50',
+            brandGreenDark: '#388E3C',
+            brandOrange: '#FF9800',
+            brandOrangeHover: '#F57C00',
+            bgLight: '#F8F9FA'
           },
           fontFamily: {
-            pixel: ['"DotGothic16"', 'monospace'],
-            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+            sans: ['"Noto Sans JP"', 'sans-serif']
           }
         }
       }
     }
   </script>
-
   <style>
-    /* 独自のネオ・レトロファンタジー スタイル定義 */
     body {
-      background-color: #121020;
-      color: #f1f5f9;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      overflow-x: hidden;
-      touch-action: manipulation;
-    }
-
-    .pixel-font {
-      font-family: 'DotGothic16', monospace;
-    }
-
-    /* レトロゲーム風ネオンシャドウエフェクト */
-    .glow-emerald {
-      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4);
-    }
-
-    .glow-crimson {
-      box-shadow: 0 0 15px rgba(230, 57, 70, 0.4);
-    }
-
-    .glow-gold {
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
-    }
-
-    /* パネルのマージアニメーション */
-    @keyframes mergePulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.15); filter: brightness(1.3); }
-      100% { transform: scale(1); }
-    }
-
-    .animate-merge {
-      animation: mergePulse 0.25s ease-in-out;
-    }
-
-    /* ダメージ・撃破エフェクト */
-    @keyframes attackFlash {
-      0% { opacity: 0; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0; transform: scale(1.5); }
-    }
-
-    .attack-effect {
-      animation: attackFlash 0.4s ease-out forwards;
-    }
-
-    /* ドット絵風グラデーションボーダー */
-    .pixel-border {
-      border: 3px solid #2e274a;
-      box-shadow: inset -3px -3px 0px rgba(0, 0, 0, 0.4), inset 3px 3px 0px rgba(255, 255, 255, 0.1);
-    }
-
-    .pixel-button {
-      transition: all 0.1s ease;
-      box-shadow: 0 4px 0 #0d0b16;
-    }
-
-    .pixel-button:active {
-      transform: translateY(4px);
-      box-shadow: 0 0 0 #0d0b16;
-    }
-
-    /* カスタムスクロールバー */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #121020;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2e274a;
-      border-radius: 3px;
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #F8F9FA;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between items-center relative selection:bg-emerald-custom selection:text-white">
+<body class="text-gray-800 pb-24 md:pb-12">
 
-  <!-- 背景演出用パーティクル/光彩効果 -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-custom/10 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-crimson-custom/10 rounded-full blur-3xl"></div>
-  </div>
-
-  <!-- メインコンテンツコンテナ (モバイルファースト設計) -->
-  <div class="w-full max-w-md mx-auto flex-1 flex flex-col justify-between p-4 relative z-10">
-
-    <!-- 【ヘッダーエリア】 -->
-    <header class="bg-dungeon-card p-3 rounded-2xl border border-dungeon-border shadow-xl mb-3">
-      <!-- 上段: プレイヤーステータス & 設定 -->
-      <div class="flex justify-between items-center mb-2">
-        <!-- プレイヤーHPバー & レベル -->
-        <div class="flex items-center space-x-2">
-          <div class="bg-dungeon-bg px-2.5 py-1 rounded-lg border border-dungeon-border flex items-center space-x-1.5">
-            <span class="text-xs text-emerald-custom font-bold">LV</span>
-            <span id="player-level" class="pixel-font text-amber-400 font-bold text-sm">05</span>
-          </div>
-          <div class="w-28 bg-dungeon-bg h-4 rounded-full border border-dungeon-border overflow-hidden relative">
-            <div id="hp-bar" class="bg-gradient-to-r from-crimson-custom to-red-400 h-full w-3/4 transition-all duration-300"></div>
-            <span class="absolute inset-0 text-[9px] font-bold flex items-center justify-center text-white drop-shadow">75 / 100</span>
-          </div>
+  <!-- ヘッダーエリア -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      <!-- 左側: アプリロゴ -->
+      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-10 h-10 rounded-xl bg-brandGreen text-white flex items-center justify-center font-bold text-xl shadow-md">
+          <i class="fa-solid fa-utensils"></i>
         </div>
-
-        <!-- 所持アイテム & 設定ボタン -->
-        <div class="flex items-center space-x-2">
-          <button onclick="usePotion()" class="bg-dungeon-bg hover:bg-dungeon-panel px-2.5 py-1 rounded-lg border border-dungeon-border flex items-center space-x-1.5 transition text-xs">
-            <i class="fa-solid fa-flask text-emerald-custom"></i>
-            <span id="potion-count" class="pixel-font text-white">x2</span>
-          </button>
-          <button onclick="toggleModal('settings-modal')" class="bg-dungeon-bg hover:bg-dungeon-panel w-7 h-7 rounded-lg border border-dungeon-border flex items-center justify-center transition text-slate-400 hover:text-white">
-            <i class="fa-solid fa-gear text-xs"></i>
-          </button>
-        </div>
+        <span class="font-bold text-lg md:text-xl text-gray-800 tracking-tight">ピタッとあまりもの献立AI</span>
       </div>
-
-      <!-- 下段: スコア & コンボ表示 -->
-      <div class="flex justify-between items-end bg-dungeon-bg/60 p-2 rounded-xl border border-dungeon-border/50">
-        <div>
-          <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">CURRENT SCORE</div>
-          <div id="score" class="pixel-font text-2xl text-emerald-custom font-bold tracking-tight">02,480</div>
-        </div>
-        <div class="text-right">
-          <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">CHAIN COMBO</div>
-          <div id="combo-display" class="pixel-font text-base text-amber-400 font-bold animate-pulse">
-            <i class="fa-solid fa-bolt text-xs mr-0.5"></i><span id="combo-count">3</span> MAX!
-          </div>
-        </div>
+      <!-- 右側: 通知ベルアイコン / マイページ・設定アイコン -->
+      <div class="flex items-center space-x-2">
+        <button aria-label="通知" class="relative p-2.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-brandOrange rounded-full"></span>
+        </button>
+        <button aria-label="マイページ・設定" class="p-2.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
+          <i class="fa-regular fa-user text-lg"></i>
+        </button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- 【メインビジュアル / パズルゲームエリア】 -->
-    <main class="flex-1 flex flex-col justify-center my-auto">
-      <!-- タイトル & ゲーム演出ガイド -->
-      <div class="flex justify-between items-center px-1 mb-2">
-        <h1 class="pixel-font text-sm font-bold text-slate-300 flex items-center gap-2">
-          <i class="fa-solid fa-[#2A9D8F] fa-dungeon text-emerald-custom"></i> ダンジョン盤面
+  <!-- メインコンテンツエリア -->
+  <main class="max-w-5xl mx-auto px-4 pt-6 space-y-8">
+
+    <!-- メインビジュアル / 入力エリア(ホーム画面) -->
+    <section class="bg-gradient-to-br from-green-50 via-white to-orange-50 rounded-3xl p-6 md:p-8 border border-green-100 shadow-sm">
+      <div class="text-center max-w-2xl mx-auto mb-6">
+        <span class="inline-block bg-green-100 text-brandGreenDark text-xs font-bold px-3 py-1 rounded-full mb-3">
+          <i class="fa-solid fa-leaf mr-1"></i> フードロス削減 & 節約サポート
+        </span>
+        <!-- キャッチコピー -->
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 leading-snug">
+          追加買い出しゼロ!<br class="sm:hidden">あまりもの食材・調味料で今すぐ作れる
         </h1>
-        <span class="text-[11px] text-slate-400">マージで敵育成 → 一気に撃破!</span>
       </div>
 
-      <!-- グリッド盤面 (4×4) -->
-      <div class="relative bg-dungeon-card p-3 rounded-2xl border-2 border-dungeon-border shadow-2xl glow-emerald">
-        
-        <!-- 4x4 グリッドコンテナ -->
-        <div id="grid-board" class="grid grid-cols-4 gap-2 aspect-square w-full">
-          <!-- JSで動的にパネルが挿入されます -->
+      <!-- 手持ち条件フィルターブロック -->
+      <div class="bg-white rounded-2xl p-5 md:p-6 shadow-md border border-gray-100 space-y-5">
+        <!-- クイック検索バー -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">
+            <i class="fa-solid fa-magnifying-glass text-brandGreen mr-1"></i> 手持ち食材・調味料・調理器具の入力
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="itemInput" placeholder="例: キャベツ, 醤油, フライパン..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brandGreen focus:border-transparent outline-none transition-all text-sm">
+            <button onclick="addItemFromInput()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-3 rounded-xl font-bold transition-all text-sm flex items-center">
+              <i class="fa-solid fa-plus mr-1"></i> 追加
+            </button>
+          </div>
         </div>
 
-        <!-- バトルエフェクトオーバレイ層 -->
-        <div id="effect-layer" class="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden rounded-2xl">
-          <!-- 撃破時のポップアップテキストやアニメーションが挿入されます -->
+        <!-- 在庫タグ選択UI (冷蔵庫の残り物カテゴリ別選択) -->
+        <div>
+          <span class="block text-xs font-semibold text-gray-500 mb-2">ワンタップ追加(冷蔵庫のよくある余りもの)</span>
+          <div class="flex flex-wrap gap-2" id="quickTags">
+            <button onclick="toggleTag(this, 'キャベツ')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">キャベツ</button>
+            <button onclick="toggleTag(this, '豚肉')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">豚肉</button>
+            <button onclick="toggleTag(this, '豆腐')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">豆腐</button>
+            <button onclick="toggleTag(this, '卵')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">卵</button>
+            <button onclick="toggleTag(this, '醤油')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">醤油</button>
+            <button onclick="toggleTag(this, '電子レンジ')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">電子レンジ</button>
+          </div>
         </div>
-      </div>
 
-      <!-- タップ・スライド移動用コントローラー (モバイル快適操作) -->
-      <div class="mt-3 grid grid-cols-3 gap-2 w-48 mx-auto">
-        <div></div>
-        <button onclick="moveGrid('up')" class="pixel-button bg-dungeon-card hover:bg-dungeon-panel border border-dungeon-border p-2 rounded-xl text-slate-300 flex items-center justify-center">
-          <i class="fa-solid fa-chevron-up"></i>
-        </button>
-        <div></div>
-        <button onclick="moveGrid('left')" class="pixel-button bg-dungeon-card hover:bg-dungeon-panel border border-dungeon-border p-2 rounded-xl text-slate-300 flex items-center justify-center">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button onclick="executeAttack()" class="pixel-button bg-crimson-custom hover:bg-crimson-dark text-white font-bold p-2 rounded-xl text-xs flex items-center justify-center glow-crimson" title="まとめて撃破">
-          <i class="fa-solid fa-burst"></i>
-        </button>
-        <button onclick="moveGrid('right')" class="pixel-button bg-dungeon-card hover:bg-dungeon-panel border border-dungeon-border p-2 rounded-xl text-slate-300 flex items-center justify-center">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-        <div></div>
-        <button onclick="moveGrid('down')" class="pixel-button bg-dungeon-card hover:bg-dungeon-panel border border-dungeon-border p-2 rounded-xl text-slate-300 flex items-center justify-center">
-          <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <div></div>
-      </div>
-    </main>
+        <!-- 選択中の手持ち条件表示エリア -->
+        <div class="pt-2 border-t border-gray-100">
+          <span class="block text-xs font-semibold text-gray-500 mb-2">現在設定中の条件:</span>
+          <div id="selectedTagsList" class="flex flex-wrap gap-2">
+            <!-- JavaScriptで動的に生成 -->
+          </div>
+        </div>
 
-    <!-- 【ソーシャル / アクションエリア】 -->
-    <section class="mt-3 space-y-2">
-      <!-- 1枠で強力なアクションボタン(SNS共有 & コンティニュー/全撃破) -->
-      <div class="grid grid-cols-2 gap-2">
-        <!-- ワンクリックSNS共有ボタン -->
-        <button onclick="openShareModal()" class="pixel-button bg-emerald-custom hover:bg-emerald-dark text-white font-bold py-2.5 px-3 rounded-xl border border-emerald-glow/30 flex items-center justify-center space-x-2 text-xs glow-emerald">
-          <i class="fa-solid fa-share-nodes text-sm"></i>
-          <span>高難易度盤面を共有</span>
-        </button>
+        <!-- 厳密フィルター・代替調味料提案のオン/オフ切り替えスイッチ -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+          <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
+            <div>
+              <p class="text-sm font-bold text-gray-800">厳密フィルター</p>
+              <p class="text-xs text-gray-500">手持ち条件のみで作れるレシピに限定</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="strictFilter" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brandGreen"></div>
+            </label>
+          </div>
 
-        <!-- コンティニュー / アイテム使用ボタン -->
-        <button onclick="executeAttack()" class="pixel-button bg-gradient-to-r from-crimson-custom to-crimson-dark hover:brightness-110 text-white font-bold py-2.5 px-3 rounded-xl border border-crimson-glow/30 flex items-center justify-center space-x-2 text-xs glow-crimson">
-          <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-          <span>一括撃破(スキル)</span>
+          <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
+            <div>
+              <p class="text-sm font-bold text-gray-800">代替調味料提案</p>
+              <p class="text-xs text-gray-500">不足調味料の代用ガイドを表示</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="substituteToggle" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brandGreen"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- プライマリーボタン -->
+        <button onclick="generateRecipes()" class="w-full bg-brandOrange hover:bg-brandOrangeHover text-white text-lg font-bold py-4 rounded-2xl shadow-lg shadow-orange-200 transition-all transform active:scale-[0.99] flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>献立を自動作成する</span>
         </button>
       </div>
     </section>
 
-    <!-- 【フッターエリア】 (ナビゲーションタブ) -->
-    <footer class="mt-4 bg-dungeon-card/90 backdrop-blur border border-dungeon-border rounded-2xl p-1.5 flex justify-around items-center">
-      <button onclick="openShopModal()" class="flex flex-col items-center p-1.5 text-slate-400 hover:text-emerald-custom transition">
-        <i class="fa-solid fa-store text-base"></i>
-        <span class="text-[9px] font-bold mt-0.5">ショップ</span>
-      </button>
-
-      <button onclick="openChallengeModal()" class="flex flex-col items-center p-1.5 text-slate-400 hover:text-emerald-custom transition relative">
-        <span class="absolute top-1 right-2 w-2 h-2 bg-crimson-custom rounded-full"></span>
-        <i class="fa-solid fa-scroll text-base"></i>
-        <span class="text-[9px] font-bold mt-0.5">課題一覧</span>
-      </button>
-
-      <button onclick="openRankingModal()" class="flex flex-col items-center p-1.5 text-slate-400 hover:text-emerald-custom transition">
-        <i class="fa-solid fa-trophy text-base"></i>
-        <span class="text-[9px] font-bold mt-0.5">ランキング</span>
-      </button>
-
-      <button onclick="resetGame()" class="flex flex-col items-center p-1.5 text-slate-400 hover:text-crimson-custom transition">
-        <i class="fa-solid fa-rotate-left text-base"></i>
-        <span class="text-[9px] font-bold mt-0.5">リセット</span>
-      </button>
-    </footer>
-
-  </div>
-
-  <!-- ==================== モーダルダイアログ群 ==================== -->
-
-  <!-- SNS共有モーダル -->
-  <div id="share-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-dungeon-card border-2 border-emerald-custom w-full max-w-sm rounded-2xl p-5 relative shadow-2xl glow-emerald">
-      <button onclick="toggleModal('share-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <div class="text-center">
-        <div class="w-12 h-12 bg-emerald-custom/20 text-emerald-custom rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-          <i class="fa-solid fa-share-nodes"></i>
-        </div>
-        <h3 class="pixel-font text-lg font-bold text-white mb-1">挑戦URLを発行しました!</h3>
-        <p class="text-xs text-slate-300 mb-4">あなたが構築した極限の「高難易度盤面」をSNSで共有して他ユーザーに挑戦させよう!</p>
-        
-        <div class="bg-dungeon-bg p-2.5 rounded-xl border border-dungeon-border flex items-center space-x-2 mb-4">
-          <input id="share-url-input" readonly type="text" value="https://dungeon-merge.example/challenge?id=78f92a" class="bg-transparent text-xs text-slate-300 w-full focus:outline-none">
-          <button onclick="copyShareUrl()" class="bg-emerald-custom hover:bg-emerald-dark text-white text-xs font-bold py-1.5 px-3 rounded-lg transition shrink-0">
-            コピー
-          </button>
-        </div>
-
-        <div class="flex gap-2">
-          <button onclick="shareToX()" class="flex-1 bg-slate-900 hover:bg-black border border-slate-700 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center space-x-1.5">
-            <i class="fa-brands fa-x-twitter"></i>
-            <span>Xで投稿</span>
-          </button>
-        </div>
+    <!-- レシピ提案・結果画面エリア -->
+    <section id="recipeResults" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <i class="fa-solid fa-utensils text-brandGreen"></i>
+          <span>提案レシピ一覧</span>
+        </h2>
+        <span class="text-xs text-gray-500 font-medium bg-gray-200 px-2.5 py-1 rounded-full">3件ヒット</span>
       </div>
-    </div>
-  </div>
 
-  <!-- テーマ/BGMショップ モーダル -->
-  <div id="shop-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-dungeon-card border border-dungeon-border w-full max-w-sm rounded-2xl p-5 relative shadow-2xl">
-      <button onclick="toggleModal('shop-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <h3 class="pixel-font text-base font-bold text-white mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-store text-emerald-custom"></i> テーマ & BGMショップ
-      </h3>
-      <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
-        <!-- アイテム1 -->
-        <div class="bg-dungeon-bg p-3 rounded-xl border border-dungeon-border flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-volcano text-lg"></i>
+      <!-- レシピ提案カードリスト (グリッド構造) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- レシピカード 1 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
+          <div>
+            <div class="relative h-44 bg-gray-200">
+              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
+              <!-- 一致度バッジ -->
+              <span class="absolute top-3 left-3 bg-brandGreen text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> 手持ち品のみで作成可能
+              </span>
             </div>
-            <div>
-              <div class="text-xs font-bold text-white">マグマ・ダンジョン</div>
-              <div class="text-[10px] text-slate-400">カスタムUIテーマ</div>
+            <div class="p-5 space-y-3">
+              <h3 class="font-bold text-lg text-gray-800 leading-snug">残り野菜と豚肉の特製スタミナ炒め</h3>
+              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
+                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 15分</span>
+                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約450円</span>
+              </div>
+              
+              <!-- 代替調味料ガイド -->
+              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
+                <p>オイスターソースがない場合: <strong>「醤油+砂糖+中華だし」</strong>で代用可能</p>
+              </div>
             </div>
           </div>
-          <button class="bg-emerald-custom text-white text-xs font-bold py-1.5 px-3 rounded-lg border border-emerald-glow/30">
-            ¥250
-          </button>
-        </div>
-        <!-- アイテム2 -->
-        <div class="bg-dungeon-bg p-3 rounded-xl border border-dungeon-border flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-music text-lg"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">16-bit Synth BGM</div>
-              <div class="text-[10px] text-slate-400">レトロバトル曲</div>
+
+          <!-- アクションボタン群 -->
+          <div class="p-5 pt-0 space-y-2">
+            <button onclick="startCooking('残り野菜と豚肉の特製スタミナ炒め')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-play text-xs"></i> 調理スタート
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="shareSNS('残り野菜と豚肉の特製スタミナ炒め', 450)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                <i class="fa-solid fa-share-nodes"></i> SNSシェア
+              </button>
+              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
+                <i class="fa-solid fa-crown"></i> 栄養分析
+              </button>
             </div>
           </div>
-          <button class="bg-emerald-custom text-white text-xs font-bold py-1.5 px-3 rounded-lg border border-emerald-glow/30">
-            ¥120
-          </button>
+        </div>
+
+        <!-- レシピカード 2 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
+          <div>
+            <div class="relative h-44 bg-gray-200">
+              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
+              <!-- 一致度バッジ -->
+              <span class="absolute top-3 left-3 bg-brandGreen text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> 手持ち品のみで作成可能
+              </span>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="font-bold text-lg text-gray-800 leading-snug">あまりもの豆腐と卵のふんわりスープ</h3>
+              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
+                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 10分</span>
+                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約200円</span>
+              </div>
+              
+              <!-- 代替調味料ガイド -->
+              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
+                <p>鶏ガラスープの素がない場合: <strong>「コンソメ+塩+ごま油」</strong>で代用可能</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- アクションボタン群 -->
+          <div class="p-5 pt-0 space-y-2">
+            <button onclick="startCooking('あまりもの豆腐と卵のふんわりスープ')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-play text-xs"></i> 調理スタート
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="shareSNS('あまりもの豆腐と卵のふんわりスープ', 200)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                <i class="fa-solid fa-share-nodes"></i> SNSシェア
+              </button>
+              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
+                <i class="fa-solid fa-crown"></i> 栄養分析
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- レシピカード 3 -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
+          <div>
+            <div class="relative h-44 bg-gray-200">
+              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
+              <!-- 一致度バッジ -->
+              <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                <i class="fa-solid fa-arrows-rotate"></i> 代替調味料を使用
+              </span>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="font-bold text-lg text-gray-800 leading-snug">キャベツとあまりもの調味料の和風パスタ</h3>
+              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
+                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 12分</span>
+                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約350円</span>
+              </div>
+              
+              <!-- 代替調味料ガイド -->
+              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
+                <p>めんつゆがない場合: <strong>「醤油+本みりん+ほんだし」</strong>で代用可能</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- アクションボタン群 -->
+          <div class="p-5 pt-0 space-y-2">
+            <button onclick="startCooking('キャベツとあまりもの調味料の和風パスタ')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-play text-xs"></i> 調理スタート
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="shareSNS('キャベツとあまりもの調味料の和風パスタ', 350)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                <i class="fa-solid fa-share-nodes"></i> SNSシェア
+              </button>
+              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
+                <i class="fa-solid fa-crown"></i> 栄養分析
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 節約達成感・レポート可視化セクション -->
+    <section class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brandOrange flex items-center justify-center text-2xl font-bold">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-800 text-sm">今月の自炊・あまりもの活用成果</h4>
+          <p class="text-2xl font-extrabold text-brandGreen">累計 ¥12,400 節約 <span class="text-xs font-normal text-gray-500">(食材ロス削減: 3.2kg)</span></p>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- 設定/共通モーダル -->
-  <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-dungeon-card border border-dungeon-border w-full max-w-sm rounded-2xl p-5 relative">
-      <button onclick="toggleModal('settings-modal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
+      <button onclick="switchTab('report')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2.5 rounded-xl font-bold text-xs transition-colors whitespace-nowrap">
+        節約レポートを見る <i class="fa-solid fa-chevron-right text-xs ml-1"></i>
       </button>
-      <h3 class="pixel-font text-base font-bold text-white mb-4">設定</h3>
-      <div class="space-y-3 text-xs">
-        <div class="flex justify-between items-center py-2 border-b border-dungeon-border">
-          <span>BGM 音量</span>
-          <input type="range" class="accent-emerald-custom">
+    </section>
+
+  </main>
+
+  <!-- フッターナビゲーション -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-40">
+    <div class="max-w-md mx-auto grid grid-cols-4 h-16">
+      <!-- タブ1: ホーム -->
+      <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-brandGreen font-bold text-xs space-y-1">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span>ホーム</span>
+      </button>
+      <!-- タブ2: レシピ保存・栄養分析(プレミアム) -->
+      <button onclick="showPremiumModal()" id="tab-save" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1 relative">
+        <i class="fa-solid fa-bookmark text-lg"></i>
+        <span>保存・栄養</span>
+        <span class="absolute top-1 right-3 bg-brandOrange text-white text-[9px] px-1 rounded-full font-bold">PRO</span>
+      </button>
+      <!-- タブ3: 節約レポート -->
+      <button onclick="switchTab('report')" id="tab-report" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1">
+        <i class="fa-solid fa-chart-line text-lg"></i>
+        <span>節約レポート</span>
+      </button>
+      <!-- タブ4: コミュニティ / シェア一覧 -->
+      <button onclick="switchTab('community')" id="tab-community" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span>シェア一覧</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- モーダル: 月額プレミアムプラン案内 -->
+  <div id="premiumModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 relative shadow-2xl">
+      <button onclick="closePremiumModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 bg-orange-100 text-brandOrange rounded-full flex items-center justify-center mx-auto text-2xl">
+          <i class="fa-solid fa-crown"></i>
         </div>
-        <div class="flex justify-between items-center py-2 border-b border-dungeon-border">
-          <span>SE 効果音</span>
-          <input type="range" class="accent-emerald-custom">
+        <h3 class="text-xl font-bold text-gray-900">月額プレミアムプラン</h3>
+        <p class="text-xs text-gray-500">無制限レシピ保存 & 高精度AI栄養分析</p>
+      </div>
+      <div class="bg-orange-50 rounded-2xl p-4 border border-orange-100 space-y-3">
+        <div class="flex items-center space-x-3 text-sm text-gray-700">
+          <i class="fa-solid fa-circle-check text-brandOrange"></i>
+          <span>レシピの無制限お気に入り保存</span>
+        </div>
+        <div class="flex items-center space-x-3 text-sm text-gray-700">
+          <i class="fa-solid fa-circle-check text-brandOrange"></i>
+          <span>AIによるPFCバランス・栄養素分析</span>
+        </div>
+        <div class="flex items-center space-x-3 text-sm text-gray-700">
+          <i class="fa-solid fa-circle-check text-brandOrange"></i>
+          <span>週間節約レポート & 優先サポート</span>
         </div>
       </div>
+      <button onclick="alert('プレミアムプランの事前登録を受け付けました!')" class="w-full bg-brandOrange hover:bg-brandOrangeHover text-white font-bold py-3.5 rounded-xl shadow-md transition-all">
+        月額プレミアムを体験する
+      </button>
     </div>
   </div>
 
-  <!-- ==================== ゲームロジック (JavaScript) ==================== -->
   <script>
-    // 4x4 グリッド用データ構造
-    const GRID_SIZE = 4;
-    let grid = Array(GRID_SIZE * GRID_SIZE).fill(0);
-    let score = 2480;
-    let combo = 3;
-    let hp = 75;
-    let potions = 2;
+    // 在庫タグの初期状態
+    let selectedItems = ['キャベツ', '豚肉', '豆腐', '醤油'];
 
-    // パネル定義(敵・アイテム・攻撃)
-    const TILE_TYPES = {
-      0: { type: 'empty' },
-      1: { type: 'enemy', level: 1, name: 'スライム', icon: 'fa-cube', color: 'text-green-400', bg: 'bg-green-950/40 border-green-800' },
-      2: { type: 'enemy', level: 2, name: 'ゴブリン', icon: 'fa-ghost', color: 'text-amber-400', bg: 'bg-amber-950/40 border-amber-800' },
-      3: { type: 'enemy', level: 3, name: 'オーク', icon: 'fa-dragon', color: 'text-crimson-glow', bg: 'bg-crimson-dark/40 border-crimson-custom' },
-      4: { type: 'enemy', level: 4, name: '魔王の影', icon: 'fa-skull', color: 'text-purple-400', bg: 'bg-purple-950/60 border-purple-600' },
-      10: { type: 'sword', name: '聖剣', icon: 'fa-wand-magic-sparkles', color: 'text-cyan-300', bg: 'bg-cyan-950/40 border-cyan-700' }
-    };
-
-    // 初期化
-    function initGame() {
-      // 模擬の初期盤面データ配置
-      grid = [
-        1, 1, 2, 0,
-        0, 2, 3, 10,
-        1, 0, 3, 1,
-        2, 1, 0, 4
-      ];
-      renderBoard();
-    }
-
-    // 盤面の描画更新
-    function renderBoard() {
-      const board = document.getElementById('grid-board');
-      board.innerHTML = '';
-
-      grid.forEach((tileValue, index) => {
-        const tile = document.createElement('div');
-        const tileInfo = TILE_TYPES[tileValue] || TILE_TYPES[1];
-
-        tile.className = `relative rounded-xl border flex flex-col items-center justify-center transition-all duration-200 select-none ${
-          tileValue === 0 
-            ? 'bg-dungeon-bg/40 border-dungeon-border/40' 
-            : `${tileInfo.bg} shadow-md`
-        }`;
-
-        if (tileValue !== 0) {
-          tile.innerHTML = `
-            <div class="${tileInfo.color} text-xl mb-1">
-              <i class="fa-solid ${tileInfo.icon}"></i>
-            </div>
-            <span class="pixel-font text-[10px] text-slate-200 font-bold">${tileInfo.name}</span>
-            ${tileInfo.level ? `<span class="absolute top-1 right-1 text-[8px] bg-black/60 px-1 rounded text-amber-400 font-bold">L${tileInfo.level}</span>` : ''}
-          `;
-        }
-
-        board.appendChild(tile);
+    // 選択されたタグのレンダリング
+    function renderTags() {
+      const container = document.getElementById('selectedTagsList');
+      container.innerHTML = '';
+      selectedItems.forEach(item => {
+        const tag = document.createElement('span');
+        tag.className = 'inline-flex items-center gap-1 bg-green-100 text-brandGreenDark text-xs font-bold px-3 py-1.5 rounded-lg border border-green-200';
+        tag.innerHTML = `${item} <i class="fa-solid fa-xmark cursor-pointer hover:text-red-500 ml-1" onclick="removeItem('${item}')"></i>`;
+        container.appendChild(tag);
       });
-
-      // ステータス更新
-      document.getElementById('score').innerText = score.toLocaleString().padStart(6, '0');
-      document.getElementById('combo-count').innerText = combo;
-      document.getElementById('potion-count').innerText = `x${potions}`;
     }
 
-    // パネルスライド・マージの擬似処理
-    function moveGrid(direction) {
-      // マージ動作アニメーション演出
-      score += 120;
-      combo = Math.min(combo + 1, 8);
-      
-      // ランダムパネル追加
-      const emptyIndices = grid.map((v, i) => v === 0 ? i : -1).filter(v => v !== -1);
-      if (emptyIndices.length > 0) {
-        const randIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-        grid[randIdx] = Math.random() > 0.3 ? 1 : 2;
-      }
-
-      renderBoard();
-      showEffectText('MERGE!', 'text-emerald-custom');
-    }
-
-    // 「あえて大きく育った敵パネルをまとめて撃破する」ジレンマ&快感アクション
-    function executeAttack() {
-      let enemyCount = 0;
-      grid = grid.map(val => {
-        if (val > 0 && val !== 10) {
-          enemyCount++;
-          return 0; // 敵を一括クリア
-        }
-        return val;
-      });
-
-      if (enemyCount > 0) {
-        const gainedScore = enemyCount * 500 * combo;
-        score += gainedScore;
-        showEffectText(`ENEMIES WIPED! +${gainedScore}`, 'text-amber-400');
-        renderBoard();
+    // クイックタグの切り替え
+    function toggleTag(btn, name) {
+      if (!selectedItems.includes(name)) {
+        selectedItems.push(name);
       } else {
-        showEffectText('敵がいません!', 'text-slate-400');
+        selectedItems = selectedItems.filter(i => i !== name);
+      }
+      renderTags();
+    }
+
+    // 入力フォームからの条件追加
+    function addItemFromInput() {
+      const input = document.getElementById('itemInput');
+      const val = input.value.trim();
+      if (val && !selectedItems.includes(val)) {
+        selectedItems.push(val);
+        input.value = '';
+        renderTags();
       }
     }
 
-    // ポーション使用
-    function usePotion() {
-      if (potions > 0) {
-        potions--;
-        hp = Math.min(hp + 30, 100);
-        document.getElementById('hp-bar').style.width = `${hp}%`;
-        renderBoard();
-        showEffectText('HP RECOVERED!', 'text-emerald-glow');
-      }
+    // タグの削除
+    function removeItem(name) {
+      selectedItems = selectedItems.filter(i => i !== name);
+      renderTags();
     }
 
-    // バトル演出テキスト表示
-    function showEffectText(text, colorClass) {
-      const effectLayer = document.getElementById('effect-layer');
-      const effect = document.createElement('div');
-      effect.className = `attack-effect pixel-font text-lg font-bold ${colorClass} drop-shadow-lg`;
-      effect.innerText = text;
-      effectLayer.appendChild(effect);
-
-      setTimeout(() => {
-        effect.remove();
-      }, 400);
+    // 献立自動作成のアクション
+    function generateRecipes() {
+      const results = document.getElementById('recipeResults');
+      results.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // モーダル開閉
-    function toggleModal(modalId) {
-      const modal = document.getElementById(modalId);
-      modal.classList.toggle('hidden');
-    }
-
-    function openShareModal() {
-      // 挑戦URLの発行
-      const randomCode = Math.random().toString(36).substring(2, 8);
-      document.getElementById('share-url-input').value = `https://dungeon-merge.example/challenge?id=${randomCode}`;
-      toggleModal('share-modal');
-    }
-
-    function openShopModal() { toggleModal('shop-modal'); }
-    function openChallengeModal() { alert('【挑戦課題】\n・魔王(Lv4)をマージで生成せよ!\n・1度の撃破で5,000pt獲得せよ!'); }
-    function openRankingModal() { alert('【全国ランキング】\n1位: HERO_TAKASHI (98,400pt)\n2位: DUNGEON_MASTER (84,100pt)\n3位: YOU (2,480pt)'); }
-
-    function copyShareUrl() {
-      const copyText = document.getElementById('share-url-input');
-      copyText.select();
-      navigator.clipboard.writeText(copyText.value);
-      alert('挑戦URLをコピーしました!SNSでシェアしよう!');
-    }
-
-    function shareToX() {
-      const url = encodeURIComponent(document.getElementById('share-url-input').value);
-      const text = encodeURIComponent('【ダンジョン・マージ・クロニクル】私が構築した超高難易度の盤面をクリアできるか!?挑戦求む! #ダンジョンマージ');
-      window.open(`[link removed]{text}&url=${url}`, '_blank');
-    }
-
-    function resetGame() {
-      score = 0;
-      combo = 1;
-      hp = 100;
-      document.getElementById('hp-bar').style.width = '100%';
-      initGame();
-    }
-
-    // キーボード操作対応
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp') moveGrid('up');
-      if (e.key === 'ArrowDown') moveGrid('down');
-      if (e.key === 'ArrowLeft') moveGrid('left');
-      if (e.key === 'ArrowRight') moveGrid('right');
-      if (e.key === ' ') executeAttack();
+    // 代替調味料トグルの切り替え連動
+    document.getElementById('substituteToggle').addEventListener('change', (e) => {
+      const guides = document.querySelectorAll('.substitute-guide');
+      guides.forEach(g => {
+        g.style.display = e.target.checked ? 'block' : 'none';
+      });
     });
 
-    // 起動
-    initGame();
+    // 調理スタート
+    function startCooking(recipeName) {
+      alert(`「${recipeName}」の調理モードを開始します!`);
+    }
+
+    // SNSシェアアクション
+    function shareSNS(recipeName, savings) {
+      alert(`【SNSシェア】\n『ピタッとあまりもの献立AI』で「${recipeName}」を作成!約${savings}円の節約になりました! #あまりもの献立 #フードロス削減 #節約`);
+    }
+
+    // プレミアムモーダルの表示・非表示
+    function showPremiumModal() {
+      document.getElementById('premiumModal').classList.remove('hidden');
+    }
+
+    function closePremiumModal() {
+      document.getElementById('premiumModal').classList.add('hidden');
+    }
+
+    // タブ切り替え
+    function switchTab(tab) {
+      if (tab === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tab === 'report') {
+        alert('【節約レポート】今月の累計節約金額や自炊ログをご確認いただけます。');
+      } else if (tab === 'community') {
+        alert('【コミュニティ/シェア一覧】他ユーザーのあまりもの活用投稿を閲覧できます。');
+      }
+    }
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTags();
+    });
   </script>
 </body>
 </html>
