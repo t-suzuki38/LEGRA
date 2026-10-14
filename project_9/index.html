@@ -3,315 +3,532 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NomadDesk Guide | 物理環境特化型デスクガイド</title>
-  <!-- Tailwind CSS -->
+  <title>ピタッと献立AI 〜追加買い出しゼロのあまりものレシピ〜</title>
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="[link removed]">
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
-  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            forest: '#1b3b2b',
-            amber: '#d97706',
-            warmgray: '#f4f3f0',
-            lightgray: '#f8f9fa',
+            primary: {
+              DEFAULT: '#f97316',
+              hover: '#ea580c',
+              light: '#ffedd5',
+            },
+            sage: {
+              DEFAULT: '#709775',
+              hover: '#58775c',
+              light: '#f0f5f1',
+            },
+            basebg: '#f8fafc',
           },
           fontFamily: {
-            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+            sans: ['"Noto Sans JP"', 'sans-serif'],
           }
         }
       }
     }
   </script>
+  
+  <!-- Google Fonts & FontAwesome CDN -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  <link rel="stylesheet" href="[link removed]">
+  
   <style>
     body {
-      background-color: #f4f3f0;
-      font-family: 'Inter', 'Noto Sans JP', sans-serif;
-      color: #2d3748;
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #f8fafc;
+    }
+    
+    .chip {
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chip.selected {
+      background-color: #f97316;
+      color: #ffffff;
+      border-color: #f97316;
+      box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+    }
+    
+    /* Custom Scrollbar for smooth horizontal tabs */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="bg-warmgray min-h-screen flex flex-col">
+<body class="text-slate-700 bg-basebg min-h-screen pb-24 md:pb-12">
 
   <!-- ヘッダーエリア -->
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <!-- 左: ブランドロゴ -->
-      <div class="flex items-center space-x-3">
-        <div class="bg-forest text-white p-2 rounded-lg flex items-center justify-center w-10 h-10">
-          <i class="fa-solid fa-chair text-lg text-amber"></i>
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      <!-- アプリロゴ -->
+      <a href="#" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-utensils text-lg"></i>
         </div>
-        <span class="text-xl font-bold text-forest tracking-tight">NomadDesk Guide</span>
-      </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-lg text-slate-800 leading-tight tracking-tight flex items-center gap-1">
+            ピタッと献立AI
+            <i class="fa-solid fa-wand-magic-sparkles text-xs text-sage"></i>
+          </span>
+          <span class="text-[10px] text-slate-400 font-medium">追加買い出しゼロのあまりものレシピ</span>
+        </div>
+      </a>
 
-      <!-- 中央: 簡易エリア検索バー -->
-      <div class="hidden md:flex items-center bg-lightgray px-3 py-1.5 rounded-full border border-gray-300 w-80">
-        <i class="fa-solid fa-location-dot text-gray-400 mr-2"></i>
-        <input type="text" placeholder="エリアを検索(例: 渋谷、新宿)" class="bg-transparent border-none text-sm focus:outline-none w-full text-gray-700">
-      </div>
-
-      <!-- 右: アクションボタン -->
-      <div class="flex items-center space-x-3">
-        <button class="text-xs sm:text-sm text-forest font-semibold px-3 py-2 rounded-lg border border-forest hover:bg-forest hover:text-white transition">
-          <i class="fa-solid fa-plus mr-1"></i> データ投稿
+      <!-- 右側ボタンエリア -->
+      <div class="flex items-center gap-3">
+        <!-- 月額プレミアムプラン案内ボタン -->
+        <button onclick="openModal('premium-modal')" class="bg-gradient-to-r from-amber-500 to-primary hover:from-amber-600 hover:to-primary-hover text-white text-xs font-bold px-3.5 py-2 rounded-full shadow-md shadow-orange-500/15 flex items-center gap-1.5 transition-all transform hover:-translate-y-0.5">
+          <i class="fa-solid fa-crown text-amber-200"></i>
+          <span>プレミアム</span>
         </button>
-        <button class="text-xs sm:text-sm bg-amber text-white font-semibold px-3 py-2 rounded-lg shadow hover:opacity-90 transition">
-          <i class="fa-solid fa-crown mr-1"></i> プレミアム
+        <!-- 設定アイコン -->
+        <button onclick="alert('設定画面を開きます')" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+          <i class="fa-solid fa-gear text-sm"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- ヒーローセクション -->
-  <section class="bg-forest text-white py-12 px-4 sm:px-6 lg:px-8 shadow-inner">
-    <div class="max-w-5xl mx-auto text-center">
-      <h1 class="text-2xl sm:text-4xl font-bold mb-3 tracking-tight">
-        身体負担を抑え、最高のパフォーマンスを発揮できるデスク環境を。
-      </h1>
-      <p class="text-gray-300 text-sm sm:text-base max-w-3xl mx-auto mb-8">
-        デスク寸法、椅子のエルゴノミクス度、コンセント配置、BGM音量などの物理環境に特化したワーキングスペースガイド。
-      </p>
+  <!-- メインコンテンツ -->
+  <main class="max-w-5xl mx-auto px-4 pt-6 space-y-8">
 
-      <!-- 物理環境特化型フィルター検索パネル -->
-      <div class="bg-white text-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl text-left">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <!-- デスク広さ・高さ -->
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">
-              <i class="fa-solid fa-ruler-horizontal text-amber mr-1"></i> デスク広さ・高さ
-            </label>
-            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
-              <option>指定なし</option>
-              <option>幅80cm以上</option>
-              <option>幅100cm以上</option>
-              <option>昇降デスクあり</option>
-            </select>
-          </div>
-
-          <!-- 椅子の座り心地 -->
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">
-              <i class="fa-solid fa-couch text-amber mr-1"></i> 椅子の座り心地
-            </label>
-            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
-              <option>指定なし</option>
-              <option>エルゴノミクスチェア完備</option>
-              <option>高反発クッション</option>
-              <option>ヘッドレスト付き</option>
-            </select>
-          </div>
-
-          <!-- 電源・足元スペース -->
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">
-              <i class="fa-solid fa-plug text-amber mr-1"></i> 電源・足元スペース
-            </label>
-            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
-              <option>指定なし</option>
-              <option>全席コンセント配備</option>
-              <option>足元ゆったりスペース</option>
-              <option>複数口タップあり</option>
-            </select>
-          </div>
-
-          <!-- BGM音量レベル -->
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">
-              <i class="fa-solid fa-volume-low text-amber mr-1"></i> BGM音量レベル
-            </label>
-            <select class="w-full bg-lightgray border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-forest">
-              <option>指定なし</option>
-              <option>静寂 (40dB以下)</option>
-              <option>適度 (50dB前後)</option>
-              <option>賑やか (60dB以上)</option>
-            </select>
-          </div>
+    <!-- メインビジュアル・導入セクション -->
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-primary to-amber-500 text-white p-6 md:p-10 shadow-xl shadow-orange-500/10">
+      <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="relative z-10 max-w-2xl space-y-4">
+        <div class="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-orange-100 border border-white/20">
+          <i class="fa-solid fa-leaf text-sage-light"></i>
+          <span>食材ロス削減&時短・節約サポート</span>
         </div>
+        <!-- キャッチコピー -->
+        <h1 class="text-2xl md:text-3xl font-extrabold leading-snug tracking-tight">
+          追加買い出しゼロ!<br class="hidden sm:inline">家にある食材と調味料だけで作れるあまりものレシピ
+        </h1>
+        <p class="text-sm md:text-base text-orange-50 font-normal leading-relaxed">
+          「厳密な在庫フィルター機能」と「高精度な代替調味料提案アルゴリズム」で、買い足し不要の美味しい献立を瞬時に提案します。
+        </p>
+        <div class="pt-2">
+          <!-- 初回ユーザー向けクイックスタートボタン -->
+          <a href="#inventory-section" class="inline-flex items-center justify-center gap-2 bg-white text-primary hover:bg-orange-50 font-bold px-6 py-3.5 rounded-2xl shadow-lg transition-all transform hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto">
+            <i class="fa-solid fa-magnifying-glass text-primary"></i>
+            <span>手持ちの材料を入力して献立を作る</span>
+          </a>
+        </div>
+      </div>
+    </section>
 
-        <!-- 検索実行ボタン -->
-        <button class="w-full bg-amber hover:bg-yellow-600 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center text-base">
-          <i class="fa-solid fa-magnifying-glass mr-2"></i> 物理環境フィルターで検索
+    <!-- 在庫登録・フィルタリングエリア(厳密な在庫フィルター機能) -->
+    <section id="inventory-section" class="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-100 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-packing text-primary"></i>
+            <span>手持ちの在庫を選択(厳密な在庫フィルター機能)</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">家にある材料をタップして選択してください。選択された材料のみでレシピを生成します。</p>
+        </div>
+        
+        <!-- 代替調味料ON/OFFトグル(高精度な代替調味料提案アルゴリズムの適用設定) -->
+        <div class="flex items-center justify-between md:justify-end gap-3 bg-sage-light/60 p-2.5 rounded-2xl border border-sage/20">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-flask text-sage font-bold"></i>
+            <span class="text-xs font-bold text-slate-700">高精度 代替調味料提案</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="alt-seasoning-toggle" class="sr-only peer" checked onchange="toggleAltSeasoning()">
+            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- カテゴリ選択タブ -->
+      <div class="flex border-b border-slate-100 space-x-2 overflow-x-auto no-scrollbar pb-1">
+        <button id="tab-ingredients" onclick="switchTab('ingredients')" class="px-4 py-2 text-sm font-bold border-b-2 border-primary text-primary whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-carrot"></i> 野菜・肉・魚
+        </button>
+        <button id="tab-seasonings" onclick="switchTab('seasonings')" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-bottle-droplet"></i> 常備調味料
+        </button>
+        <button id="tab-cookware" onclick="switchTab('cookware')" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-kitchen-set"></i> 調理器具
         </button>
       </div>
-    </div>
-  </section>
 
-  <!-- メインコンテンツエリア -->
-  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- メインカラム: 厳選ワークスペース一覧 -->
-      <div class="lg:col-span-2 space-y-6">
-        <h2 class="text-xl font-bold text-forest flex items-center">
-          <i class="fa-solid fa-compass text-amber mr-2"></i> 厳選ワークスペース一覧
-        </h2>
-
-        <!-- カード1 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
-          <div class="sm:w-2/5 bg-gray-200 relative min-h-[160px]">
-            <img src="[link removed]" alt="Workspace" class="w-full h-full object-cover">
-            <span class="absolute top-2 left-2 bg-forest text-white text-xs font-semibold px-2 py-1 rounded">渋谷エリア</span>
-          </div>
-          <div class="sm:w-3/5 p-5 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <h3 class="font-bold text-lg text-gray-800">Organic Work Lab 渋谷</h3>
-                <span class="bg-amber/10 text-amber font-bold text-xs px-2.5 py-1 rounded-full flex items-center">
-                  <i class="fa-solid fa-star text-xs mr-1"></i> 4.8
-                </span>
-              </div>
-              <p class="text-xs text-gray-500 mb-3">エルゴノミクススコア: <span class="text-forest font-bold">95/100</span></p>
-
-              <!-- 物理環境インジケーター -->
-              <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-4 bg-lightgray p-2.5 rounded-lg">
-                <div><i class="fa-solid fa-ruler text-forest mr-1"></i>幅90cm×奥行60cm</div>
-                <div><i class="fa-solid fa-plug text-forest mr-1"></i>全席2口コンセント</div>
-                <div><i class="fa-solid fa-couch text-forest mr-1"></i>ハーマンミラーチェア</div>
-                <div><i class="fa-solid fa-volume-xmark text-forest mr-1"></i>静寂 (38dB)</div>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between border-t pt-3 border-gray-100">
-              <p class="text-xs text-gray-500 line-clamp-1">「長時間の作業でも腰がまったく痛くなりません」</p>
-              <button class="text-xs font-bold text-forest hover:text-amber transition flex items-center ml-2 whitespace-nowrap">
-                詳細表示 <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- カード2 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
-          <div class="sm:w-2/5 bg-gray-200 relative min-h-[160px]">
-            <img src="[link removed]" alt="Workspace" class="w-full h-full object-cover">
-            <span class="absolute top-2 left-2 bg-forest text-white text-xs font-semibold px-2 py-1 rounded">新宿エリア</span>
-          </div>
-          <div class="sm:w-3/5 p-5 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <h3 class="font-bold text-lg text-gray-800">Focus Lounge 新宿</h3>
-                <span class="bg-amber/10 text-amber font-bold text-xs px-2.5 py-1 rounded-full flex items-center">
-                  <i class="fa-solid fa-star text-xs mr-1"></i> 4.6
-                </span>
-              </div>
-              <p class="text-xs text-gray-500 mb-3">エルゴノミクススコア: <span class="text-forest font-bold">91/100</span></p>
-
-              <!-- 物理環境インジケーター -->
-              <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-4 bg-lightgray p-2.5 rounded-lg">
-                <div><i class="fa-solid fa-ruler text-forest mr-1"></i>電動昇降デスク完備</div>
-                <div><i class="fa-solid fa-plug text-forest mr-1"></i>USB-C給電可能</div>
-                <div><i class="fa-solid fa-couch text-forest mr-1"></i>高機能メッシュチェア</div>
-                <div><i class="fa-solid fa-volume-low text-forest mr-1"></i>適度 (45dB)</div>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between border-t pt-3 border-gray-100">
-              <p class="text-xs text-gray-500 line-clamp-1">「立ち作業と座り作業を交互にできて快適です」</p>
-              <button class="text-xs font-bold text-forest hover:text-amber transition flex items-center ml-2 whitespace-nowrap">
-                詳細表示 <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- サイドバー: 収益化・広告エリア -->
-      <div class="space-y-6">
-        
-        <!-- プレミアム機能バナー -->
-        <div class="bg-gradient-to-br from-forest to-emerald-900 text-white rounded-xl p-6 shadow-md relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl">
-            <i class="fa-solid fa-cube"></i>
-          </div>
-          <span class="bg-amber text-xs font-bold px-2.5 py-1 rounded text-white uppercase tracking-wider mb-2 inline-block">PREMIUM</span>
-          <h3 class="text-lg font-bold mb-2">3Dデスク寸法マップ&空き情報</h3>
-          <p class="text-xs text-gray-200 mb-4 leading-relaxed">
-            リアルタイムの電源空き状況や、ミリ単位のデスク寸法3Dマップをアンロック。
-          </p>
-          <button class="w-full bg-amber hover:bg-yellow-600 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
-            プレミアム版を無料体験
+      <!-- チップ選択エリア -->
+      <div class="min-h-[140px]">
+        <!-- 野菜・肉・魚 -->
+        <div id="category-ingredients" class="flex flex-wrap gap-2.5">
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 豚薄切り肉
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> キャベツ
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 卵
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 豆腐
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            玉ねぎ
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            人参
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            鶏もも肉
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            しめじ
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            じゃがいも
           </button>
         </div>
 
-        <!-- 姿勢改善・アフィリエイト枠 -->
-        <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-          <h4 class="font-bold text-sm text-gray-800 mb-3 flex items-center border-b pb-2">
-            <i class="fa-solid fa-shield-heart text-amber mr-2"></i> エルゴノミクス推奨グッズ
-          </h4>
-          <div class="space-y-3">
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-lightgray transition group">
-              <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-forest flex-shrink-0">
-                <i class="fa-solid fa-laptop text-xl"></i>
+        <!-- 常備調味料 -->
+        <div id="category-seasonings" class="hidden flex-wrap gap-2.5">
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 醤油
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 砂糖
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 塩・コショウ
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> マヨネーズ
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            みりん
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            料理酒
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            オイスターソース
+          </button>
+        </div>
+
+        <!-- 調理器具 -->
+        <div id="category-cookware" class="hidden flex-wrap gap-2.5">
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> フライパン
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> 電子レンジ
+          </button>
+          <button onclick="toggleChip(this)" class="chip selected border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-[10px]"></i> ボウル
+          </button>
+          <button onclick="toggleChip(this)" class="chip border border-slate-200 bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5">
+            両手鍋
+          </button>
+        </div>
+      </div>
+
+      <!-- レシピ生成実行ボタン -->
+      <div class="pt-2">
+        <button onclick="generateRecipes()" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-robot"></i>
+          <span>選択した手持ち材料だけでレシピをAI提案する</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- AIレシピ提案・結果エリア -->
+    <section id="recipe-results" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-utensils text-sage"></i>
+            <span>提案レシピ一覧</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">追加買い出し不要で作れるあまりものレシピです</p>
+        </div>
+        <span class="text-xs font-bold bg-orange-100 text-primary px-3 py-1 rounded-full">3件ヒット</span>
+      </div>
+
+      <!-- レシピカード一覧 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- レシピカード 1 -->
+        <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col hover:shadow-md transition-shadow relative">
+          <div class="p-5 space-y-3 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <!-- 「追加買い出しゼロ」達成バッジ -->
+                <span class="bg-sage-light text-sage border border-sage/30 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i> 追加買い出しゼロ
+                </span>
+                <button class="text-slate-300 hover:text-red-500 transition-colors">
+                  <i class="fa-regular fa-heart text-lg"></i>
+                </button>
               </div>
-              <div>
-                <p class="text-xs font-bold text-gray-800 group-hover:text-amber transition">折りたたみノートPCスタンド</p>
-                <p class="text-[11px] text-gray-500">目線を上げて首の負担を軽減</p>
+              
+              <!-- 料理名 -->
+              <h3 class="font-bold text-base text-slate-800 leading-snug">豚キャベツの甘辛スタミナ炒め</h3>
+              
+              <!-- 項目: 調理時間、調理器具 -->
+              <div class="flex items-center gap-3 text-xs text-slate-500 pt-1">
+                <span><i class="fa-regular fa-clock text-primary"></i> 10分</span>
+                <span><i class="fa-solid fa-kitchen-set text-slate-400"></i> フライパン</span>
               </div>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-lightgray transition group">
-              <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-forest flex-shrink-0">
-                <i class="fa-solid fa-mattress-pillow text-xl"></i>
+
+              <!-- 使用する手持ち食材 -->
+              <div class="pt-2">
+                <span class="text-[11px] text-slate-400 block mb-1">使用する手持ち食材:</span>
+                <div class="flex flex-wrap gap-1">
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">豚薄切り肉</span>
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">キャベツ</span>
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">醤油</span>
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">砂糖</span>
+                </div>
               </div>
-              <div>
-                <p class="text-xs font-bold text-gray-800 group-hover:text-amber transition">高反発ランバーサポートクッション</p>
-                <p class="text-[11px] text-gray-500">骨盤を支えて正しい姿勢を維持</p>
+
+              <!-- 代替調味料ガイド表示 -->
+              <div class="alt-guide bg-amber-50 border border-amber-200/60 rounded-2xl p-3 text-xs text-amber-900 mt-3 space-y-1">
+                <div class="font-bold flex items-center gap-1 text-amber-700">
+                  <i class="fa-solid fa-lightbulb"></i> 代替調味料ガイド
+                </div>
+                <p class="text-[11px] leading-relaxed">みりんが無い場合: <span class="font-bold">「砂糖+水+酒少々」</span>で甘みと照りを再現できます!</p>
               </div>
-            </a>
+            </div>
+
+            <button onclick="alert('レシピの詳細手順を開きます')" class="w-full mt-4 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors">
+              作り方を見る
+            </button>
           </div>
         </div>
 
+        <!-- レシピカード 2 -->
+        <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col hover:shadow-md transition-shadow relative">
+          <div class="p-5 space-y-3 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <!-- 「追加買い出しゼロ」達成バッジ -->
+                <span class="bg-sage-light text-sage border border-sage/30 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i> 追加買い出しゼロ
+                </span>
+                <button class="text-slate-300 hover:text-red-500 transition-colors">
+                  <i class="fa-regular fa-heart text-lg"></i>
+                </button>
+              </div>
+              
+              <!-- 料理名 -->
+              <h3 class="font-bold text-base text-slate-800 leading-snug">レンジで速攻!ふんわりつゆたまご</h3>
+              
+              <!-- 項目: 調理時間、調理器具 -->
+              <div class="flex items-center gap-3 text-xs text-slate-500 pt-1">
+                <span><i class="fa-regular fa-clock text-primary"></i> 5分</span>
+                <span><i class="fa-solid fa-microchip text-slate-400"></i> 電子レンジ, ボウル</span>
+              </div>
+
+              <!-- 使用する手持ち食材 -->
+              <div class="pt-2">
+                <span class="text-[11px] text-slate-400 block mb-1">使用する手持ち食材:</span>
+                <div class="flex flex-wrap gap-1">
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">卵</span>
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">醤油</span>
+                  <span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md">マヨネーズ</span>
+                </div>
+              </div>
+
+              <!-- 代替調味料ガイド表示 -->
+              <div class="alt-guide bg-amber-50 border border-amber-200/60 rounded-2xl p-3 text-xs text-amber-900 mt-3 space-y-1">
+                <div class="font-bold flex items-center gap-1 text-amber-700">
+                  <i class="fa-solid fa-lightbulb"></i> 代替調味料ガイド
+                </div>
+                <p class="text-[11px] leading-relaxed">和風だしが無い場合: <span class="font-bold">「マヨネーズ+醤油」</span>でマイルドな旨味とふんわり感を補完!</p>
+              </div>
+            </div>
+
+            <button onclick="alert('レシピの詳細手順を開きます')" class="w-full mt-4 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors">
+              作り方を見る
+            </button>
+          </div>
+        </div>
+
+        <!-- インフィード広告表示スペース -->
+        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-5 border border-dashed border-slate-300 flex flex-col justify-between space-y-4 relative">
+          <span class="absolute top-3 right-4 text-[10px] bg-slate-200 text-slate-500 font-bold px-2 py-0.5 rounded">PR インフィード広告</span>
+          <div class="space-y-2 pt-2">
+            <div class="w-8 h-8 rounded-lg bg-orange-100 text-primary flex items-center justify-center font-bold">
+              <i class="fa-solid fa-dumpster-fire"></i>
+            </div>
+            <h4 class="font-bold text-sm text-slate-800">毎日の料理時間をさらに半減!人気フライパンセット</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">焦げ付きにくくお手入れ簡単。今ならプレミアム会員登録で特別割引クーポン進呈中!</p>
+          </div>
+          <button class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs transition-colors">
+            詳細を見る
+          </button>
+        </div>
+
       </div>
-    </div>
+    </section>
+
   </main>
 
-  <!-- フッターエリア -->
-  <footer class="bg-forest text-white border-t border-emerald-900 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <div class="flex items-center space-x-2 mb-3">
-            <i class="fa-solid fa-chair text-amber text-lg"></i>
-            <span class="text-lg font-bold">NomadDesk Guide</span>
-          </div>
-          <p class="text-xs text-gray-300 leading-relaxed">
-            リモートワーカーやフリーランスのための物理環境特化型デスク・作業スペース検索プラットフォーム。
-          </p>
-        </div>
-        <div>
-          <h5 class="text-xs font-bold text-amber tracking-wider uppercase mb-3">クイックカテゴリ検索</h5>
-          <ul class="text-xs text-gray-300 space-y-2">
-            <li><a href="#" class="hover:underline">エルゴノミクスチェア完備</a></li>
-            <li><a href="#" class="hover:underline">昇降デスク・立ち作業エリア</a></li>
-            <li><a href="#" class="hover:underline">静音・BGM低音量重視</a></li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="text-xs font-bold text-amber tracking-wider uppercase mb-3">サポート・運営</h5>
-          <ul class="text-xs text-gray-300 space-y-2">
-            <li><a href="#" class="hover:underline">利用規約</a></li>
-            <li><a href="#" class="hover:underline">プライバシーポリシー</a></li>
-            <li><a href="#" class="hover:underline">お問い合わせ</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="border-t border-emerald-800 pt-6 text-center text-xs text-gray-400">
-        &copy; 2026 NomadDesk Guide. All rights reserved.
-      </div>
+  <!-- フッターナビゲーション(固定フッター / モバイルフレンドリー) -->
+  <footer class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 py-2 shadow-lg">
+    <div class="max-w-md mx-auto px-6 flex justify-between items-center text-center">
+      <!-- ホーム(献立作成) -->
+      <a href="#" class="flex flex-col items-center gap-1 text-primary">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-bold">ホーム</span>
+      </a>
+      <!-- お気に入りレシピ -->
+      <button onclick="alert('お気に入りレシピ一覧を開きます')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-heart text-lg"></i>
+        <span class="text-[10px] font-bold">お気に入り</span>
+      </button>
+      <!-- プレミアム(月額プラン) -->
+      <button onclick="openModal('premium-modal')" class="flex flex-col items-center gap-1 text-amber-500 hover:text-amber-600">
+        <i class="fa-solid fa-crown text-lg"></i>
+        <span class="text-[10px] font-bold">プレミアム</span>
+      </button>
+      <!-- SNSシェア・友達招待 -->
+      <button onclick="openModal('share-modal')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-share-nodes text-lg"></i>
+        <span class="text-[10px] font-bold">シェア</span>
+      </button>
     </div>
   </footer>
 
+  <!-- モーダル: プレミアム案内 -->
+  <div id="premium-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-5 relative shadow-2xl animate-fade-in">
+      <button onclick="closeModal('premium-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mx-auto text-xl shadow-inner">
+          <i class="fa-solid fa-crown"></i>
+        </div>
+        <h3 class="font-bold text-lg text-slate-800">月額プレミアムプラン</h3>
+        <p class="text-xs text-slate-500">毎日の献立作成をさらに快適にする無制限アクセス</p>
+      </div>
+
+      <ul class="space-y-2.5 text-xs text-slate-600">
+        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sage font-bold"></i> 広告非表示でストレスフリー</li>
+        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sage font-bold"></i> 代替調味料AI提案の精度向上アルゴリズム</li>
+        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-sage font-bold"></i> お気に入りレシピ無制限保存</li>
+      </ul>
+
+      <button onclick="alert('決済画面へ移動します'); closeModal('premium-modal');" class="w-full bg-gradient-to-r from-amber-500 to-primary text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-orange-500/20">
+        月額プレミアムプランを開始する
+      </button>
+    </div>
+  </div>
+
+  <!-- モーダル: SNSシェア・友達招待 -->
+  <div id="share-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-5 relative shadow-2xl">
+      <button onclick="closeModal('share-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      
+      <div class="text-center space-y-1">
+        <h3 class="font-bold text-lg text-slate-800">SNSシェア・友達招待</h3>
+        <p class="text-xs text-slate-500">追加買い出しゼロの快適さを友達に教えよう!</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button onclick="alert('Xでシェアしました')" class="bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+          <i class="fa-brands fa-x-twitter"></i> Xでシェア
+        </button>
+        <button onclick="alert('LINEで共有しました')" class="bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+          <i class="fa-brands fa-line"></i> LINEで送る
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript制御部 -->
   <script>
-    // 検索ボタンクリック時の簡単なインタラクション
-    document.querySelector('button.bg-amber').addEventListener('click', function() {
-      console.log('検索フィルターが実行されました');
-    });
+    // チップの選択切り替え機能
+    function toggleChip(element) {
+      element.classList.toggle('selected');
+      const icon = element.querySelector('i');
+      if (element.classList.contains('selected')) {
+        if (!icon) {
+          element.insertAdjacentHTML('afterbegin', '<i class="fa-solid fa-check text-[10px]"></i> ');
+        }
+      } else {
+        if (icon) {
+          icon.remove();
+        }
+      }
+    }
+
+    // カテゴリタブ切り替え機能
+    function switchTab(tabName) {
+      const tabs = ['ingredients', 'seasonings', 'cookware'];
+      tabs.forEach(t => {
+        const tabBtn = document.getElementById(`tab-${t}`);
+        const catContent = document.getElementById(`category-${t}`);
+        
+        if (t === tabName) {
+          tabBtn.className = 'px-4 py-2 text-sm font-bold border-b-2 border-primary text-primary whitespace-nowrap transition-colors flex items-center gap-1.5';
+          catContent.classList.remove('hidden');
+          catContent.classList.add('flex');
+        } else {
+          tabBtn.className = 'px-4 py-2 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap transition-colors flex items-center gap-1.5';
+          catContent.classList.remove('flex');
+          catContent.classList.add('hidden');
+        }
+      });
+    }
+
+    // 代替調味料ガイドの表示ON/OFF
+    function toggleAltSeasoning() {
+      const toggle = document.getElementById('alt-seasoning-toggle');
+      const guides = document.querySelectorAll('.alt-guide');
+      guides.forEach(g => {
+        if (toggle.checked) {
+          g.classList.remove('hidden');
+        } else {
+          g.classList.add('hidden');
+        }
+      });
+    }
+
+    // AIレシピ生成のシミュレーション
+    function generateRecipes() {
+      const resultsSection = document.getElementById('recipe-results');
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // モーダル表示制御
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+      }
+    }
   </script>
 </body>
 </html>
