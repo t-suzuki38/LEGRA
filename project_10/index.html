@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ピタッと献立AI 〜追加買い出しゼロのあまりものレシピ〜</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts (Noto Sans JP) -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#f97316',
+              hover: '#ea580c',
+              light: '#ffedd5',
+            },
+            sage: {
+              DEFAULT: '#709775',
+              hover: '#5c7d60',
+              light: '#eaf1eb',
+            },
+            bgbase: '#f8fafc',
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #f8fafc;
+    }
+    .gradient-btn {
+      background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    }
+    .gradient-btn:hover {
+      background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200/80 sticky top-0 z-50 backdrop-blur-md bg-white/90">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- App Logo & Title -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center text-primary text-xl font-bold shadow-inner">
+          <i class="fa-solid fa-utensils"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 flex items-center gap-1.5">
+            ピタッと献立AI
+            <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-sage-light text-sage font-medium border border-sage/20">買い出しゼロ</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">余り物・調味料だけで作る最適レシピ</p>
+        </div>
+      </div>
+
+      <!-- Quick Status Display -->
+      <div class="flex items-center gap-2 sm:gap-3 text-xs">
+        <div class="bg-slate-100/80 px-3 py-1.5 rounded-xl flex items-center gap-1.5 border border-slate-200/60">
+          <i class="fa-solid fa-carrot text-primary"></i>
+          <span>登録食材: <strong id="ingredient-count" class="text-primary font-bold">6</strong>個</span>
+        </div>
+        <div class="bg-sage-light px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-sage-hover font-medium border border-sage/20">
+          <i class="fa-solid fa-piggy-bank"></i>
+          <span>今月の節約: <strong id="savings-amount" class="font-bold">¥2,400</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+    <!-- Ingredient Input & Selection Section -->
+    <section class="bg-white rounded-3xl p-5 md:p-7 shadow-sm border border-slate-100 space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-boxes-packing text-primary"></i>
+          冷蔵庫のあまりもの食材
+        </h2>
+        <span class="text-xs text-slate-400">タップでオン/オフ切り替え</span>
+      </div>
+
+      <!-- Search / Add Form -->
+      <div class="relative">
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="add-input" placeholder="食材や調味料を追加(例: キャベツ, 豚肉, めんつゆ)" class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white transition-all">
+            <button type="button" id="mic-btn" title="音声入力" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+          </div>
+          <button id="add-btn" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-5 py-3 rounded-2xl transition-colors flex items-center gap-1.5 shrink-0 shadow-sm">
+            <i class="fa-solid fa-plus text-xs"></i> 追加
+          </button>
+        </div>
+      </div>
+
+      <!-- Ingredient Chips -->
+      <div>
+        <div class="flex items-center justify-between mb-2.5">
+          <p class="text-xs font-semibold text-slate-500">現在自宅にある食材・調理用具</p>
+          <button id="clear-inactive-btn" class="text-[11px] text-slate-400 hover:text-slate-600 transition-colors">OFFアイテムを非表示</button>
+        </div>
+        <div id="tag-container" class="flex flex-wrap gap-2">
+          <!-- JS Dynamic Tag Rendering -->
+        </div>
+      </div>
+
+      <!-- Condiments & Equipment Filter Switches -->
+      <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 space-y-3">
+        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders text-sage"></i> 厳密フィルタリング・環境制限
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <label class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200/80 cursor-pointer hover:border-slate-300 transition-all">
+            <span class="flex items-center gap-2 font-medium text-slate-700"><i class="fa-solid fa-bottle-droplet text-amber-500"></i> 基本調味料のみ使用</span>
+            <input type="checkbox" id="basic-condiments" checked class="w-4 h-4 accent-primary rounded cursor-pointer">
+          </label>
+          <label class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200/80 cursor-pointer hover:border-slate-300 transition-all">
+            <span class="flex items-center gap-2 font-medium text-slate-700"><i class="fa-solid fa-fire text-red-500"></i> コンロ2口以内</span>
+            <input type="checkbox" id="stove-limit" checked class="w-4 h-4 accent-primary rounded cursor-pointer">
+          </label>
+          <label class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200/80 cursor-pointer hover:border-slate-300 transition-all">
+            <span class="flex items-center gap-2 font-medium text-slate-700"><i class="fa-solid fa-bolt text-blue-500"></i> 電子レンジ活用</span>
+            <input type="checkbox" id="use-microwave" checked class="w-4 h-4 accent-primary rounded cursor-pointer">
+          </label>
+        </div>
+      </div>
+
+      <!-- Main CTA Button -->
+      <div class="pt-2">
+        <button id="generate-btn" class="w-full gradient-btn text-white py-4 px-6 rounded-2xl font-bold text-base sm:text-lg shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>追加買い出しゼロで献立を作る</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loading-spinner" class="hidden bg-white rounded-3xl p-10 text-center shadow-sm border border-slate-100 space-y-4">
+      <div class="inline-block animate-spin text-primary text-4xl">
+        <i class="fa-solid fa-circle-notch"></i>
+      </div>
+      <p class="text-sm font-bold text-slate-700">選択した手持ち食材のみで厳密に計算中...</p>
+      <p class="text-xs text-slate-400">追加の買い出し費用が0円になるレシピを選出しています</p>
+    </div>
+
+    <!-- Results Section -->
+    <section id="results-section" class="hidden space-y-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-utensils text-sage"></i>
+          AI提案の最適献立レシピ
+        </h2>
+        <button id="regenerate-btn" class="text-xs bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-rotate-right"></i> 別の献立を再提案
+        </button>
+      </div>
+
+      <!-- Main Recipe Card -->
+      <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col md:flex-row">
+        <!-- Recipe Image -->
+        <div class="md:w-5/12 relative h-52 md:h-auto bg-slate-100 overflow-hidden">
+          <img id="recipe-img" src="" alt="調理後の料理画像" class="w-full h-full object-cover">
+          <div class="absolute top-3 left-3 bg-sage text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+            <i class="fa-solid fa-shield-halved"></i> 買い出しゼロ保証
+          </div>
+        </div>
+
+        <!-- Recipe Content -->
+        <div class="p-6 md:w-7/12 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center gap-3 text-xs text-slate-500 mb-2">
+              <span class="flex items-center gap-1"><i class="fa-solid fa-clock text-slate-400"></i> 調理時間: <strong id="recipe-time" class="text-slate-800">15分</strong></span>
+              <span class="flex items-center gap-1"><i class="fa-solid fa-fire text-slate-400"></i> カロリー: <strong id="recipe-cal" class="text-slate-800">420kcal</strong></span>
+            </div>
+            <h3 id="recipe-title" class="text-xl font-bold text-slate-900 mb-2 leading-snug"></h3>
+            <p id="recipe-desc" class="text-xs text-slate-600 leading-relaxed"></p>
+          </div>
+
+          <!-- Used Ingredients Badge -->
+          <div class="space-y-1.5">
+            <p class="text-xs font-semibold text-slate-500">消費されるあまりもの食材:</p>
+            <div id="recipe-ingredients" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <!-- Substitute Condiment Assist Box -->
+          <div class="bg-amber-50/80 border border-amber-200/60 rounded-2xl p-3.5 flex items-start gap-3">
+            <i class="fa-solid fa-lightbulb text-amber-500 text-base shrink-0 mt-0.5"></i>
+            <div class="text-xs text-amber-900 leading-relaxed">
+              <span class="font-bold block mb-0.5 text-amber-950">AI代替調味料アシスト</span>
+              <p id="substitute-text"></p>
+            </div>
+          </div>
+
+          <!-- Action Buttons & Share -->
+          <div class="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
+            <span class="text-xs text-slate-500">浮いた買い出し代: <strong id="recipe-savings" class="text-sage-hover font-bold text-sm">約¥450</strong></span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="shareSNS('TikTok')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 font-medium">
+                <i class="fa-brands fa-tiktok"></i> シェア
+              </button>
+              <button onclick="shareSNS('Instagram')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 font-medium">
+                <i class="fa-brands fa-instagram"></i> シェア
+              </button>
+              <button onclick="shareSNS('X')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 font-medium">
+                <i class="fa-brands fa-x-twitter"></i> 拡散
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200/60 py-5 text-center text-xs text-slate-400 mt-auto">
+    <p>© 2026 ピタッと献立AI - 追加買い出しゼロのあまりものレシピ</p>
+  </footer>
+
+  <script>
+    // Initial Ingredients State
+    const defaultIngredients = [
+      { name: '豚肉', active: true },
+      { name: 'キャベツ', active: true },
+      { name: 'たまご', active: true },
+      { name: '豆腐', active: true },
+      { name: '醤油', active: true },
+      { name: 'ごま油', active: true },
+      { name: '人参', active: false },
+      { name: '玉ねぎ', active: false },
+      { name: 'みりん', active: false }
+    ];
+
+    let ingredients = [...defaultIngredients];
+
+    // Mock Recipe Dataset
+    const dummyRecipes = [
+      {
+        title: 'あまりもの豚肉とキャベツの旨塩炒め',
+        time: '12分',
+        cal: '410kcal',
+        desc: '冷蔵庫に残った豚肉とキャベツだけで手早く作れる高コスパなおかず。香ばしいごま油とシンプルな塩味が食欲をそそります。',
+        img: '[link removed]',
+        used: ['豚肉', 'キャベツ', '醤油', 'ごま油'],
+        substitute: '「鶏ガラスープの素」が無い場合は、<strong>「醤油+みりん+塩少々」</strong>で旨味を十分に補えます!',
+        savings: '約¥480'
+      },
+      {
+        title: 'とろたまキャベツの和風レンジ蒸し',
+        time: '8分',
+        cal: '260kcal',
+        desc: '卵とキャベツの優しいうま味が広がる一品。レンジ調理のみでコンロを使わずに完成します。',
+        img: '[link removed]',
+        used: ['たまご', 'キャベツ', '醤油'],
+        substitute: '「和風だし」が無い場合は、<strong>「めんつゆ」</strong>または<strong>「醤油+ほんの少しの砂糖」</strong>で代用可能です!',
+        savings: '¥350'
+      },
+      {
+        title: '豆腐と豚肉のヘルシー甘辛炒め',
+        time: '15分',
+        cal: '380kcal',
+        desc: 'しっかり水切りした豆腐と豚肉を香ばしく炒め合わせた、満足感たっぷりのおかずです。',
+        img: '[link removed]',
+        used: ['豆腐', '豚肉', '醤油', 'ごま油'],
+        substitute: '「みりん」が無い場合は、<strong>「砂糖+水(1:1)」</strong>で自然な甘みと照りを表現できます!',
+        savings: '¥520'
+      }
+    ];
+
+    let recipeIndex = 0;
+
+    // DOM Elements
+    const tagContainer = document.getElementById('tag-container');
+    const ingredientCountEl = document.getElementById('ingredient-count');
+    const addInput = document.getElementById('add-input');
+    const addBtn = document.getElementById('add-btn');
+    const micBtn = document.getElementById('mic-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    const regenerateBtn = document.getElementById('regenerate-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const resultsSection = document.getElementById('results-section');
+
+    // Render Tag List
+    function renderTags() {
+      tagContainer.innerHTML = '';
+      let activeCount = 0;
+
+      ingredients.forEach((item, index) => {
+        if (item.active) activeCount++;
+
+        const tag = document.createElement('button');
+        tag.type = 'button';
+        tag.className = `px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
+          item.active
+            ? 'bg-primary text-white shadow-sm shadow-orange-500/20'
+            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+        }`;
+        
+        tag.innerHTML = `
+          <span>${item.name}</span>
+          <i class="fa-solid ${item.active ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
+        `;
+
+        tag.addEventListener('click', () => {
+          ingredients[index].active = !ingredients[index].active;
+          renderTags();
+        });
+
+        tagContainer.appendChild(tag);
+      });
+
+      ingredientCountEl.textContent = activeCount;
+    }
+
+    // Add New Ingredient
+    function addIngredient() {
+      const val = addInput.value.trim();
+      if (!val) return;
+
+      const existing = ingredients.find(i => i.name === val);
+      if (existing) {
+        existing.active = true;
+      } else {
+        ingredients.push({ name: val, active: true });
+      }
+
+      addInput.value = '';
+      renderTags();
+    }
+
+    addBtn.addEventListener('click', addIngredient);
+    addInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addIngredient();
+    });
+
+    // Voice Input Trigger
+    micBtn.addEventListener('click', () => {
+      alert('音声検索機能: 音声認識で「キャベツ」「たまご」などの食材を一括入力できます。');
+    });
+
+    // Display Recipe Result
+    function displayRecipe(data) {
+      document.getElementById('recipe-title').textContent = data.title;
+      document.getElementById('recipe-time').textContent = data.time;
+      document.getElementById('recipe-cal').textContent = data.cal;
+      document.getElementById('recipe-desc').textContent = data.desc;
+      document.getElementById('recipe-img').src = data.img;
+      document.getElementById('substitute-text').innerHTML = data.substitute;
+      document.getElementById('recipe-savings').textContent = data.savings;
+
+      const ingContainer = document.getElementById('recipe-ingredients');
+      ingContainer.innerHTML = '';
+      data.used.forEach(ing => {
+        const badge = document.createElement('span');
+        badge.className = 'text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg font-medium border border-slate-200/80';
+        badge.textContent = ing;
+        ingContainer.appendChild(badge);
+      });
+    }
+
+    // Generate Recipe Action
+    function generateRecipe() {
+      resultsSection.classList.add('hidden');
+      loadingSpinner.classList.remove('hidden');
+
+      setTimeout(() => {
+        loadingSpinner.classList.add('hidden');
+        displayRecipe(dummyRecipes[recipeIndex]);
+        resultsSection.classList.remove('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+      }, 900);
+    }
+
+    generateBtn.addEventListener('click', generateRecipe);
+
+    regenerateBtn.addEventListener('click', () => {
+      recipeIndex = (recipeIndex + 1) % dummyRecipes.length;
+      generateRecipe();
+    });
+
+    // Share Modal Simulation
+    function shareSNS(platform) {
+      alert(`${platform}へ成果をシェアしました!\n「あまりもの食材だけで料理が完成!買い出し費¥0」`);
+    }
+
+    // Initialize
+    renderTags();
+  </script>
+</body>
+</html>
