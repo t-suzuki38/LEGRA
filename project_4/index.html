@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1900年代文学回廊</title>
+  <title>1900年代文学集成Web</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -11,223 +11,352 @@
       theme: {
         extend: {
           colors: {
-            sepiaBase: '#f4f0ea',
-            sepiaCard: '#eae3d5',
-            charcoalBlack: '#222222',
-            classicBordeaux: '#6b2d3c',
-            antiqueIvory: '#f9f6f0',
+            charcoal: '#121212',
+            surface: '#1a1a1a',
+            gold: '#D4AF37',
+            'gold-light': '#F3E5AB',
+            crimson: '#8B0000',
+            'crimson-dark': '#5c0000',
           },
           fontFamily: {
-            mincho: ['"Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS PMincho", serif'],
-            serif: ['Georgia', 'serif'],
+            serif: ['"Shippori Mincho"', 'serif'],
+            sans: ['"Noto Sans JP"', 'sans-serif'],
           }
         }
       }
     }
   </script>
-  <!-- FontAwesome CDN -->
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="[link removed]">
   <style>
     body {
-      background-color: #f4f0ea;
-      color: #222222;
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS PMincho", serif;
+      background-color: #121212;
+      color: #e5e5e5;
+      font-family: 'Noto Sans JP', sans-serif;
     }
-    .vertical-text {
-      writing-mode: vertical-rl;
-      text-orientation: upright;
+    .font-serif {
+      font-family: 'Shippori Mincho', serif;
     }
-    .letterpress-bg {
-      background-color: #f4f0ea;
-      background-image: radial-gradient(#dcd5c5 1px, transparent 1px);
-      background-size: 20px 20px;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121212;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #D4AF37;
     }
   </style>
 </head>
-<body class="letterpress-bg min-h-screen flex flex-col selection:bg-classicBordeaux selection:text-white">
+<body class="bg-charcoal text-gray-200 antialiased selection:bg-gold selection:text-charcoal">
 
-  <!-- ヘッダー部 -->
-  <header class="sticky top-0 z-50 bg-antiqueIvory/90 backdrop-blur-md border-b border-sepiaCard shadow-sm">
+  <!-- ヘッダーエリア -->
+  <header class="sticky top-0 z-50 bg-charcoal/90 backdrop-blur-md border-b border-white/10 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <a href="#" class="text-2xl font-bold tracking-widest text-charcoalBlack font-mincho">1900年代文学回廊</a>
-      </div>
-      <nav class="hidden md:flex items-center space-x-8 text-sm tracking-wider">
-        <a href="#serial" class="hover:text-classicBordeaux transition-colors">連載一覧</a>
-        <a href="#style" class="hover:text-classicBordeaux transition-colors">文豪スタイル</a>
-        <a href="#premium" class="hover:text-classicBordeaux transition-colors">プレミアム</a>
-        <a href="#search" class="hover:text-classicBordeaux transition-colors flex items-center gap-1"><i class="fa-solid fa-magnifying-glass"></i> 検索</a>
+      <!-- ロゴ -->
+      <a href="#" class="font-serif text-xl sm:text-2xl font-bold tracking-wider text-gold hover:opacity-90 transition-opacity">
+        1900年代文学集成Web
+      </a>
+
+      <!-- ナビゲーションメニュー (デスクトップ) -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
+        <a href="#works" class="hover:text-gold transition-colors">作品一覧</a>
+        <a href="#features" class="hover:text-gold transition-colors">特集</a>
+        <a href="#crowdfunding" class="hover:text-gold transition-colors">クラウドファンディング</a>
+        <a href="#ads" class="hover:text-gold transition-colors">広告掲載について</a>
       </nav>
+
+      <!-- 右側ボタン -->
       <div class="flex items-center space-x-4">
-        <a href="#premium" class="hidden sm:inline-block px-4 py-2 text-xs border border-classicBordeaux text-classicBordeaux rounded hover:bg-classicBordeaux hover:text-white transition-all tracking-widest">ログイン</a>
-        <button id="mobile-menu-btn" class="md:hidden text-charcoalBlack focus:outline-none">
+        <button id="search-btn" class="p-2 text-gray-300 hover:text-gold transition-colors" aria-label="検索">
+          <i class="fa-solid fa-magnifying-glass text-lg"></i>
+        </button>
+        <button onclick="openModal('login-modal')" class="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-200 hover:text-gold transition-colors">
+          ログイン
+        </button>
+        <button onclick="openModal('premium-modal')" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-gold to-[#b3922c] text-charcoal font-bold text-sm shadow-lg hover:opacity-90 transition-all transform hover:-translate-y-0.5">
+          プレミアム会員登録
+        </button>
+        <!-- モバイルメニューボタン -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-300 hover:text-gold">
           <i class="fa-solid fa-bars text-xl"></i>
         </button>
       </div>
     </div>
-    <!-- モバイルメニュー -->
-    <div id="mobile-menu" class="hidden md:hidden bg-antiqueIvory border-b border-sepiaCard px-4 pt-2 pb-4 space-y-2">
-      <a href="#serial" class="block py-2 hover:text-classicBordeaux">連載一覧</a>
-      <a href="#style" class="block py-2 hover:text-classicBordeaux">文豪スタイル</a>
-      <a href="#premium" class="block py-2 hover:text-classicBordeaux">プレミアム</a>
-      <a href="#search" class="block py-2 hover:text-classicBordeaux">検索</a>
+
+    <!-- モバイルメニューパネル -->
+    <div id="mobile-menu" class="hidden md:hidden bg-surface border-b border-white/10 px-4 pt-2 pb-6 space-y-4">
+      <a href="#works" class="block py-2 text-base hover:text-gold transition-colors">作品一覧</a>
+      <a href="#features" class="block py-2 text-base hover:text-gold transition-colors">特集</a>
+      <a href="#crowdfunding" class="block py-2 text-base hover:text-gold transition-colors">クラウドファンディング</a>
+      <a href="#ads" class="block py-2 text-base hover:text-gold transition-colors">広告掲載について</a>
+      <div class="pt-4 border-t border-white/10 flex flex-col space-y-3">
+        <button onclick="openModal('login-modal')" class="w-full py-2 text-center text-sm font-medium text-gray-200 border border-white/20 rounded-md hover:border-gold">
+          ログイン
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- メインビジュアル部 -->
-  <section class="relative overflow-hidden py-24 sm:py-32 border-b border-sepiaCard">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-      <p class="text-xs sm:text-sm tracking-[0.2em] text-classicBordeaux mb-4 uppercase">Retro Web Novel Site</p>
-      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-widest mb-6 font-mincho leading-relaxed">
-        1900年代の文豪スタイルで描かれる<br class="hidden sm:inline">レトロWeb小説サイト
+  <!-- メインビジュアルエリア -->
+  <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-charcoal via-[#1a1614] to-charcoal py-20 px-4">
+    <!-- 背景装飾 (耽美な書斎・インク壺の雰囲気を抽象化) -->
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold via-transparent to-transparent pointer-events-none"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-crimson/20 border border-crimson/40 text-gold-light text-xs sm:text-sm tracking-widest uppercase font-serif">
+        <i class="fa-solid fa-feather-pointed"></i>
+        <span>超大作小説プラットフォーム</span>
+      </div>
+      
+      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+        1900年代の文豪たちの名作を<br class="hidden sm:inline">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-amber-200">
+          現代のWebブラウザで耽美に味わう
+        </span>
       </h1>
-      <p class="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto mb-10 leading-loose tracking-wider">
-        当時の活版印刷風UIと、1900年代の筆致を再現した小説の連載配信。ノスタルジックな世界観に浸りながら上質な読書体験をお届けします。
+
+      <p class="max-w-2xl mx-auto text-gray-300 text-sm sm:text-base lg:text-lg font-light leading-relaxed">
+        現代の忙しい日常から離れ、1900年代の重厚な文学世界に深く没入して読書体験を楽しむことができます。時を超えた重厚長編の世界へようこそ。
       </p>
-      <div>
-        <a href="#serial" class="inline-block bg-charcoalBlack text-antiqueIvory px-8 py-4 rounded-none shadow-lg hover:bg-classicBordeaux transition-all tracking-widest text-sm sm:text-base font-serif">
-          [ 今すぐノスタルジックな読書を始める ]
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <a href="#works" class="w-full sm:w-auto px-8.5 py-4 rounded-full bg-gradient-to-r from-gold to-[#c59b27] text-charcoal font-bold text-base shadow-xl hover:shadow-gold/20 hover:scale-105 transition-all text-center">
+          今すぐ没入読書を始める <i class="fa-solid fa-arrow-right ml-2"></i>
+        </a>
+        <a href="#features" class="w-full sm:w-auto px-8.5 py-4 rounded-full bg-surface border border-white/20 text-gray-200 font-medium text-base hover:border-gold hover:text-gold transition-all text-center">
+          特集を見る
         </a>
       </div>
     </div>
   </section>
 
-  <!-- コンテンツセクション: 本日の回廊(新着連載) -->
-  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24 w-full">
-    <section id="serial">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 border-b border-sepiaCard pb-4">
-        <div>
-          <p class="text-xs tracking-widest text-classicBordeaux uppercase mb-1">New Serials</p>
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-wider font-mincho">本日の回廊(新着連載)</h2>
-        </div>
-        <a href="#" class="text-xs tracking-widest mt-2 sm:mt-0 hover:text-classicBordeaux transition-colors flex items-center gap-1">すべての連載を見る <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
+  <!-- コンテンツエリア (作品セクション) -->
+  <section id="works" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-white/10 pb-6">
+      <div>
+        <span class="text-gold text-xs tracking-widest uppercase font-serif">Collection</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mt-1">重厚長編・超大作小説</h2>
       </div>
-
-      <!-- セピア調カード型リスト -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- カード1 -->
-        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
-              <span>第十四回</span>
-              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">近代ロマン</span>
-            </div>
-            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">黄昏のガス灯と影法師</h3>
-            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
-              石畳の街路に微かに響く馬車の蹄の音。霧の深まる夜、私はふと見知らぬ紳士とすれ違った......。
-            </p>
-          </div>
-          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
-            <span class="text-xs text-gray-500 font-serif">著者:夏目 漱石風</span>
-            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
-          </div>
-        </div>
-
-        <!-- カード2 -->
-        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
-              <span>第八回</span>
-              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">探偵奇譚</span>
-            </div>
-            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">月夜の密室事件</h3>
-            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
-              鍵の掛かった書斎の窓辺に、奇妙な足跡だけが残されていた。名探偵が静かにパイプを燻らせる。
-            </p>
-          </div>
-          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
-            <span class="text-xs text-gray-500 font-serif">著者:江戸川 乱歩風</span>
-            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
-          </div>
-        </div>
-
-        <!-- カード3 -->
-        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
-              <span>第三回</span>
-              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">抒情詩</span>
-            </div>
-            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">赤い薔薇の散る庭</h3>
-            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
-              庭の隅にひっそりと咲く薔薇の花びらが、秋の冷たい風に吹かれて舞い散る午後。
-            </p>
-          </div>
-          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
-            <span class="text-xs text-gray-500 font-serif">著者:中原 中也風</span>
-            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- プレミアム会員限定プラン -->
-    <section id="premium" class="bg-antiqueIvory border border-sepiaCard p-8 sm:p-12 relative overflow-hidden shadow-sm">
-      <div class="max-w-3xl mx-auto text-center relative z-10">
-        <p class="text-xs tracking-[0.2em] text-classicBordeaux uppercase mb-2">Premium Plan</p>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-wider mb-6 font-mincho">プレミアム会員限定プラン</h2>
-        <p class="text-sm text-gray-700 leading-relaxed mb-8">
-          限定読書プランでは、一般未公開の秘蔵小説や、文豪たちの直筆原稿風デジタルアーカイブ、専用の活版印刷フォントによる没入型ビューアをご利用いただけます。
-        </p>
-        <div class="inline-block bg-sepiaCard p-6 border border-[#d9cebc] mb-8 text-left w-full sm:w-auto">
-          <ul class="space-y-3 text-xs sm:text-sm tracking-wider">
-            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> すべての限定連載小説が読み放題</li>
-            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> 紙の質感を選べるカスタムビューア</li>
-            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> 文庫化クラウドファンディングの優先参加権</li>
-          </ul>
-        </div>
-        <div>
-          <a href="#" class="inline-block bg-classicBordeaux text-white px-8 py-3 text-sm tracking-widest hover:bg-opacity-90 transition-all font-serif">
-            プレミアム会員に登録する
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 文庫化クラウドファンディング支援受付中バナー -->
-    <section class="bg-charcoalBlack text-antiqueIvory p-8 sm:p-12 shadow-md relative overflow-hidden">
-      <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-        <div class="space-y-3 text-center md:text-left">
-          <span class="bg-classicBordeaux text-white text-[10px] tracking-widest px-2.5 py-1 uppercase font-serif">Crowdfunding</span>
-          <h2 class="text-xl sm:text-2xl font-bold font-mincho tracking-wider">文庫化クラウドファンディング支援受付中</h2>
-          <p class="text-xs sm:text-sm text-gray-300 tracking-wider">
-            皆様のご支援により、本サイトの人気連載を本格的な「装丁付き実物文庫本」として刊行いたします。特製しおり付き。
-          </p>
-        </div>
-        <div class="flex-shrink-0">
-          <a href="#" class="inline-block bg-antiqueIvory text-charcoalBlack px-6 py-3 text-xs sm:text-sm tracking-widest hover:bg-sepiaCard transition-all font-serif font-bold">
-            プロジェクト詳細を見る
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- フッター部 -->
-  <footer class="bg-antiqueIvory border-t border-sepiaCard py-12 text-xs text-gray-600">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="text-center md:text-left">
-        <p class="text-sm font-bold tracking-widest text-charcoalBlack font-mincho mb-2">1900年代文学回廊</p>
-        <p class="tracking-wider">ノスタルジックな世界観に浸りながら上質な読書体験を。</p>
-      </div>
-      <div class="flex flex-wrap justify-center gap-6 tracking-wider">
-        <a href="#" class="hover:text-classicBordeaux transition-colors">運営情報</a>
-        <a href="#" class="hover:text-classicBordeaux transition-colors">利用規約</a>
-        <a href="#" class="hover:text-classicBordeaux transition-colors">プライバシーポリシー</a>
-        <a href="#" class="hover:text-classicBordeaux transition-colors">お問い合わせ</a>
-      </div>
-      <div class="flex space-x-4 text-base">
-        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
-        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-discord"></i></a>
+      <div class="mt-4 md:mt-0 flex space-x-2 overflow-x-auto pb-2 md:pb-0 text-sm">
+        <button class="px-4 py-1.5 rounded-full bg-gold text-charcoal font-medium whitespace-nowrap">すべて</button>
+        <button class="px-4 py-1.5 rounded-full bg-surface text-gray-300 hover:text-gold transition-colors whitespace-nowrap">明治・大正</button>
+        <button class="px-4 py-1.5 rounded-full bg-surface text-gray-300 hover:text-gold transition-colors whitespace-nowrap">耽美主義</button>
+        <button class="px-4 py-1.5 rounded-full bg-surface text-gray-300 hover:text-gold transition-colors whitespace-nowrap">海外翻訳・翻案</button>
       </div>
     </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8 pt-8 border-t border-sepiaCard/50 text-[10px] tracking-widest text-gray-500">
-      &copy; 1900年代文学回廊 All Rights Reserved.
+
+    <!-- 作品カードグリッド -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- カード 1 -->
+      <article class="group bg-surface rounded-xl overflow-hidden border border-white/10 hover:border-gold/50 transition-all duration-300 shadow-xl flex flex-col justify-between">
+        <div>
+          <!-- 書籍の表紙風デザイン -->
+          <div class="relative h-64 bg-gradient-to-br from-[#2a1b18] via-[#1f1614] to-[#121212] p-8 flex flex-col justify-between overflow-hidden border-b border-white/10">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-crimson/10 rounded-full blur-2xl group-hover:bg-crimson/20 transition-all"></div>
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-serif tracking-widest text-gold uppercase px-2.5 py-1 rounded bg-charcoal/60 border border-gold/30">長編大作</span>
+              <span class="text-xs text-gray-400">全四巻</span>
+            </div>
+            <div class="space-y-2 z-10">
+              <h3 class="font-serif text-2xl font-bold text-white group-hover:text-gold transition-colors">黄昏の迷宮録</h3>
+              <p class="text-xs text-crimson font-serif tracking-wider">著者:夏目 漱石 (模写)</p>
+            </div>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-sm text-gray-300 leading-relaxed font-light">
+              1900年代の帝都を舞台に、人間の深層心理と移りゆく季節の美しさを緻密な筆致で描き出した、世紀を超えて愛されるべき心理描写の極北。
+            </p>
+          </div>
+        </div>
+        <div class="p-6 pt-0">
+          <button onclick="openReaderModal('黄昏の迷宮録')" class="w-full py-3 rounded-lg bg-white/5 hover:bg-gold hover:text-charcoal border border-white/10 hover:border-gold font-medium text-sm transition-all flex items-center justify-center space-x-2">
+            <span>続きを読む</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </article>
+
+      <!-- カード 2 -->
+      <article class="group bg-surface rounded-xl overflow-hidden border border-white/10 hover:border-gold/50 transition-all duration-300 shadow-xl flex flex-col justify-between">
+        <div>
+          <div class="relative h-64 bg-gradient-to-br from-[#1b222a] via-[#141a20] to-[#121212] p-8 flex flex-col justify-between overflow-hidden border-b border-white/10">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-gold/10 rounded-full blur-2xl group-hover:bg-gold/20 transition-all"></div>
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-serif tracking-widest text-gold uppercase px-2.5 py-1 rounded bg-charcoal/60 border border-gold/30">耽美主義</span>
+              <span class="text-xs text-gray-400">全二巻</span>
+            </div>
+            <div class="space-y-2 z-10">
+              <h3 class="font-serif text-2xl font-bold text-white group-hover:text-gold transition-colors">月下の一群の詩学</h3>
+              <p class="text-xs text-gold-light font-serif tracking-wider">著者:永井 荷風 (模写)</p>
+            </div>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-sm text-gray-300 leading-relaxed font-light">
+              フランス象徴主義の香気をまとった退廃的かつ官能的な世界観。異国の街路と日本の哀愁が融合した、至高の散文詩的ドラマ。
+            </p>
+          </div>
+        </div>
+        <div class="p-6 pt-0">
+          <button onclick="openReaderModal('月下の一群の詩学')" class="w-full py-3 rounded-lg bg-white/5 hover:bg-gold hover:text-charcoal border border-white/10 hover:border-gold font-medium text-sm transition-all flex items-center justify-center space-x-2">
+            <span>続きを読む</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </article>
+
+      <!-- カード 3 -->
+      <article class="group bg-surface rounded-xl overflow-hidden border border-white/10 hover:border-gold/50 transition-all duration-300 shadow-xl flex flex-col justify-between">
+        <div>
+          <div class="relative h-64 bg-gradient-to-br from-[#2a1b24] via-[#1c141a] to-[#121212] p-8 flex flex-col justify-between overflow-hidden border-b border-white/10">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-crimson/15 rounded-full blur-2xl group-hover:bg-crimson/25 transition-all"></div>
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-serif tracking-widest text-gold uppercase px-2.5 py-1 rounded bg-charcoal/60 border border-gold/30">超大作・完結</span>
+              <span class="text-xs text-gray-400">全六巻</span>
+            </div>
+            <div class="space-y-2 z-10">
+              <h3 class="font-serif text-2xl font-bold text-white group-hover:text-gold transition-colors">黒衣の貴婦人と鏡</h3>
+              <p class="text-xs text-crimson font-serif tracking-wider">著者:泉 鏡花 (模写)</p>
+            </div>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-sm text-gray-300 leading-relaxed font-light">
+              現実と幻想の境界線が曖昧になる夜、妖しくも美しい怪異と人間の情愛が織りなす、スペクタクルなロマンティシズムの最高峰。
+            </p>
+          </div>
+        </div>
+        <div class="p-6 pt-0">
+          <button onclick="openReaderModal('黒衣の貴婦人と鏡')" class="w-full py-3 rounded-lg bg-white/5 hover:bg-gold hover:text-charcoal border border-white/10 hover:border-gold font-medium text-sm transition-all flex items-center justify-center space-x-2">
+            <span>続きを読む</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 特集・クラウドファンディング・広告掲載セクション -->
+  <section id="features" class="py-20 bg-surface/50 border-y border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6">
+        <span class="text-gold text-xs tracking-widest uppercase font-serif">Special Feature</span>
+        <h2 class="font-serif text-3xl font-bold text-white">当時の世界観を再現したWeb空間</h2>
+        <p class="text-gray-300 leading-relaxed font-light">
+          当サイトでは、1900年代の書斎やインク壺、アンティークの質感をモチーフにした独自のUIデザインを採用しています。現代のディスプレイ上でありながら、かつての文豪たちが愛した空気感を体験いただけます。
+        </p>
+        <ul class="space-y-3 text-sm text-gray-300">
+          <li class="flex items-center space-x-3">
+            <i class="fa-solid fa-check text-gold"></i>
+            <span>ディープチャコールとアンティークゴールド基調の耽美な配色</span>
+          </li>
+          <li class="flex items-center space-x-3">
+            <i class="fa-solid fa-check text-gold"></i>
+            <span>伝統的な美しさを感じる明朝体と洗練されたモダンフォントの融合</span>
+          </li>
+          <li class="flex items-center space-x-3">
+            <i class="fa-solid fa-check text-gold"></i>
+            <span>プレミアム会員限定の書き下ろし外伝や特別エッセイの閲覧</span>
+          </li>
+        </ul>
+      </div>
+      <div id="crowdfunding" class="bg-charcoal p-8 rounded-2xl border border-gold/30 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+        <span class="text-xs font-serif tracking-widest text-gold uppercase px-2.5 py-1 rounded bg-gold/10 border border-gold/30 inline-block mb-4">Cloud Funding</span>
+        <h3 class="font-serif text-2xl font-bold text-white mb-3">愛蔵版・書籍化プロジェクト</h3>
+        <p class="text-sm text-gray-300 mb-6 leading-relaxed">
+          Web連載で大きな反響を呼んだ超大作群を、特製函入り・箔押し仕様の愛蔵版書籍として物理的なかたちに残すクラウドファンディングを実施いたします。
+        </p>
+        <div class="space-y-2 mb-6">
+          <div class="flex justify-between text-xs text-gray-400">
+            <span>達成率 340%</span>
+            <span>目標金額 5,000,000円</span>
+          </div>
+          <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-gold to-amber-200 h-full w-[85%]"></div>
+          </div>
+        </div>
+        <button onclick="openModal('cf-modal')" class="w-full py-3 rounded-lg bg-gold text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+          プロジェクト詳細を見る
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 広告掲載・マネタイズ案内セクション -->
+  <section id="ads" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <span class="text-gold text-xs tracking-widest uppercase font-serif">Partnership</span>
+    <h2 class="font-serif text-3xl font-bold text-white mt-2 mb-4">文芸広告の掲載について</h2>
+    <p class="max-w-2xl mx-auto text-gray-300 text-sm sm:text-base font-light mb-8">
+      「1900年代文学集成Web」では、文学やアート、上質なライフスタイルに特化したプレミアムな文芸広告の掲載パートナーを募集しております。読者層に深くアプローチする広告枠をご用意しております。
+    </p>
+    <button onclick="openModal('ad-modal')" class="px-8 py-3 rounded-full bg-surface border border-white/20 text-gray-200 hover:border-gold hover:text-gold text-sm font-medium transition-all">
+      媒体資料・広告出稿のお問い合わせ
+    </button>
+  </section>
+
+  <!-- フッターエリア -->
+  <footer class="bg-surface border-t border-white/10 pt-16 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      <div class="space-y-4 md:col-span-1">
+        <h3 class="font-serif text-lg font-bold text-gold">1900年代文学集成Web</h3>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          1900年代の文豪たちの名作を現代のWebブラウザで耽美に味わう超大作小説プラットフォーム。
+        </p>
+      </div>
+      <div>
+        <h4 class="text-xs font-serif uppercase tracking-widest text-gold mb-4">サイトマップ</h4>
+        <ul class="space-y-2 text-sm text-gray-300">
+          <li><a href="#works" class="hover:text-gold transition-colors">作品一覧</a></li>
+          <li><a href="#features" class="hover:text-gold transition-colors">特集企画</a></li>
+          <li><a href="#crowdfunding" class="hover:text-gold transition-colors">書籍化クラウドファンディング</a></li>
+          <li><a href="#ads" class="hover:text-gold transition-colors">広告掲載について</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs font-serif uppercase tracking-widest text-gold mb-4">プレミアム会員</h4>
+        <ul class="space-y-2 text-sm text-gray-300">
+          <li><button onclick="openModal('premium-modal')" class="hover:text-gold transition-colors text-left">プレミアム会員特典</button></li>
+          <li><button onclick="openModal('login-modal')" class="hover:text-gold transition-colors text-left">会員ログイン</button></li>
+          <li><a href="#" class="hover:text-gold transition-colors">限定外伝の閲覧</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs font-serif uppercase tracking-widest text-gold mb-4">公式SNS</h4>
+        <div class="flex space-x-4 text-lg">
+          <a href="#" class="text-gray-400 hover:text-gold transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="text-gray-400 hover:text-gold transition-colors"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="text-gray-400 hover:text-gold transition-colors"><i class="fa-brands fa-discord"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-white/5 text-center text-xs text-gray-500">
+      &copy; 2026 1900年代文学集成Web All Rights Reserved. Produced by LEGRA.
     </div>
   </footer>
 
-  <!-- JavaScriptの記述 -->
+  <!-- 汎用モーダル -->
+  <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="modal-content" class="bg-surface border border-gold/30 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl relative transform scale-95 transition-transform duration-300">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gold">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <div id="modal-body" class="space-y-6">
+        <!-- 動的挿入 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScriptによるインタラクション制御 -->
   <script>
     // モバイルメニューのトグル
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -237,22 +366,145 @@
       mobileMenu.classList.toggle('hidden');
     });
 
-    // スムーズスクロール
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const targetId = this.getAttribute('href');
-        if (targetId === '#') return;
-        e.preventDefault();
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'smooth'
-          });
-          if (!mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.add('hidden');
-          }
-        }
-      });
+    // モダル制御
+    const modalContainer = document.getElementById('modal-container');
+    const modalContent = document.getElementById('modal-content');
+    const modalBody = document.getElementById('modal-body');
+
+    function openModal(type) {
+      let contentHtml = '';
+      if (type === 'login-modal') {
+        contentHtml = `
+          <h3 class="font-serif text-2xl font-bold text-gold mb-2">ログイン</h3>
+          <p class="text-xs text-gray-400">ご登録のメールアドレスでログインしてください。</p>
+          <div class="space-y-4 pt-2">
+            <div>
+              <label class="block text-xs font-medium text-gray-300 mb-1">メールアドレス</label>
+              <input type="email" placeholder="example@legra.info" class="w-full bg-charcoal border border-white/20 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-gold">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-300 mb-1">パスワード</label>
+              <input type="password" placeholder="••••••••" class="w-full bg-charcoal border border-white/20 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-gold">
+            </div>
+            <button onclick="alert('ログイン処理のモックです'); closeModal();" class="w-full py-3 rounded-lg bg-gold text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+              ログインする
+            </button>
+          </div>
+        `;
+      } else if (type === 'premium-modal') {
+        contentHtml = `
+          <h3 class="font-serif text-2xl font-bold text-gold mb-2">プレミアム会員のご案内</h3>
+          <p class="text-xs text-gray-400">月額500円で全ての限定外伝や特別エッセイが読み放題になります。</p>
+          <div class="space-y-3 pt-2 text-sm text-gray-300">
+            <div class="flex items-center space-x-2"><i class="fa-solid fa-check text-gold"></i><span>限定外伝タイトルの無制限閲覧</span></div>
+            <div class="flex items-center space-x-2"><i class="fa-solid fa-check text-gold"></i><span>文豪たちの書簡・未公開草稿の特別公開</span></div>
+            <div class="flex items-center space-x-2"><i class="fa-solid fa-check text-gold"></i><span>クラウドファンディングの優先優待枠</span></div>
+          </div>
+          <button onclick="alert('プレミアム会員登録のモックです'); closeModal();" class="w-full mt-4 py-3 rounded-lg bg-gradient-to-r from-gold to-[#b3922c] text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+            プレミアム会員になる (月額500円)
+          </button>
+        `;
+      } else if (type === 'cf-modal') {
+        contentHtml = `
+          <h3 class="font-serif text-2xl font-bold text-gold mb-2">愛蔵版・書籍化プロジェクト</h3>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            皆様のご支援により、1900年代文学集成のハードカバー愛蔵版制作が決定いたしました。現在、特製函および箔押し装丁の詳細なデザインを進行中です。
+          </p>
+          <div class="bg-charcoal p-4 rounded-lg border border-white/10 text-xs text-gray-400 space-y-1">
+            <p>支援受付期間:2026年10月31日まで</p>
+            <p>お届け予定:2027年春頃</p>
+          </div>
+          <button onclick="alert('支援受付ページのモックです'); closeModal();" class="w-full py-3 rounded-lg bg-gold text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+            支援プラン一覧へ進む
+          </button>
+        `;
+      } else if (type === 'ad-modal') {
+        contentHtml = `
+          <h3 class="font-serif text-2xl font-bold text-gold mb-2">広告掲載・パートナーシップ</h3>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            当プラットフォームでは、文学・カルチャー・高級嗜好品に関するブランド様の広告出稿を承っております。媒体資料をご希望の方はお問い合わせください。
+          </p>
+          <div class="space-y-4 pt-2">
+            <div>
+              <label class="block text-xs font-medium text-gray-300 mb-1">貴社名 / ご担当者様名</label>
+              <input type="text" placeholder="LEGRA 太郎" class="w-full bg-charcoal border border-white/20 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-gold">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-300 mb-1">メールアドレス</label>
+              <input type="email" placeholder="example@legra.info" class="w-full bg-charcoal border border-white/20 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-gold">
+            </div>
+            <button onclick="alert('お問い合わせを受け付けました'); closeModal();" class="w-full py-3 rounded-lg bg-surface border border-gold text-gold font-bold text-sm hover:bg-gold hover:text-charcoal transition-all">
+              媒体資料を請求する
+            </button>
+          </div>
+        `;
+      }
+
+      modalBody.innerHTML = contentHtml;
+      modalContainer.classList.remove('hidden');
+      setTimeout(() => {
+        modalContainer.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+      }, 10);
+    }
+
+    function openReaderModal(title) {
+      modalBody.innerHTML = `
+        <span class="text-xs font-serif tracking-widest text-gold uppercase px-2 py-0.5 rounded bg-charcoal border border-gold/30">没入読書モード</span>
+        <h3 class="font-serif text-2xl font-bold text-white mt-2">${title}</h3>
+        <div class="py-6 border-y border-white/10 my-4 max-h-[50vh] overflow-y-auto space-y-4 text-sm leading-loose font-serif text-gray-200">
+          <p>夜の帳が帝都の空を深く染め上げる頃、街灯のガス灯が淡い黄金色の光を投げかけていた。時は1900年代――文明の足音が静かに響き渡る中、人々はそれぞれの物語を胸に抱いて暮らしている。</p>
+          <p>「この静寂こそが、我々にとっての最も贅沢な時間なのだ」</p>
+          <p>主人公はペンをとり、インク壺の微かな薫りを感じながら、とめどなく溢れる思考を白い紙面へと滑らせていく。現代の喧騒を忘れ、物語の深淵へと意識が溶けていくような、耽美で重厚な時間がそこには流れていた......。</p>
+          <p class="text-center text-gold text-xs tracking-widest pt-4">- 第 一 章 完 -</p>
+        </div>
+        <button onclick="closeModal()" class="w-full py-3 rounded-lg bg-gold text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+          読書を終了する
+        </button>
+      `;
+      modalContainer.classList.remove('hidden');
+      setTimeout(() => {
+        modalContainer.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      modalContainer.classList.add('opacity-0');
+      modalContent.classList.remove('scale-100');
+      modalContent.classList.add('scale-95');
+      setTimeout(() => {
+        modalContainer.classList.add('hidden');
+      }, 300);
+    }
+
+    modalContainer.addEventListener('click', (e) => {
+      if (e.target === modalContainer) {
+        closeModal();
+      }
+    });
+
+    // 検索ボタンクリック時のモック動作
+    document.getElementById('search-btn').addEventListener('click', () => {
+      modalBody.innerHTML = `
+        <h3 class="font-serif text-2xl font-bold text-gold mb-2">作品検索</h3>
+        <p class="text-xs text-gray-400 mb-4">キーワードや著者名から作品を検索できます。</p>
+        <div class="relative">
+          <input type="text" placeholder="夏目漱石、黄昏、耽美..." class="w-full bg-charcoal border border-white/20 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-gold">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400"></i>
+        </div>
+        <button onclick="alert('検索を実行しました'); closeModal();" class="w-full mt-4 py-3 rounded-lg bg-gold text-charcoal font-bold text-sm hover:opacity-90 transition-opacity">
+          検索する
+        </button>
+      `;
+      modalContainer.classList.remove('hidden');
+      setTimeout(() => {
+        modalContainer.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+      }, 10);
     });
   </script>
 </body>
