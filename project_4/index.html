@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja" class="scroll-smooth">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1900年代文学オマージュWebサイト | クラシック調の読書体験</title>
+  <title>1900年代文学回廊</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -11,328 +11,249 @@
       theme: {
         extend: {
           colors: {
-            ivory: '#F4F1EA',
-            ink: '#1A1A1A',
-            burgundy: '#4A0E17',
+            sepiaBase: '#f4f0ea',
+            sepiaCard: '#eae3d5',
+            charcoalBlack: '#222222',
+            classicBordeaux: '#6b2d3c',
+            antiqueIvory: '#f9f6f0',
           },
           fontFamily: {
-            serif: ['"Playfair Display"', '"Lora"', 'serif'],
+            mincho: ['"Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS PMincho", serif'],
+            serif: ['Georgia', 'serif'],
           }
         }
       }
     }
   </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
-  <link href="[link removed]" rel="stylesheet">
-  <!-- FontAwesome -->
+  <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="[link removed]">
   <style>
     body {
-      background-color: #F4F1EA;
-      color: #1A1A1A;
-      font-family: 'Lora', serif;
+      background-color: #f4f0ea;
+      color: #222222;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS PMincho", serif;
     }
-    .font-classic {
-      font-family: 'Playfair Display', serif;
+    .vertical-text {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
     }
-    /* パターン背景や微調整用 */
-    .parchment-border {
-      border: 1px solid rgba(74, 14, 23, 0.2);
+    .letterpress-bg {
+      background-color: #f4f0ea;
+      background-image: radial-gradient(#dcd5c5 1px, transparent 1px);
+      background-size: 20px 20px;
     }
   </style>
 </head>
-<body class="bg-ivory text-ink flex flex-col min-h-screen selection:bg-burgundy selection:text-ivory">
+<body class="letterpress-bg min-h-screen flex flex-col selection:bg-classicBordeaux selection:text-white">
 
-  <!-- ヘッダーエリア -->
-  <header class="sticky top-0 z-50 bg-ivory/90 backdrop-blur-md border-b border-burgundy/10">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-feather-pointed text-burgundy text-2xl"></i>
-        <span class="font-classic text-xl md:text-2xl font-bold tracking-wider text-ink">1900's Literary</span>
+  <!-- ヘッダー部 -->
+  <header class="sticky top-0 z-50 bg-antiqueIvory/90 backdrop-blur-md border-b border-sepiaCard shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="#" class="text-2xl font-bold tracking-widest text-charcoalBlack font-mincho">1900年代文学回廊</a>
       </div>
-      <nav class="hidden md:flex items-center gap-8 font-classic text-sm tracking-widest">
-        <a href="#home" class="hover:text-burgundy transition-colors">ホーム</a>
-        <a href="#works" class="hover:text-burgundy transition-colors">作品一覧</a>
-        <a href="#features" class="hover:text-burgundy transition-colors">特集</a>
-        <button onclick="shareWebsite()" class="hover:text-burgundy transition-colors flex items-center gap-1.5">
-          <i class="fa-solid fa-share-nodes"></i> シェア
-        </button>
+      <nav class="hidden md:flex items-center space-x-8 text-sm tracking-wider">
+        <a href="#serial" class="hover:text-classicBordeaux transition-colors">連載一覧</a>
+        <a href="#style" class="hover:text-classicBordeaux transition-colors">文豪スタイル</a>
+        <a href="#premium" class="hover:text-classicBordeaux transition-colors">プレミアム</a>
+        <a href="#search" class="hover:text-classicBordeaux transition-colors flex items-center gap-1"><i class="fa-solid fa-magnifying-glass"></i> 検索</a>
       </nav>
-      <button id="mobile-menu-btn" class="md:hidden text-ink text-xl focus:outline-none">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+      <div class="flex items-center space-x-4">
+        <a href="#premium" class="hidden sm:inline-block px-4 py-2 text-xs border border-classicBordeaux text-classicBordeaux rounded hover:bg-classicBordeaux hover:text-white transition-all tracking-widest">ログイン</a>
+        <button id="mobile-menu-btn" class="md:hidden text-charcoalBlack focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
     </div>
     <!-- モバイルメニュー -->
-    <div id="mobile-menu" class="hidden md:hidden bg-ivory border-b border-burgundy/10 px-6 py-4 flex flex-col gap-4 font-classic text-sm">
-      <a href="#home" class="hover:text-burgundy transition-colors">ホーム</a>
-      <a href="#works" class="hover:text-burgundy transition-colors">作品一覧</a>
-      <a href="#features" class="hover:text-burgundy transition-colors">特集</a>
-      <button onclick="shareWebsite()" class="text-left hover:text-burgundy transition-colors flex items-center gap-1.5">
-        <i class="fa-solid fa-share-nodes"></i> シェア
-      </button>
+    <div id="mobile-menu" class="hidden md:hidden bg-antiqueIvory border-b border-sepiaCard px-4 pt-2 pb-4 space-y-2">
+      <a href="#serial" class="block py-2 hover:text-classicBordeaux">連載一覧</a>
+      <a href="#style" class="block py-2 hover:text-classicBordeaux">文豪スタイル</a>
+      <a href="#premium" class="block py-2 hover:text-classicBordeaux">プレミアム</a>
+      <a href="#search" class="block py-2 hover:text-classicBordeaux">検索</a>
     </div>
   </header>
 
-  <main class="flex-grow">
-    <!-- メインビジュアルエリア -->
-    <section id="home" class="relative py-20 md:py-32 px-6 flex flex-col items-center justify-center text-center overflow-hidden border-b border-burgundy/10">
-      <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#4A0E17_1px,transparent_1px)] [background-size:16px_16px]"></div>
-      <div class="max-w-4xl mx-auto space-y-8 relative z-10">
-        <span class="inline-block px-4 py-1.5 rounded-full border border-burgundy/30 text-burgundy text-xs font-classic tracking-widest uppercase bg-burgundy/5">
-          Classic Literature Experience
-        </span>
-        <h1 class="font-classic text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight text-ink">
-          古き良き1900年代の<br class="hidden sm:inline">文学世界に浸る
-        </h1>
-        <p class="max-w-2xl mx-auto text-base md:text-lg text-ink/80 leading-relaxed font-light">
-          レトロなタイポグラフィと洗練されたデザイン。名作小説の世界観を再現したWebサイトとオリジナル小説で、至高のクラシック調読書体験をお届けします。
-        </p>
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <a href="#works" class="w-full sm:w-auto px-8 py-4 bg-burgundy text-ivory rounded-none font-classic tracking-widest text-sm hover:bg-burgundy/90 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-            <i class="fa-solid fa-book-open"></i> クラシック調の読書体験を始める
-          </a>
-          <button onclick="shareWebsite()" class="w-full sm:w-auto px-8 py-4 border border-burgundy/40 text-burgundy hover:bg-burgundy/5 rounded-none font-classic tracking-widest text-sm transition-all flex items-center justify-center gap-2">
-            <i class="fa-solid fa-share-nodes"></i> エピソードをSNSでシェア
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 広告エリア(上部バナー) -->
-    <div class="max-w-5xl mx-auto px-6 py-8">
-      <div class="w-full bg-stone-200/60 border border-stone-300/60 p-4 text-center text-xs text-stone-500 font-classic tracking-widest flex items-center justify-center gap-2">
-        <i class="fa-solid fa-rectangle-ad text-stone-400"></i> Sponsored Advertisement
+  <!-- メインビジュアル部 -->
+  <section class="relative overflow-hidden py-24 sm:py-32 border-b border-sepiaCard">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <p class="text-xs sm:text-sm tracking-[0.2em] text-classicBordeaux mb-4 uppercase">Retro Web Novel Site</p>
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-widest mb-6 font-mincho leading-relaxed">
+        1900年代の文豪スタイルで描かれる<br class="hidden sm:inline">レトロWeb小説サイト
+      </h1>
+      <p class="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto mb-10 leading-loose tracking-wider">
+        当時の活版印刷風UIと、1900年代の筆致を再現した小説の連載配信。ノスタルジックな世界観に浸りながら上質な読書体験をお届けします。
+      </p>
+      <div>
+        <a href="#serial" class="inline-block bg-charcoalBlack text-antiqueIvory px-8 py-4 rounded-none shadow-lg hover:bg-classicBordeaux transition-all tracking-widest text-sm sm:text-base font-serif">
+          [ 今すぐノスタルジックな読書を始める ]
+        </a>
       </div>
     </div>
+  </section>
 
-    <!-- メインコンテンツエリア(小説一覧) -->
-    <section id="works" class="max-w-7xl mx-auto px-6 py-12">
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-burgundy/10 pb-6">
+  <!-- コンテンツセクション: 本日の回廊(新着連載) -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24 w-full">
+    <section id="serial">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 border-b border-sepiaCard pb-4">
         <div>
-          <span class="text-burgundy text-xs font-classic tracking-widest uppercase">Library & Archives</span>
-          <h2 class="font-classic text-3xl md:text-4xl font-bold text-ink mt-1">公開作品・エピソード</h2>
+          <p class="text-xs tracking-widest text-classicBordeaux uppercase mb-1">New Serials</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-wider font-mincho">本日の回廊(新着連載)</h2>
         </div>
-        <p class="text-sm text-ink/70 mt-2 md:mt-0 font-light">1900年代風オマージュ作品とオリジナル小説の一覧</p>
+        <a href="#" class="text-xs tracking-widest mt-2 sm:mt-0 hover:text-classicBordeaux transition-colors flex items-center gap-1">すべての連載を見る <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
       </div>
 
-      <!-- カード型レイアウト一覧 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        
+      <!-- セピア調カード型リスト -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- カード1 -->
-        <article class="bg-white/60 parchment-border p-6 flex flex-col justify-between transition-all hover:shadow-md hover:bg-white/90 group">
+        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between text-xs text-burgundy/80 font-classic tracking-widest mb-3">
-              <span>Novel No. 01</span>
-              <span>1904年 発表</span>
+            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
+              <span>第十四回</span>
+              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">近代ロマン</span>
             </div>
-            <h3 class="font-classic text-xl font-bold text-ink group-hover:text-burgundy transition-colors mb-2">黄昏のガス燈通り</h3>
-            <p class="text-xs text-ink/60 mb-4 font-light">著者:アーサー・L・ペン</p>
-            <p class="text-sm text-ink/80 leading-relaxed line-clamp-3 mb-6 font-light">
-              霧深きロンドンの石畳。微かに揺らぐガス燈の光の向こう側で、紳士は何を想うのか。古き良き世紀末の空気感を纏った短編小説。
+            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">黄昏のガス灯と影法師</h3>
+            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
+              石畳の街路に微かに響く馬車の蹄の音。霧の深まる夜、私はふと見知らぬ紳士とすれ違った......。
             </p>
           </div>
-          <div class="pt-4 border-t border-burgundy/10 flex items-center justify-between">
-            <button onclick="openReader('黄昏のガス燈通り', 'アーサー・L・ペン', '霧深きロンドンの石畳。微かに揺らぐガス燈の光の向こう側で、紳士は何を想うのか。古き良き世紀末の空気感を纏った短編小説。\n\n時計塔の鐘が重く響き渡るころ、私はいつもあの街角へと足を向けてしまう。そこにはかつての面影を残したまま、静かに時を刻む古書店があった。店主は決して多くを語らないが、彼が差し出す一冊の本には、いつも奇妙な物語が隠されていた。')" class="text-xs font-classic tracking-widest text-burgundy hover:underline flex items-center gap-1 font-bold">
-              <i class="fa-solid fa-book-open-reader"><b>続きを読む</b></i>
-            </button>
-            <button onclick="shareWork('黄昏のガス燈通り')" class="text-ink/60 hover:text-burgundy text-sm transition-colors" title="シェア">
-              <i class="fa-solid fa-share-nodes"></i>
-            </button>
+          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
+            <span class="text-xs text-gray-500 font-serif">著者:夏目 漱石風</span>
+            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
           </div>
-        </article>
+        </div>
 
         <!-- カード2 -->
-        <article class="bg-white/60 parchment-border p-6 flex flex-col justify-between transition-all hover:shadow-md hover:bg-white/90 group">
+        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between text-xs text-burgundy/80 font-classic tracking-widest mb-3">
-              <span>Novel No. 02</span>
-              <span>1912年 発表</span>
+            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
+              <span>第八回</span>
+              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">探偵奇譚</span>
             </div>
-            <h3 class="font-classic text-xl font-bold text-ink group-hover:text-burgundy transition-colors mb-2">白亜の館の隠された手紙</h3>
-            <p class="text-xs text-ink/60 mb-4 font-light">著者:エレノア・V・モリス</p>
-            <p class="text-sm text-ink/80 leading-relaxed line-clamp-3 mb-6 font-light">
-              嵐の夜に届いた一通の封筒。そこには差出人不明の古いインクで、奇妙な予言が綴られていた。優雅な貴族社会の裏に隠された秘密。
+            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">月夜の密室事件</h3>
+            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
+              鍵の掛かった書斎の窓辺に、奇妙な足跡だけが残されていた。名探偵が静かにパイプを燻らせる。
             </p>
           </div>
-          <div class="pt-4 border-t border-burgundy/10 flex items-center justify-between">
-            <button onclick="openReader('白亜の館の隠された手紙', 'エレノア・V・モリス', '嵐の夜に届いた一通の封筒。そこには差出人不明の古いインクで、奇妙な予言が綴られていた。優雅な貴族社会の裏に隠された秘密。\n\n暖炉の炎がパチパチと音を立てる部屋で、私は震える手でその羊皮紙を開いた。文字は美しくもどこか焦燥感を帯びており、読む者の心を深い迷宮へと誘うのだった。')" class="text-xs font-classic tracking-widest text-burgundy hover:underline flex items-center gap-1 font-bold">
-              <i class="fa-solid fa-book-open-reader"><b>続きを読む</b></i>
-            </button>
-            <button onclick="shareWork('白亜の館の隠された手紙')" class="text-ink/60 hover:text-burgundy text-sm transition-colors" title="シェア">
-              <i class="fa-solid fa-share-nodes"></i>
-            </button>
+          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
+            <span class="text-xs text-gray-500 font-serif">著者:江戸川 乱歩風</span>
+            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
           </div>
-        </article>
+        </div>
 
         <!-- カード3 -->
-        <article class="bg-white/60 parchment-border p-6 flex flex-col justify-between transition-all hover:shadow-md hover:bg-white/90 group">
+        <div class="bg-sepiaCard border border-[#d9cebc] p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between text-xs text-burgundy/80 font-classic tracking-widest mb-3">
-              <span>Novel No. 03</span>
-              <span>1908年 発表</span>
+            <div class="flex justify-between items-center text-xs text-gray-600 mb-3 tracking-widest">
+              <span>第三回</span>
+              <span class="bg-[#d9cebc] px-2 py-0.5 text-[10px]">抒情詩</span>
             </div>
-            <h3 class="font-classic text-xl font-bold text-ink group-hover:text-burgundy transition-colors mb-2">懐古的汽車の旅路</h3>
-            <p class="text-xs text-ink/60 mb-4 font-light">著者:ジュリアン・クロフォード</p>
-            <p class="text-sm text-ink/80 leading-relaxed line-clamp-3 mb-6 font-light">
-              車窓を流れる牧歌的な風景と、相席となった老紳士が語る忘れ得ぬ遠い日の思い出。ノスタルジーに浸る贅沢な紀行オマージュ小説。
+            <h3 class="text-lg font-bold mb-3 font-mincho leading-snug">赤い薔薇の散る庭</h3>
+            <p class="text-xs text-gray-700 leading-relaxed mb-6 line-clamp-3">
+              庭の隅にひっそりと咲く薔薇の花びらが、秋の冷たい風に吹かれて舞い散る午後。
             </p>
           </div>
-          <div class="pt-4 border-t border-burgundy/10 flex items-center justify-between">
-            <button onclick="openReader('懐古的汽車の旅路', 'ジュリアン・クロフォード', '車窓を流れる牧歌的な風景と、相席となった老紳士が語る忘れ得ぬ遠い日の思い出。ノスタルジーに浸る贅沢な紀行オマージュ小説。\n\n蒸気機関車の心地よい揺れが、旅人の疲れた体を優しく包み込む。遠くに見える丘の上には、昔と変わらない風車がゆっくりと羽を回していた。')" class="text-xs font-classic tracking-widest text-burgundy hover:underline flex items-center gap-1 font-bold">
-              <i class="fa-solid fa-book-open-reader"><b>続きを読む</b></i>
-            </button>
-            <button onclick="shareWork('懐古的汽車の旅路')" class="text-ink/60 hover:text-burgundy text-sm transition-colors" title="シェア">
-              <i class="fa-solid fa-share-nodes"></i>
-            </button>
+          <div class="border-t border-[#d9cebc] pt-4 flex items-center justify-between">
+            <span class="text-xs text-gray-500 font-serif">著者:中原 中也風</span>
+            <a href="#" class="text-xs tracking-wider text-classicBordeaux hover:underline">続きを読む →</a>
           </div>
-        </article>
-
+        </div>
       </div>
     </section>
 
-    <!-- 広告エリア(下部バナー) -->
-    <div class="max-w-5xl mx-auto px-6 py-8">
-      <div class="w-full bg-stone-200/60 border border-stone-300/60 p-4 text-center text-xs text-stone-500 font-classic tracking-widest flex items-center justify-center gap-2">
-        <i class="fa-solid fa-rectangle-ad text-stone-400"></i> Sponsored Advertisement
+    <!-- プレミアム会員限定プラン -->
+    <section id="premium" class="bg-antiqueIvory border border-sepiaCard p-8 sm:p-12 relative overflow-hidden shadow-sm">
+      <div class="max-w-3xl mx-auto text-center relative z-10">
+        <p class="text-xs tracking-[0.2em] text-classicBordeaux uppercase mb-2">Premium Plan</p>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-wider mb-6 font-mincho">プレミアム会員限定プラン</h2>
+        <p class="text-sm text-gray-700 leading-relaxed mb-8">
+          限定読書プランでは、一般未公開の秘蔵小説や、文豪たちの直筆原稿風デジタルアーカイブ、専用の活版印刷フォントによる没入型ビューアをご利用いただけます。
+        </p>
+        <div class="inline-block bg-sepiaCard p-6 border border-[#d9cebc] mb-8 text-left w-full sm:w-auto">
+          <ul class="space-y-3 text-xs sm:text-sm tracking-wider">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> すべての限定連載小説が読み放題</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> 紙の質感を選べるカスタムビューア</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-classicBordeaux"></i> 文庫化クラウドファンディングの優先参加権</li>
+          </ul>
+        </div>
+        <div>
+          <a href="#" class="inline-block bg-classicBordeaux text-white px-8 py-3 text-sm tracking-widest hover:bg-opacity-90 transition-all font-serif">
+            プレミアム会員に登録する
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 文庫化クラウドファンディング支援受付中バナー -->
+    <section class="bg-charcoalBlack text-antiqueIvory p-8 sm:p-12 shadow-md relative overflow-hidden">
+      <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+        <div class="space-y-3 text-center md:text-left">
+          <span class="bg-classicBordeaux text-white text-[10px] tracking-widest px-2.5 py-1 uppercase font-serif">Crowdfunding</span>
+          <h2 class="text-xl sm:text-2xl font-bold font-mincho tracking-wider">文庫化クラウドファンディング支援受付中</h2>
+          <p class="text-xs sm:text-sm text-gray-300 tracking-wider">
+            皆様のご支援により、本サイトの人気連載を本格的な「装丁付き実物文庫本」として刊行いたします。特製しおり付き。
+          </p>
+        </div>
+        <div class="flex-shrink-0">
+          <a href="#" class="inline-block bg-antiqueIvory text-charcoalBlack px-6 py-3 text-xs sm:text-sm tracking-widest hover:bg-sepiaCard transition-all font-serif font-bold">
+            プロジェクト詳細を見る
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- フッターエリア -->
-  <footer class="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-burgundy/20 mt-20">
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-      <div class="space-y-4">
-        <div class="flex items-center gap-3 text-ivory">
-          <i class="fa-solid fa-feather-pointed text-burgundy text-xl"></i>
-          <span class="font-classic text-lg font-bold tracking-wider">1900's Literary</span>
-        </div>
-        <p class="text-xs text-stone-400 leading-relaxed font-light">
-          1900年代の名作小説の世界観を現代に蘇らせる、クラシック調Web読書プラットフォーム。
-        </p>
+  <!-- フッター部 -->
+  <footer class="bg-antiqueIvory border-t border-sepiaCard py-12 text-xs text-gray-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="text-center md:text-left">
+        <p class="text-sm font-bold tracking-widest text-charcoalBlack font-mincho mb-2">1900年代文学回廊</p>
+        <p class="tracking-wider">ノスタルジックな世界観に浸りながら上質な読書体験を。</p>
       </div>
-      <div>
-        <h4 class="font-classic text-ivory text-sm tracking-widest uppercase mb-4">ナビゲーション</h4>
-        <ul class="space-y-2.5 text-xs text-stone-400 font-light">
-          <li><a href="#home" class="hover:text-ivory transition-colors">ホーム</a></li>
-          <li><a href="#works" class="hover:text-ivory transition-colors">作品一覧</a></li>
-          <li><a href="#features" class="hover:text-ivory transition-colors">特集企画</a></li>
-        </ul>
+      <div class="flex flex-wrap justify-center gap-6 tracking-wider">
+        <a href="#" class="hover:text-classicBordeaux transition-colors">運営情報</a>
+        <a href="#" class="hover:text-classicBordeaux transition-colors">利用規約</a>
+        <a href="#" class="hover:text-classicBordeaux transition-colors">プライバシーポリシー</a>
+        <a href="#" class="hover:text-classicBordeaux transition-colors">お問い合わせ</a>
       </div>
-      <div>
-        <h4 class="font-classic text-ivory text-sm tracking-widest uppercase mb-4">法務・ポリシー</h4>
-        <ul class="space-y-2.5 text-xs text-stone-400 font-light">
-          <li><a href="#" class="hover:text-ivory transition-colors">利用規約</a></li>
-          <li><a href="#" class="hover:text-ivory transition-colors">プライバシーポリシー</a></li>
-          <li><a href="#" class="hover:text-ivory transition-colors">運営情報</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-classic text-ivory text-sm tracking-widest uppercase mb-4">ソーシャル</h4>
-        <div class="flex items-center gap-4 text-stone-400">
-          <a href="#" class="hover:text-ivory text-lg transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#" class="hover:text-ivory text-lg transition-colors"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#" class="hover:text-ivory text-lg transition-colors"><i class="fa-brands fa-facebook"></i></a>
-        </div>
+      <div class="flex space-x-4 text-base">
+        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="hover:text-classicBordeaux transition-colors"><i class="fa-brands fa-discord"></i></a>
       </div>
     </div>
-    <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-stone-800 text-center text-xs text-stone-500 font-light">
-      &copy; 1900年代文学オマージュWebサイト All Rights Reserved.
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8 pt-8 border-t border-sepiaCard/50 text-[10px] tracking-widest text-gray-500">
+      &copy; 1900年代文学回廊 All Rights Reserved.
     </div>
   </footer>
 
-  <!-- 読書モーダル -->
-  <div id="reader-modal" class="fixed inset-0 z-50 bg-ink/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-ivory parchment-border max-w-2xl w-full p-8 md:p-12 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-      <button onclick="closeReader()" class="absolute top-6 right-6 text-ink/60 hover:text-burgundy text-xl">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div id="modal-content" class="space-y-6">
-        <!-- JSで動的挿入 -->
-      </div>
-      <div class="mt-8 pt-6 border-t border-burgundy/10 flex justify-between items-center">
-        <button onclick="closeReader()" class="px-6 py-2 bg-burgundy/10 text-burgundy font-classic text-xs tracking-widest hover:bg-burgundy/20 transition-colors">
-          閉じる
-        </button>
-        <button onclick="shareCurrentStory()" class="px-6 py-2 bg-burgundy text-ivory font-classic text-xs tracking-widest hover:bg-burgundy/90 transition-colors flex items-center gap-2">
-          <i class="fa-solid fa-share-nodes"></i> このエピソードをシェア
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- シェア通知トースト -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-ink text-ivory px-6 py-3 shadow-xl font-classic text-xs tracking-widest translate-y-20 opacity-0 transition-all duration-300">
-    リンクをクリップボードにコピーしました
-  </div>
-
-  <!-- JavaScript -->
+  <!-- JavaScriptの記述 -->
   <script>
     // モバイルメニューのトグル
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
+
     mobileMenuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
 
-    // 読書モーダル操作
-    function openReader(title, author, content) {
-      const modal = document.getElementById('reader-modal');
-      const modalContent = document.getElementById('modal-content');
-      
-      modalContent.innerHTML = `
-        <div class="text-center space-y-2">
-          <span class="text-xs text-burgundy font-classic tracking-widest uppercase">Classic Reading Mode</span>
-          <h3 class="font-classic text-2xl md:text-3xl font-bold text-ink">${title}</h3>
-          <p class="text-xs text-ink/60 font-light">著者:${author}</p>
-        </div>
-        <div class="pt-6 border-t border-burgundy/10 text-ink/90 text-base leading-loose font-light whitespace-pre-line">
-          ${content}
-        </div>
-      `;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeReader() {
-      const modal = document.getElementById('reader-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.body.style.overflow = 'auto';
-    }
-
-    // シェア機能・通知
-    function showToast() {
-      const toast = document.getElementById('toast');
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-
-    function shareWebsite() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href);
-        showToast();
-      } else {
-        alert('1900年代文学オマージュWebサイトをSNSでシェア!');
-      }
-    }
-
-    function shareWork(title) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(`${window.location.href}#${encodeURIComponent(title)}`);
-        showToast();
-      } else {
-        alert(`「${title}」のエピソードをシェアしました!`);
-      }
-    }
-
-    function shareCurrentStory() {
-      showToast();
-    }
+    // スムーズスクロール
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        e.preventDefault();
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth'
+          });
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+        }
+      });
+    });
   </script>
 </body>
 </html>
