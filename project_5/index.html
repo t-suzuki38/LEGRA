@@ -3,326 +3,489 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ピタッと献立AI 〜追加買い出しゼロのあまりものレシピ〜</title>
-  <!-- Tailwind CSS -->
+  <title>純喫茶デジタル・エコシステム『レトロメモリア』</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome -->
   <link rel="stylesheet" href="[link removed]">
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
-  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: {
-              orange: '#f97316',
-              sage: '#709775',
-              bg: '#f8fafc',
-            }
-          },
-          fontFamily: {
-            sans: ['Noto Sans JP', '-apple-system', 'sans-serif'],
+            deepAmber: '#38220f',
+            warmAmber: '#d97706',
+            creamWhite: '#fdfbf7',
+            sepiaBg: '#f4f1ea',
+            coralRed: '#e05648',
           }
         }
       }
     }
   </script>
   <style>
-    body {
-      background-color: #f8fafc;
-      font-family: 'Noto Sans JP', -apple-system, sans-serif;
+    @import url('[link removed]');
+    .font-serif-jp { font-family: 'Shippori Mincho', serif; }
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(56, 34, 15, 0.95) 0%, rgba(74, 48, 24, 0.85) 100%);
     }
-    .chip-active {
-      background-color: #709775 !important;
-      color: #ffffff !important;
-      border-color: #709775 !important;
+    .custom-shadow {
+      box-shadow: 0 10px 30px -5px rgba(56, 34, 15, 0.1);
     }
   </style>
 </head>
-<body class="text-slate-800 pb-24 min-h-screen">
+<body class="bg-[#fdfbf7] text-[#38220f] font-sans antialiased selection:bg-[#e05648] selection:text-white">
 
   <!-- ヘッダー -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
-    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-      <!-- 左側: アプリロゴ -->
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
-          <i class="fa-solid fa-utensils text-lg"></i>
+  <header class="sticky top-0 z-50 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-[#e5dec9]">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- ロゴ -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+        <div class="w-10 h-10 rounded-full bg-[#38220f] flex items-center justify-center text-[#fdfbf7]">
+          <i class="fa-solid fa-mug-hot text-lg text-[#d97706]"></i>
         </div>
-        <span class="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1">
-          ピタッと献立<span class="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-md font-bold">AI</span>
-        </span>
+        <div>
+          <span id="brand-title" class="font-serif-jp font-bold text-xl tracking-wider">レトロメモリア</span>
+          <span class="block text-[10px] text-warmAmber tracking-widest uppercase font-semibold">Kissaten Archive Platform</span>
+        </div>
       </div>
-      <!-- 右側: プレミアム案内・設定 -->
-      <div class="flex items-center gap-3">
-        <button onclick="openModal('premiumModal')" class="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium px-3 py-1.5 rounded-full shadow-sm hover:opacity-95 transition">
-          <i class="fa-solid fa-crown text-yellow-200 mr-1"></i>プレミアム
+
+      <!-- グローバルナビゲーション -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <button onclick="switchTab('home')" id="nav-home" class="text-coralRed transition-colors pb-1 border-b-2 border-coralRed">ホーム</button>
+        <button onclick="switchTab('archive')" id="nav-archive" class="hover:text-coralRed transition-colors pb-1 border-b-2 border-transparent">純喫茶アーカイブ</button>
+        <button onclick="switchTab('map')" id="nav-map" class="hover:text-coralRed transition-colors pb-1 border-b-2 border-transparent">タイムトラベルマップ</button>
+        <button onclick="switchTab('museum')" id="nav-museum" class="hover:text-coralRed transition-colors pb-1 border-b-2 border-transparent">3Dミュージアム</button>
+        <button onclick="switchTab('community')" id="nav-community" class="hover:text-coralRed transition-colors pb-1 border-b-2 border-transparent">コミュニティ</button>
+      </nav>
+
+      <!-- 右側アクション -->
+      <div class="flex items-center space-x-4">
+        <button onclick="openModal('loginModal')" class="hidden sm:inline-flex text-sm font-medium hover:text-coralRed transition-colors">
+          ログイン
         </button>
-        <button class="text-slate-400 hover:text-slate-600 p-1">
-          <i class="fa-solid fa-gear text-lg"></i>
+        <button onclick="openModal('registerModal')" class="bg-[#38220f] text-[#fdfbf7] px-5 py-2.5 rounded-full text-sm font-medium hover:bg-warmAmber transition-all custom-shadow flex items-center space-x-2">
+          <span>プレミアム登録</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- メインコンテンツ -->
-  <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
+  <!-- メインコンテンツ領域 -->
+  <main>
 
-    <!-- ヒーローバナー -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-5 text-white shadow-lg shadow-orange-500/10">
-      <div class="relative z-10">
-        <span class="inline-block px-2.5 py-0.5 bg-white/20 backdrop-blur-md text-xs font-semibold rounded-full mb-2">追加買い出しゼロ</span>
-        <h1 class="text-xl font-bold leading-snug">余りものだけで<br>最高の献立をつくろう</h1>
-        <p class="text-xs text-orange-100 mt-1">手元にある食材・調味料・器具をAIが最適化</p>
-      </div>
-      <i class="fa-solid fa-wand-magic-sparkles absolute -right-3 -bottom-3 text-7xl text-white/10 rotate-12"></i>
-    </div>
-
-    <!-- メインビジュアル & 入力エリア (在庫UI) -->
-    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
-          <i class="fa-solid fa-boxes-packing text-brand-sage"></i>
-          家にあるものをチェック
-        </h2>
-        <span class="text-xs text-slate-400">タップで選択/解除</span>
-      </div>
-
-      <!-- カテゴリ切り替えタブ -->
-      <div class="flex border-b border-slate-100 gap-4 text-xs font-medium text-slate-400">
-        <button id="tab-ingredients" class="pb-2 text-brand-sage border-b-2 border-brand-sage font-bold" onclick="switchCategory('ingredients')">食材</button>
-        <button id="tab-seasonings" class="pb-2 hover:text-slate-600" onclick="switchCategory('seasonings')">調味料</button>
-        <button id="tab-tools" class="pb-2 hover:text-slate-600" onclick="switchCategory('tools')">調理器具</button>
-      </div>
-
-      <!-- チップUI (食材) -->
-      <div id="category-ingredients" class="flex flex-wrap gap-2 pt-1">
-        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🍅</span> トマト
-        </button>
-        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🥚</span> 卵
-        </button>
-        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🧅</span> 玉ねぎ
-        </button>
-        <button onclick="toggleChip(this)" class="chip-active px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🥓</span> 豚肉
-        </button>
-        <button onclick="toggleChip(this)" class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🥦</span> ブロッコリー
-        </button>
-        <button onclick="toggleChip(this)" class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-600 transition flex items-center gap-1.5">
-          <span>🧀</span> チーズ
-        </button>
-        <button class="px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-slate-50 text-slate-400 border-dashed flex items-center gap-1 hover:border-slate-400">
-          <i class="fa-solid fa-plus text-xs"></i> 追加
-        </button>
-      </div>
-
-      <!-- 条件設定: 代替調味料トグル -->
-      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-repeat text-slate-400 text-xs"></i>
-          <span class="text-xs font-medium text-slate-700">代替調味料を許可する</span>
+    <!-- ホームタブ (3つのプロダクトハイライト) -->
+    <section id="tab-home" class="space-y-24 py-12">
+      
+      <!-- メインビジュアル -->
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="relative rounded-3xl overflow-hidden hero-gradient text-white p-12 md:p-20 custom-shadow">
+          <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          <div class="relative z-10 max-w-2xl space-y-6">
+            <span class="inline-block px-3.5 py-1.5 rounded-full bg-warmAmber/20 text-warmAmber text-xs font-semibold tracking-wider uppercase border border-warmAmber/30">
+              昭和カルチャー永久保存プロジェクト
+            </span>
+            <h1 class="font-serif-jp text-4xl md:text-6xl font-bold leading-tight">
+              消えゆく純喫茶の記憶と空間を、<br>美しく未来へ繋ぐ。
+            </h1>
+            <p class="text-[#f4f1ea]/80 text-base md:text-lg leading-relaxed font-light">
+              昭和レトロとモダンテクノロジーの融合。高解像度アーカイブ、タイムトラベルマップ、3Dミュージアムで深淵なる喫茶文化を体験するプラットフォーム。
+            </p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+              <button onclick="switchTab('archive')" class="bg-coralRed text-white px-8 py-4 rounded-full font-medium hover:bg-red-600 transition-all text-center custom-shadow">
+                今すぐアーカイブを見る
+              </button>
+              <button onclick="switchTab('map')" class="bg-white/10 hover:bg-white/25 border border-white/20 text-white px-8 py-4 rounded-full font-medium transition-all text-center backdrop-blur-sm">
+                マップでスポットを探す
+              </button>
+            </div>
+          </div>
         </div>
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" checked class="sr-only peer">
-          <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
-        </label>
+      </div>
+
+      <!-- 3大プラン・プロダクトセクション -->
+      <div class="max-w-7xl mx-auto px-6 space-y-16">
+        <div class="text-center space-y-4">
+          <h2 class="font-serif-jp text-3xl md:text-4xl font-bold">3つの体験プロダクト</h2>
+          <p class="text-[#38220f]/70 max-w-xl mx-auto text-sm md:text-base">
+            昭和カルチャーを多角的に味わい尽くすための、洗練されたデジタル体験をご用意しています。
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- プランA -->
+          <div class="bg-white rounded-2xl p-8 border border-[#e5dec9] custom-shadow hover:translate-y-[-4px] transition-all flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-warmAmber text-xl font-bold">
+                A
+              </div>
+              <span class="text-xs font-semibold text-warmAmber uppercase tracking-wider">Webサービス / プラットフォーム</span>
+              <h3 class="font-serif-jp text-xl font-bold leading-snug">純喫茶デジタルアーカイブ『レトロメモリア』</h3>
+              <p class="text-sm text-[#38220f]/70 leading-relaxed">
+                高解像度画像ビューアと文化財レベルのディープなタグ付け機能による多角的閲覧・投稿システム。推し喫茶の情緒を美しく永久保存。
+              </p>
+            </div>
+            <div class="pt-8">
+              <button onclick="switchTab('archive')" class="w-full py-3 rounded-xl bg-[#f4f1ea] text-[#38220f] font-medium hover:bg-[#38220f] hover:text-white transition-all text-sm flex items-center justify-center space-x-2">
+                <span>詳細を見る</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- プランB -->
+          <div class="bg-white rounded-2xl p-8 border border-[#e5dec9] custom-shadow hover:translate-y-[-4px] transition-all flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-coralRed text-xl font-bold">
+                B
+              </div>
+              <span class="text-xs font-semibold text-coralRed uppercase tracking-wider">体験型マップサービス</span>
+              <h3 class="font-serif-jp text-xl font-bold leading-snug">純喫茶タイムトラベルマップ『エモ・アーカイブWeb』</h3>
+              <p class="text-sm text-[#38220f]/70 leading-relaxed">
+                全国の失われゆく歴史やマスターのストーリーを位置情報と紐づけ、タイムスリップ感覚で巡る体験型キュレーションマップ。
+              </p>
+            </div>
+            <div class="pt-8">
+              <button onclick="switchTab('map')" class="w-full py-3 rounded-xl bg-[#f4f1ea] text-[#38220f] font-medium hover:bg-[#38220f] hover:text-white transition-all text-sm flex items-center justify-center space-x-2">
+                <span>マップを体験する</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- プランC -->
+          <div class="bg-white rounded-2xl p-8 border border-[#e5dec9] custom-shadow hover:translate-y-[-4px] transition-all flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="w-12 h-12 rounded-xl bg-amber-900/10 flex items-center justify-center text-deepAmber text-xl font-bold">
+                C
+              </div>
+              <span class="text-xs font-semibold text-deepAmber uppercase tracking-wider">3Dバーチャルミュージアム</span>
+              <h3 class="font-serif-jp text-xl font-bold leading-snug">レトロインテリア『純喫茶キャビネット』</h3>
+              <p class="text-sm text-[#38220f]/70 leading-relaxed">
+                名店内部のインテリアや調度品を3Dスキャンでデジタル化。自宅にいながら文化財級の美しさを心ゆくまで堪能できる没入感。
+              </p>
+            </div>
+            <div class="pt-8">
+              <button onclick="switchTab('museum')" class="w-full py-3 rounded-xl bg-[#f4f1ea] text-[#38220f] font-medium hover:bg-[#38220f] hover:text-white transition-all text-sm flex items-center justify-center space-x-2">
+                <span>3D展示室に入る</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- アーカイブ一覧タブ -->
+    <section id="tab-archive" class="hidden max-w-7xl mx-auto px-6 py-12 space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-[#e5dec9] pb-6 gap-4">
+        <div>
+          <span class="text-xs font-semibold text-warmAmber uppercase tracking-wider">Plan A Archive</span>
+          <h2 class="font-serif-jp text-3xl font-bold mt-1">純喫茶デジタルアーカイブ</h2>
+        </div>
+        <!-- フィルター -->
+        <div class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
+          <button class="px-4 py-2 rounded-full bg-[#38220f] text-white text-xs font-medium whitespace-nowrap">すべて</button>
+          <button class="px-4 py-2 rounded-full bg-white border border-[#e5dec9] text-xs font-medium hover:bg-[#f4f1ea] whitespace-nowrap">内観・インテリア</button>
+          <button class="px-4 py-2 rounded-full bg-white border border-[#e5dec9] text-xs font-medium hover:bg-[#f4f1ea] whitespace-nowrap">看板メニュー</button>
+          <button class="px-4 py-2 rounded-full bg-white border border-[#e5dec9] text-xs font-medium hover:bg-[#f4f1ea] whitespace-nowrap">マッチ・コースター</button>
+        </div>
+      </div>
+
+      <!-- グリッドアイテム -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- カード1 -->
+        <div class="bg-white rounded-2xl overflow-hidden border border-[#e5dec9] custom-shadow group">
+          <div class="h-60 bg-[#e5dec9] relative overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+            <div class="absolute bottom-4 left-4 right-4 z-20 text-white">
+              <span class="text-[10px] px-2.5 py-1 rounded bg-warmAmber font-semibold">東京都・上野</span>
+              <h4 class="font-serif-jp text-lg font-bold mt-1">純喫茶ローヤル(1968年創業)</h4>
+            </div>
+            <i class="fa-solid fa-camera text-4xl text-[#38220f]/20"></i>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-xs text-[#38220f]/70 leading-relaxed">
+              ステンドグラスの窓から差し込む琥珀色の光と、ビロードのソファが織りなす完璧な空間美。
+            </p>
+            <div class="flex items-center justify-between pt-2 border-t border-[#f4f1ea]">
+              <span class="text-xs text-[#38220f]/50">高解像度 8Kスキャン</span>
+              <button class="text-xs font-bold text-coralRed hover:underline">ビューアを開く →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- カード2 -->
+        <div class="bg-white rounded-2xl overflow-hidden border border-[#e5dec9] custom-shadow group">
+          <div class="h-60 bg-[#e5dec9] relative overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+            <div class="absolute bottom-4 left-4 right-4 z-20 text-white">
+              <span class="text-[10px] px-2.5 py-1 rounded bg-warmAmber font-semibold">京都府・祇園</span>
+              <h4 class="font-serif-jp text-lg font-bold mt-1">フランソワ喫茶室</h4>
+            </div>
+            <i class="fa-solid fa-camera text-4xl text-[#38220f]/20"></i>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-xs text-[#38220f]/70 leading-relaxed">
+              豪華客船のキャビンを模したバロック様式の内装。歴史的文化財指定を受けた唯一無二の空間。
+            </p>
+            <div class="flex items-center justify-between pt-2 border-t border-[#f4f1ea]">
+              <span class="text-xs text-[#38220f]/50">高解像度 8Kスキャン</span>
+              <button class="text-xs font-bold text-coralRed hover:underline">ビューアを開く →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- カード3 -->
+        <div class="bg-white rounded-2xl overflow-hidden border border-[#e5dec9] custom-shadow group">
+          <div class="h-60 bg-[#e5dec9] relative overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+            <div class="absolute bottom-4 left-4 right-4 z-20 text-white">
+              <span class="text-[10px] px-2.5 py-1 rounded bg-warmAmber font-semibold">東京都・神保町</span>
+              <h4 class="font-serif-jp text-lg font-bold mt-1">さぼうる</h4>
+            </div>
+            <i class="fa-solid fa-camera text-4xl text-[#38220f]/20"></i>
+          </div>
+          <div class="p-6 space-y-4">
+            <p class="text-xs text-[#38220f]/70 leading-relaxed">
+              山小屋風の温かみある外観と、無数に刻まれた歴史の痕跡。幾多の文豪に愛された伝説のディテール。
+            </p>
+            <div class="flex items-center justify-between pt-2 border-t border-[#f4f1ea]">
+              <span class="text-xs text-[#38220f]/50">高解像度 8Kスキャン</span>
+              <button class="text-xs font-bold text-coralRed hover:underline">ビューアを開く →</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- メインアクションエリア -->
-    <div class="text-center pt-1">
-      <button onclick="generateRecipe()" class="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-orange-500/30 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 text-base">
-        <i class="fa-solid fa-bolt"></i>
-        追加買い出しゼロで献立を作成
-      </button>
-    </div>
-
-    <!-- レシピ提案カード表示エリア -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
-          <i class="fa-solid fa-sparkles text-amber-500"></i>
-          AI提案レシピ
-        </h2>
-        <span class="text-xs text-slate-400">100% 手元食材のみ</span>
+    <!-- タイムトラベルマップタブ -->
+    <section id="tab-map" class="hidden max-w-7xl mx-auto px-6 py-12 space-y-8">
+      <div class="border-b border-[#e5dec9] pb-6">
+        <span class="text-xs font-semibold text-coralRed uppercase tracking-wider">Plan B Map & Oral History</span>
+        <h2 class="font-serif-jp text-3xl font-bold mt-1">純喫茶タイムトラベルマップ</h2>
       </div>
 
-      <!-- 提案レシピカード -->
-      <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 transition hover:shadow-md">
-        <!-- 完成イメージ画像 -->
-        <div class="relative h-48 bg-slate-100">
-          <img src="[link removed]" alt="完成料理" class="w-full h-full object-cover">
-          <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-            <i class="fa-regular fa-clock text-orange-400"></i> 15分
-          </div>
-          <div class="absolute bottom-3 left-3 bg-orange-500/90 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-full font-bold">
-            余りもの活用度 100%
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- サイドリスト -->
+        <div class="space-y-4 lg:col-span-1">
+          <div class="bg-white p-4 rounded-2xl border border-[#e5dec9] custom-shadow space-y-3">
+            <h4 class="font-serif-jp font-bold text-base">オーラルヒストリー登録スポット</h4>
+            <div class="space-y-2">
+              <div class="p-3 rounded-xl bg-[#f4f1ea] hover:bg-amber-50 transition-colors cursor-pointer border border-transparent hover:border-warmAmber">
+                <span class="text-[10px] text-warmAmber font-semibold">創業 1955年</span>
+                <h5 class="font-bold text-sm">喫茶トリコロール(銀座)</h5>
+                <p class="text-xs text-[#38220f]/70 mt-1">名物のアンティーク珈琲カップの秘密とマスターの軌跡</p>
+              </div>
+              <div class="p-3 rounded-xl bg-[#f4f1ea] hover:bg-amber-50 transition-colors cursor-pointer border border-transparent hover:border-warmAmber">
+                <span class="text-[10px] text-warmAmber font-semibold">創業 1962年</span>
+                <h5 class="font-bold text-sm">珈琲王城(上野)</h5>
+                <p class="text-xs text-[#38220f]/70 mt-1">シャンデリアの下で語り継がれる昭和の社交場としての歴史</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="p-5 space-y-4">
-          <!-- レシピ名 & 概要 -->
-          <div>
-            <h3 class="font-bold text-lg text-slate-900 leading-tight">フレッシュトマトとふんわり卵の彩り炒め</h3>
-            <p class="text-xs text-slate-500 mt-1">手元のトマトと卵でサッと作れる絶品時短おかず。</p>
-          </div>
-
-          <!-- 消費できる手元食材リスト -->
-          <div class="bg-slate-50 rounded-xl p-3">
-            <span class="text-xs font-bold text-slate-600 block mb-1.5"><i class="fa-solid fa-check text-brand-sage mr-1"></i>消費する手元食材:</span>
-            <div class="flex flex-wrap gap-1.5">
-              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">トマト 2個</span>
-              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">卵 2個</span>
-              <span class="text-xs bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md">玉ねぎ 1/2個</span>
+        <!-- マップモックアップ画面 -->
+        <div class="lg:col-span-2 bg-[#38220f] rounded-3xl h-[450px] flex items-center justify-center relative overflow-hidden custom-shadow">
+          <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#e05648_1px,transparent_1px)] [background-size:20px_20px]"></div>
+          <div class="text-center space-y-3 relative z-10 p-6">
+            <div class="w-16 h-16 rounded-full bg-coralRed/20 border border-coralRed/50 flex items-center justify-center mx-auto text-coralRed text-2xl animate-pulse">
+              <i class="fa-solid fa-map-location-dot"></i>
             </div>
-          </div>
-
-          <!-- 代替調味料のアドバイス枠 -->
-          <div class="bg-amber-50 border border-amber-200/60 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2.5">
-            <i class="fa-solid fa-lightbulb text-amber-500 text-sm mt-0.5"></i>
-            <div>
-              <span class="font-bold block">AIの代替アドバイス:</span>
-              <span>醤油がない場合は「めんつゆ 小さじ1」で美味しく代用可能です!</span>
-            </div>
-          </div>
-
-          <!-- 詳細栄養分析表示タブ (プレミアム機能) -->
-          <div class="border-t border-slate-100 pt-3">
-            <div class="flex items-center justify-between text-xs mb-2">
-              <span class="font-bold text-slate-700 flex items-center gap-1">
-                <i class="fa-solid fa-chart-pie text-brand-sage"></i> 詳細栄養分析
-              </span>
-              <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">PREMIUM</span>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-2 text-center text-xs">
-              <div class="bg-slate-50 p-2 rounded-lg">
-                <span class="text-[10px] text-slate-400 block">カロリー</span>
-                <span class="font-bold text-slate-800">320 kcal</span>
-              </div>
-              <div class="bg-slate-50 p-2 rounded-lg">
-                <span class="text-[10px] text-slate-400 block">たんぱく質</span>
-                <span class="font-bold text-slate-800">14.2 g</span>
-              </div>
-              <div class="bg-slate-50 p-2 rounded-lg">
-                <span class="text-[10px] text-slate-400 block">脂質</span>
-                <span class="font-bold text-slate-800">18.5 g</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ソーシャル・アクション -->
-          <div class="pt-2 flex gap-2">
-            <button onclick="shareResult()" class="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-share-nodes"></i>
-              作れた料理をSNSにシェア
-            </button>
-            <button class="px-3 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition">
-              <i class="fa-regular fa-bookmark"></i>
+            <h3 class="font-serif-jp text-xl text-white font-bold">インタラクティブ・レトロマップ</h3>
+            <p class="text-xs text-[#f4f1ea]/70 max-w-sm mx-auto">
+              位置情報と連動し、全国の失われゆく純喫茶の歴史的・建築的価値をタイムスリップ感覚で体験できます。
+            </p>
+            <button class="px-6 py-2.5 rounded-full bg-coralRed text-white text-xs font-medium hover:bg-red-600 transition-all">
+              全画面マップを開く
             </button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- 3Dミュージアムタブ -->
+    <section id="tab-museum" class="hidden max-w-7xl mx-auto px-6 py-12 space-y-8">
+      <div class="border-b border-[#e5dec9] pb-6">
+        <span class="text-xs font-semibold text-deepAmber uppercase tracking-wider">Plan C 3D Virtual Museum</span>
+        <h2 class="font-serif-jp text-3xl font-bold mt-1">レトロインテリア・3Dミュージアム『純喫茶キャビネット』</h2>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-[#e5dec9] p-8 md:p-12 custom-shadow grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+          <span class="px-3 py-1 rounded-full bg-amber-900/10 text-deepAmber text-xs font-semibold">没入型バーチャル展示室</span>
+          <h3 class="font-serif-jp text-2xl md:text-3xl font-bold">二度と行けない幻の純喫茶空間に、いつでもアクセス。</h3>
+          <p class="text-sm text-[#38220f]/70 leading-relaxed">
+            高精度3D空間レンダリングと調度品のクローズアップ解説、オーナーの想いを伝えるドキュメンタリー映像を統合。自宅で文化財級の美しさを心ゆくまで堪能。
+          </p>
+          <div class="flex items-center space-x-4 pt-4">
+            <button class="bg-[#38220f] text-white px-6 py-3.5 rounded-full text-sm font-medium hover:bg-warmAmber transition-all">
+              3Dデモを体験する (WebAR対応)
+            </button>
+          </div>
+        </div>
+        <div class="bg-[#f4f1ea] rounded-2xl h-80 flex items-center justify-center relative overflow-hidden border border-[#e5dec9]">
+          <div class="text-center space-y-3">
+            <i class="fa-solid fa-cube text-5xl text-warmAmber animate-bounce"></i>
+            <span class="block text-xs font-semibold text-[#38220f]/60">3D Renderer Interactive Preview</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- コミュニティタブ -->
+    <section id="tab-community" class="hidden max-w-7xl mx-auto px-6 py-12 space-y-8">
+      <div class="border-b border-[#e5dec9] pb-6">
+        <span class="text-xs font-semibold text-warmAmber uppercase tracking-wider">Community & Crowdfunding</span>
+        <h2 class="font-serif-jp text-3xl font-bold mt-1">熱狂的マニアコミュニティ</h2>
+      </div>
+      <div class="bg-white rounded-3xl border border-[#e5dec9] p-12 text-center space-y-6 custom-shadow">
+        <i class="fa-solid fa-comments text-4xl text-warmAmber"></i>
+        <h3 class="font-serif-jp text-2xl font-bold">同志とマニアックな情報を深く分かち合う</h3>
+        <p class="text-sm text-[#38220f]/70 max-w-lg mx-auto">
+          レトロスポット連動型クラウドファンディングや限定デジタルグッズ販売、プレミアム会員向けの容量拡張コミュニティ機能を提供予定です。
+        </p>
+        <button onclick="openModal('registerModal')" class="bg-coralRed text-white px-8 py-3.5 rounded-full text-sm font-medium hover:bg-red-600 transition-all inline-block">
+          コミュニティに参加する
+        </button>
       </div>
     </section>
 
   </main>
 
-  <!-- 画面下部固定ナビゲーションバー -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40">
-    <div class="max-w-md mx-auto flex justify-around py-2">
-      <a href="#" class="flex flex-col items-center gap-1 text-orange-500">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] font-bold">ホーム</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-boxes-stacked text-lg"></i>
-        <span class="text-[10px]">在庫管理</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
-        <i class="fa-regular fa-bookmark text-lg"></i>
-        <span class="text-[10px]">レシピ保存</span>
-      </a>
-      <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600">
-        <i class="fa-regular fa-user text-lg"></i>
-        <span class="text-[10px]">マイページ</span>
-      </a>
+  <!-- フッター -->
+  <footer class="bg-[#38220f] text-[#fdfbf7] mt-24 py-16">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-warmAmber flex items-center justify-center text-[#38220f]">
+            <i class="fa-solid fa-mug-hot text-sm"></i>
+          </div>
+          <span class="font-serif-jp font-bold text-lg">レトロメモリア</span>
+        </div>
+        <p class="text-xs text-[#f4f1ea]/60 leading-relaxed">
+          純喫茶の記憶と空間を永久に記録・共有するコミュニティプラットフォーム。
+        </p>
+      </div>
+      <div>
+        <h4 class="font-serif-jp font-bold text-sm tracking-wider mb-4 text-warmAmber">プロダクト</h4>
+        <ul class="space-y-2 text-xs text-[#f4f1ea]/70">
+          <li><a href="#" class="hover:text-white transition-colors">純喫茶デジタルアーカイブ</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">タイムトラベルマップ</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">3Dミュージアム</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-serif-jp font-bold text-sm tracking-wider mb-4 text-warmAmber">サポート・規約</h4>
+        <ul class="space-y-2 text-xs text-[#f4f1ea]/70">
+          <li><a href="#" class="hover:text-white transition-colors">利用規約</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">プライバシーポリシー</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">運営情報</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-serif-jp font-bold text-sm tracking-wider mb-4 text-warmAmber">公式SNS</h4>
+        <div class="flex space-x-4 text-lg">
+          <a href="#" class="hover:text-warmAmber transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="hover:text-warmAmber transition-colors"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="hover:text-warmAmber transition-colors"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
     </div>
-  </nav>
+    <div class="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-white/10 text-center text-xs text-[#f4f1ea]/40">
+      &copy; 2026 RETRO MEMORIA / LEGRA Inc. All rights reserved.
+    </div>
+  </footer>
 
-  <!-- プレミアムプランモーダル -->
-  <div id="premiumModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 text-center relative">
-      <button onclick="closeModal('premiumModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+  <!-- ログインモーダル -->
+  <div id="loginModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full space-y-6 custom-shadow relative">
+      <button onclick="closeModal('loginModal')" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
-      <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-amber-500 text-xl">
-        <i class="fa-solid fa-crown"></i>
+      <div class="text-center space-y-2">
+        <h3 class="font-serif-jp text-2xl font-bold">ログイン</h3>
+        <p class="text-xs text-[#38220f]/60">アカウント情報を入力してください</p>
       </div>
-      <h3 class="text-lg font-bold text-slate-900">プレミアムプラン</h3>
-      <p class="text-xs text-slate-600 leading-relaxed">
-        レシピ保存無制限・詳細栄養分析・広告非表示など、毎日の料理をもっと便利にする機能が使い放題!
-      </p>
-      <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-orange-800 font-bold text-sm">
-        月額 プレミアムプラン
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[#38220f]/70 mb-1">メールアドレス</label>
+          <input type="email" class="w-full px-4 py-3 rounded-xl border border-[#e5dec9] focus:outline-none focus:border-warmAmber text-sm" placeholder="takanori.suzuki@legra.info">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#38220f]/70 mb-1">パスワード</label>
+          <input type="password" class="w-full px-4 py-3 rounded-xl border border-[#e5dec9] focus:outline-none focus:border-warmAmber text-sm" placeholder="••••••••">
+        </div>
+        <button onclick="closeModal('loginModal')" class="w-full py-3.5 bg-[#38220f] text-white rounded-xl font-medium text-sm hover:bg-warmAmber transition-all">
+          ログインする
+        </button>
       </div>
-      <button class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-md hover:opacity-95 transition">
-        今すぐ登録する
+    </div>
+  </div>
+
+  <!-- プレミアム登録モーダル -->
+  <div id="registerModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full space-y-6 custom-shadow relative">
+      <button onclick="closeModal('registerModal')" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
       </button>
+      <div class="text-center space-y-2">
+        <h3 class="font-serif-jp text-2xl font-bold">プレミアム会員登録</h3>
+        <p class="text-xs text-[#38220f]/60">容量拡張・3Dミュージアム見放題プラン</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[#38220f]/70 mb-1">お名前</label>
+          <input type="text" class="w-full px-4 py-3 rounded-xl border border-[#e5dec9] focus:outline-none focus:border-warmAmber text-sm" placeholder="鈴木 崚永">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#38220f]/70 mb-1">メールアドレス</label>
+          <input type="email" class="w-full px-4 py-3 rounded-xl border border-[#e5dec9] focus:outline-none focus:border-warmAmber text-sm" placeholder="takanori.suzuki@legra.info">
+        </div>
+        <button onclick="closeModal('registerModal')" class="w-full py-3.5 bg-coralRed text-white rounded-xl font-medium text-sm hover:bg-red-600 transition-all">
+          登録を完了する
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    // チップUIの選択トグル
-    function toggleChip(element) {
-      element.classList.toggle('chip-active');
-    }
-
-    // カテゴリ切替機能 (簡易表示切替)
-    function switchCategory(cat) {
-      const tabs = ['ingredients', 'seasonings', 'tools'];
+    // タブ切り替え機能
+    function switchTab(tabName) {
+      const tabs = ['home', 'archive', 'map', 'museum', 'community'];
       tabs.forEach(t => {
-        const tabEl = document.getElementById(`tab-${t}`);
-        if (tabEl) {
-          if (t === cat) {
-            tabEl.className = 'pb-2 text-brand-sage border-b-2 border-brand-sage font-bold';
+        const el = document.getElementById('tab-' + t);
+        const navEl = document.getElementById('nav-' + t);
+        if (el) {
+          if (t === tabName) {
+            el.classList.remove('hidden');
           } else {
-            tabEl.className = 'pb-2 hover:text-slate-600';
+            el.classList.add('hidden');
+          }
+        }
+        if (navEl) {
+          if (t === tabName) {
+            navEl.classList.add('text-coralRed', 'border-coralRed');
+            navEl.classList.remove('border-transparent');
+          } else {
+            navEl.classList.remove('text-coralRed', 'border-coralRed');
+            navEl.classList.add('border-transparent');
           }
         }
       });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // AI献立生成アクション
-    function generateRecipe() {
-      alert('AIが選択中のあまりもの食材を分析し、最適なレシピを生成しました!');
+    // モーダル操作
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
     }
 
-    // SNSシェアアクション
-    function shareResult() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'ピタッと献立AI',
-          text: '追加買い出しゼロ!あまりもの食材だけで「フレッシュトマトとふんわり卵の彩り炒め」を作りました! #ピタッと献立AI',
-          url: window.location.href,
-        }).catch(() => {});
-      } else {
-        alert('SNSシェア用テキストをコピーしました!');
-      }
-    }
-
-    // モーダル制御
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
     }
   </script>
 </body>
