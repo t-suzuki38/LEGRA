@@ -3,423 +3,417 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HabitSpeak AI - 3分AIスパーリング</title>
+  <title>マルチペットカルテ - 複数飼い専用の医療・健康一元管理アプリ</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome CDN -->
-  <link rel="stylesheet" href="[link removed]">
-  <!-- Google Fonts (Inter, Noto Sans JP) -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
-  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: {
-              dark: '#0a0e17',
-              card: '#121826',
-              border: '#1e293b',
-              blue: '#00f0ff',
-              orange: '#ff6b00',
-            }
+            turquoise: {
+              DEFAULT: '#0EA5E9',
+              dark: '#0284C7',
+              light: '#E0F2FE',
+            },
+            warmBeige: {
+              DEFAULT: '#FDE68A',
+              dark: '#FCD34D',
+              light: '#FEF3C7',
+            },
+            baseWhite: '#FFFFFF',
+            lightGray: '#F8FAFC',
           },
           fontFamily: {
-            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
-          }
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          },
         }
       }
     }
   </script>
+  <!-- Google Fonts: Noto Sans JP -->
+  <link href="[link removed]" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="[link removed]">
   <style>
     body {
-      background-color: #0a0e17;
-      color: #f8fafc;
-      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #F1F5F9;
     }
-    .neon-glow-blue {
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+    /* スクロールバー非表示(アプリ風デザイン維持) */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    .neon-glow-orange {
-      box-shadow: 0 0 25px rgba(255, 107, 0, 0.5);
-    }
-    /* Wave animation */
-    .wave-bar {
-      animation: wave 1.2s ease-in-out infinite alternate;
-    }
-    .wave-bar:nth-child(2n) { animation-delay: 0.2s; }
-    .wave-bar:nth-child(3n) { animation-delay: 0.4s; }
-    .wave-bar:nth-child(4n) { animation-delay: 0.1s; }
-    .wave-bar:nth-child(5n) { animation-delay: 0.3s; }
-
-    @keyframes wave {
-      0% { height: 12px; opacity: 0.4; }
-      100% { height: 56px; opacity: 1; }
-    }
-    .wave-inactive .wave-bar {
-      animation: none !important;
-      height: 8px !important;
-      opacity: 0.25;
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+<body class="bg-slate-100 flex justify-center items-center min-h-screen p-0 sm:py-6">
 
-  <!-- APP CONTAINER -->
-  <div class="max-w-md w-full mx-auto min-h-screen flex flex-col justify-between p-4 relative overflow-hidden bg-brand-dark shadow-2xl border-x border-brand-border/40">
+  <!-- アプリケーションコンテナ (スマホフレームサイズ) -->
+  <div class="w-full sm:max-w-md bg-lightGray min-h-screen sm:min-h-[850px] sm:rounded-3xl shadow-2xl flex flex-col relative overflow-hidden border border-slate-200">
 
-    <!-- HEADER (Shared) -->
-    <header class="flex justify-between items-center py-3 px-2 border-b border-brand-border/60 z-10 backdrop-blur-md bg-brand-dark/80 sticky top-0">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-cyan-500/20">
-          <i class="fa-solid fa-bolt"></i>
+    <!-- ヘッダーエリア -->
+    <header class="bg-baseWhite px-4 py-3 border-b border-slate-100 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center space-x-2">
+        <div class="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center text-turquoise shadow-sm">
+          <i class="fa-solid fa-notes-medical text-lg"></i>
         </div>
-        <span class="font-extrabold text-lg tracking-tight text-white">HabitSpeak <span class="text-brand-blue font-black text-xs px-1.5 py-0.5 rounded border border-brand-blue/30 bg-brand-blue/10 ml-0.5">AI</span></span>
+        <span class="font-bold text-slate-800 tracking-tight text-lg">ペットカルテ</span>
       </div>
-      <div class="flex items-center gap-2 bg-brand-card/90 px-3 py-1.5 rounded-full border border-orange-500/30 shadow-inner">
-        <span class="text-orange-500 text-sm animate-pulse"><i class="fa-solid fa-fire"></i></span>
-        <span class="font-black text-sm text-orange-400">7<span class="text-xs font-normal text-slate-400 ml-0.5">日連続</span></span>
+
+      <!-- 右側: ペットのプロファイル瞬時切り替え & 設定 -->
+      <div class="flex items-center space-x-3">
+        <div class="flex space-x-1 bg-slate-100 p-1 rounded-full">
+          <button onclick="switchPet('mocha')" id="tab-mocha" class="w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all">M</button>
+          <button onclick="switchPet('luna')" id="tab-luna" class="w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all">L</button>
+        </div>
+        <button onclick="openSettings()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
       </div>
     </header>
 
-    <!-- SCREEN A: REALTIME AI VOICE SPARRING -->
-    <main id="screenA" class="flex-1 flex flex-col justify-between py-4 space-y-4 transition-all duration-300">
-      
-      <!-- Situation Card -->
-      <div class="bg-brand-card/80 border border-brand-border rounded-2xl p-4 shadow-xl relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-brand-blue bg-brand-blue/10 px-2.5 py-0.5 rounded-full border border-brand-blue/20">
-            <i class="fa-solid fa-sparkles mr-1"></i> 動的シチュエーション
-          </span>
-          <button id="refreshTopicBtn" class="text-slate-400 hover:text-white transition-colors text-xs flex items-center gap-1">
-            <i class="fa-solid fa-rotate-right"></i> 変更
-          </button>
-        </div>
-        <h2 id="topicTitle" class="font-bold text-base text-slate-100 mb-1">「新規事業アイデアの咄嗟の30秒プレゼン」</h2>
-        <p id="topicDesc" class="text-xs text-slate-400 leading-relaxed">クライアントから『面白い案ある?』と振られました。簡潔に核心を突いて提案してください。</p>
-      </div>
+    <!-- メインコンテンツ領域 -->
+    <main class="flex-1 overflow-y-auto no-scrollbar pb-24">
 
-      <!-- Active AI Sound Visualizer -->
-      <div class="flex-1 flex flex-col items-center justify-center my-2 relative">
-        <div id="glowCircle" class="absolute w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl transition-all duration-500"></div>
-        
-        <!-- Sound Wave Animation Container -->
-        <div id="soundWave" class="flex items-center justify-center gap-1.5 h-24 w-full px-8 my-auto wave-inactive transition-all">
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-orange-500 to-amber-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-orange-500 to-amber-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-          <div class="wave-bar w-1.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full"></div>
-        </div>
-
-        <!-- Status Label -->
-        <div class="text-center mt-2">
-          <span id="aiStatus" class="text-xs font-semibold tracking-wide text-slate-400 bg-brand-card/90 px-3 py-1 rounded-full border border-slate-800">
-            <i class="fa-solid fa-headset mr-1.5 text-brand-blue"></i> AIがあなたの発話を待っています
-          </span>
-        </div>
-      </div>
-
-      <!-- Realtime 3-Min Timer & Progress Bar -->
-      <div class="bg-brand-card/60 rounded-xl p-3 border border-brand-border/80">
-        <div class="flex justify-between items-center mb-1.5 text-xs">
-          <span class="text-slate-400 font-medium"><i class="fa-regular fa-clock mr-1"></i> 制限時間</span>
-          <span id="timerText" class="font-extrabold text-brand-blue tracking-wider font-mono text-sm">03:00</span>
-        </div>
-        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-          <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-orange-500 w-full transition-all duration-1000"></div>
-        </div>
-      </div>
-
-      <!-- Live Transcript Box -->
-      <div class="bg-brand-card/90 border border-brand-border rounded-xl p-3 text-xs space-y-2 max-h-32 overflow-y-auto shadow-inner">
-        <div class="flex gap-2">
-          <span class="font-bold text-brand-blue shrink-0">AI:</span>
-          <p id="aiDialogue" class="text-slate-300 leading-relaxed">「今回の提案の最大の強みとターゲット層を、まずは1分で説明してもらえますか?」</p>
-        </div>
-        <div class="flex gap-2 border-t border-slate-800/80 pt-2">
-          <span class="font-bold text-orange-400 shrink-0">あなた:</span>
-          <p id="userDialogue" class="text-slate-400 italic">(マイクボタンを押して回答を開始してください)</p>
-        </div>
-      </div>
-
-      <!-- Controls Footer -->
-      <div class="flex items-center justify-between pt-2 px-4">
-        <button id="muteBtn" class="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition active:scale-95 shadow-md">
-          <i class="fa-solid fa-microphone-slash"></i>
-        </button>
-
-        <!-- Main Push-to-Talk Mic Button -->
-        <button id="micBtn" class="w-20 h-20 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-cyan-400 text-slate-950 flex flex-col items-center justify-center shadow-lg neon-glow-blue hover:scale-105 active:scale-95 transition-all duration-200 group">
-          <i class="fa-solid fa-microphone text-2xl group-hover:scale-110 transition-transform"></i>
-          <span class="text-[9px] font-black tracking-tighter mt-0.5">TAP TO SPEAK</span>
-        </button>
-
-        <button id="endBtn" class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition active:scale-95 shadow-md">
-          <i class="fa-solid fa-phone-slash"></i>
-        </button>
-      </div>
-    </main>
-
-
-    <!-- SCREEN B: STREAK & DETAILED FEEDBACK -->
-    <main id="screenB" class="hidden flex-1 flex-col justify-between py-2 space-y-3 transition-all duration-300">
-      
-      <!-- Session Complete Header -->
-      <div class="text-center py-1 relative">
-        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/40 text-orange-400 px-4 py-1 rounded-full text-xs font-bold mb-2">
-          <i class="fa-solid fa-trophy text-amber-400"></i> セッション完了!
-        </div>
-        <h1 class="text-2xl font-black text-white tracking-tight">3分スパーリング達成!</h1>
-        <p class="text-xs text-slate-400 mt-1">即座のアドリブ発話お疲れ様でした!今回の分析結果です。</p>
-      </div>
-
-      <!-- Score & Analysis Card -->
-      <div class="bg-brand-card/90 border border-brand-border rounded-2xl p-4 shadow-xl space-y-4">
-        
-        <!-- Score Overview -->
-        <div class="grid grid-cols-3 gap-2 text-center pb-3 border-b border-brand-border/60">
-          <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] font-bold text-slate-400 mb-1">即答力スコア</div>
-            <div class="text-xl font-black text-brand-blue">88<span class="text-xs font-normal">/100</span></div>
-          </div>
-          <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] font-bold text-slate-400 mb-1">発話速度</div>
-            <div class="text-lg font-black text-emerald-400">適正<span class="text-[9px] block font-normal text-slate-400">240字/分</span></div>
-          </div>
-          <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] font-bold text-slate-400 mb-1">語彙の多様性</div>
-            <div class="text-xl font-black text-orange-400">A<span class="text-xs font-normal">評価</span></div>
-          </div>
-        </div>
-
-        <!-- AI Improvement One-point Advice -->
-        <div>
-          <h3 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-1.5">
-            <i class="fa-solid fa-wand-magic-sparkles text-brand-blue"></i> AI改善ワンポイントアドバイス
-          </h3>
-          <div class="bg-brand-dark/90 border border-brand-blue/30 rounded-xl p-3 text-xs text-slate-300 leading-relaxed space-y-2">
-            <p>結論を最初の<span class="text-brand-blue font-bold">5秒以内</span>に言い切れた点が素晴らしいです!前半の「つまり〜」の接続詞を「具体的には」に変えることで、論理的展開がより鮮明になります。</p>
-          </div>
-        </div>
-
-        <!-- Performance Indicators -->
-        <div class="space-y-2 pt-1">
-          <div class="flex justify-between text-xs text-slate-400">
-            <span>応答レスポンス (0.8s)</span>
-            <span class="text-brand-blue font-bold">95%</span>
-          </div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div class="bg-brand-blue h-full w-[95%]"></div>
-          </div>
-
-          <div class="flex justify-between text-xs text-slate-400">
-            <span>説得力・構成力</span>
-            <span class="text-orange-400 font-bold">82%</span>
-          </div>
-          <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div class="bg-orange-500 h-full w-[82%]"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Social Share & Monetization Banner -->
-      <div class="space-y-2.5">
-        <!-- SNS Share Button -->
-        <button id="shareBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-xs shadow-md active:scale-98">
-          <i class="fa-brands fa-x-twitter text-sm"></i> 連続ストリーク(7日達成)をSNSでシェア
-        </button>
-
-        <!-- Premium Plan Banner -->
-        <div class="bg-gradient-to-r from-orange-500/15 via-amber-500/10 to-brand-blue/15 border border-orange-500/40 rounded-2xl p-3.5 relative overflow-hidden group">
-          <div class="flex justify-between items-start mb-1.5">
-            <div>
-              <span class="bg-gradient-to-r from-orange-500 to-amber-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full uppercase">
-                PREMIUM
-              </span>
-              <h4 class="font-extrabold text-xs text-white mt-1">無制限対話 & 詳細フィードバックを解放</h4>
+      <!-- メインビジュアル/ダッシュボード -->
+      <section class="p-4 bg-gradient-to-b from-baseWhite to-lightGray">
+        <!-- ステータスカード -->
+        <div class="bg-baseWhite rounded-2xl p-5 shadow-sm border border-slate-100 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-bl-full -z-0 opacity-50"></div>
+          
+          <div class="flex items-start justify-between relative z-10 mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-14 h-14 rounded-2xl bg-warmBeige-light flex items-center justify-center text-2xl shadow-inner border border-warmBeige">
+                🐕
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h1 id="pet-name" class="text-xl font-bold text-slate-800">モカ</h1>
+                  <span id="pet-breed" class="text-xs px-2 py-0.5 bg-warmBeige text-slate-800 font-medium rounded-full">トイプードル</span>
+                </div>
+                <p id="pet-age-weight" class="text-xs text-slate-500 mt-0.5">3歳 (♀) • 4.2 kg</p>
+              </div>
             </div>
-            <i class="fa-solid fa-crown text-amber-400 text-lg"></i>
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full flex items-center gap-1 border border-emerald-100">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 健康安定
+            </span>
           </div>
-          <p class="text-[10px] text-slate-300 mb-2.5">AIによる無制限スパーリングと、パーソナライズされた弱点分析シナリオで圧倒的即答力を手に入れよう。</p>
-          <button class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black py-2 px-4 rounded-xl text-xs shadow-lg neon-glow-orange transition active:scale-98">
-            月額プレミアムを開始(7日間無料体験)
+
+          <!-- 次回予定バッジ -->
+          <div class="bg-slate-50 rounded-xl p-3 flex items-center justify-between text-xs text-slate-700 mb-4 border border-slate-100">
+            <div class="flex items-center space-x-2">
+              <i class="fa-regular fa-calendar-days text-turquoise"></i>
+              <span class="font-medium">次回ワクチン予定:</span>
+            </div>
+            <span class="font-bold text-slate-900">2026年11月15日</span>
+          </div>
+
+          <!-- 緊急時用クイックアクセスボタン -->
+          <button onclick="openEmergencyModal()" class="w-full py-3 px-4 bg-gradient-to-r from-turquoise to-turquoise-dark text-white rounded-xl font-bold shadow-md shadow-turquoise/20 flex items-center justify-center space-x-2 hover:opacity-95 transition transform active:scale-[0.98]">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>獣医師に見せるサマリー(緊急モード)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- タイムラインエリア -->
+      <section class="px-4 pt-2">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-turquoise"></i> 医療・健康タイムライン
+          </h2>
+          <span class="text-xs text-turquoise font-bold cursor-pointer hover:underline">すべて見る</span>
+        </div>
+
+        <!-- タイムラインフィード -->
+        <div class="space-y-3" id="timeline-feed">
+          <!-- タイムラインアイテム1 -->
+          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
+            <div onclick="toggleAccordion('item-1')" class="flex items-start justify-between cursor-pointer">
+              <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-sky-50 text-turquoise flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-hospital-user"></i>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold px-2 py-0.5 bg-sky-50 text-turquoise rounded-md">定期通院</span>
+                    <span class="text-xs text-slate-400">10月12日</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-slate-800 mt-1">ひまわり動物病院</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">耳の洗浄および皮膚のチェック</p>
+                </div>
+              </div>
+              <button class="text-slate-400 hover:text-slate-600 p-1">
+                <i id="icon-item-1" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+              </button>
+            </div>
+            <!-- アコーディオン詳細 -->
+            <div id="content-item-1" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
+                <p><span class="font-bold text-slate-700">処方薬:</span> イヤオニック滴用液 (1日2回)</p>
+                <p><span class="font-bold text-slate-700">ドクターのメモ:</span> 湿気が溜まりやすいので、お風呂後はしっかり乾かしてください。</p>
+                <p><span class="font-bold text-slate-700">体重:</span> 4.2 kg (前回比 ±0)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- タイムラインアイテム2 -->
+          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
+            <div onclick="toggleAccordion('item-2')" class="flex items-start justify-between cursor-pointer">
+              <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-pills"></i>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold px-2 py-0.5 bg-amber-50 text-amber-600 rounded-md">投薬記録</span>
+                    <span class="text-xs text-slate-400">10月10日</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-slate-800 mt-1">フィラリア予防薬投薬</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">ネクスガードスペクトラ投与完了</p>
+                </div>
+              </div>
+              <button class="text-slate-400 hover:text-slate-600 p-1">
+                <i id="icon-item-2" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+              </button>
+            </div>
+            <!-- アコーディオン詳細 -->
+            <div id="content-item-2" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
+                <p><span class="font-bold text-slate-700">担当:</span> 夫 (タカノリ)</p>
+                <p><span class="font-bold text-slate-700">副作用・特記事項:</span> なし。食いつき良好。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- タイムラインアイテム3 -->
+          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
+            <div onclick="toggleAccordion('item-3')" class="flex items-start justify-between cursor-pointer">
+              <div class="flex items-start space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-syringe"></i>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md">ワクチン</span>
+                    <span class="text-xs text-slate-400">5月20日</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-slate-800 mt-1">混合ワクチン接種 (8種)</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">ひまわり動物病院にて接種</p>
+                </div>
+              </div>
+              <button class="text-slate-400 hover:text-slate-600 p-1">
+                <i id="icon-item-3" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+              </button>
+            </div>
+            <!-- アコーディオン詳細 -->
+            <div id="content-item-3" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
+                <p><span class="font-bold text-slate-700">証明書:</span> デジタル保管済み</p>
+                <p><span class="font-bold text-slate-700">副反応:</span> 当日は安静に過ごし、発熱等の異常なし。</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 下部アクションバー (フローティングボタン) -->
+    <div class="absolute bottom-16 right-4 z-20">
+      <button onclick="openAddRecordModal()" class="w-14 h-14 bg-turquoise hover:bg-turquoise-dark text-white rounded-full shadow-lg shadow-turquoise/30 flex items-center justify-center text-xl transition transform hover:scale-105 active:scale-95">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <!-- ボトムナビゲーション -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-baseWhite border-t border-slate-100 px-6 py-3 flex justify-between items-center z-30">
+      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-turquoise transition">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-bold mt-1">ホーム</span>
+      </button>
+      <button onclick="switchTab('timeline')" id="nav-timeline" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
+        <i class="fa-solid fa-timeline text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">タイムライン</span>
+      </button>
+      <button onclick="switchTab('calendar')" id="nav-calendar" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
+        <i class="fa-regular fa-calendar text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">カレンダー</span>
+      </button>
+      <button onclick="switchTab('share')" id="nav-share" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
+        <i class="fa-solid fa-user-group text-lg"></i>
+        <span class="text-[10px] font-medium mt-1">共有・設定</span>
+      </button>
+    </nav>
+
+    <!-- ─── モーダル: 緊急時サマリー ─── -->
+    <div id="emergency-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-baseWhite w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div class="flex items-center space-x-2 text-rose-500">
+            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            <h2 class="font-bold text-slate-900 text-base">緊急診察サマリー</h2>
+          </div>
+          <button onclick="closeEmergencyModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="py-4 space-y-4 text-xs">
+          <div class="bg-rose-50 border border-rose-100 rounded-xl p-3 text-rose-800">
+            <p class="font-bold mb-1">⚠️ 獣医師へご提示ください</p>
+            <p class="text-[11px] text-rose-700">直近の服薬履歴やアレルギー情報を瞬時にまとめています。</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">ペット情報</span>
+              <p class="font-bold text-slate-800 text-sm mt-0.5">モカ (トイプードル / 3歳 / 雌 / 4.2kg)</p>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">既往歴・アレルギー</span>
+              <p class="font-bold text-slate-800 mt-0.5">特にななし(ノミ・マダニ・フィラリア予防実施中)</p>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">直近の投薬・処方</span>
+              <p class="font-bold text-slate-800 mt-0.5">ネクスガードスペクトラ (10/10投与)</p>
+              <p class="text-slate-600">イヤオニック滴用液 (10/12〜処方中)</p>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="closeEmergencyModal()" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-900 transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── モーダル: 新規記録追加 ─── -->
+    <div id="add-record-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-baseWhite w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h2 class="font-bold text-slate-900 text-base">新規健康記録を追加</h2>
+          <button onclick="closeAddRecordModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="py-4 space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">記録カテゴリ</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button class="py-2.5 bg-sky-50 text-turquoise border border-turquoise rounded-xl font-bold text-center">通院</button>
+              <button class="py-2.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl font-medium text-center">投薬</button>
+              <button class="py-2.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl font-medium text-center">ワクチン</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">タイトル</label>
+            <input type="text" placeholder="例: 定期健診、フィラリア薬など" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">日付</label>
+            <input type="date" value="2026-10-21" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">メモ・ドクターの所見</label>
+            <textarea rows="3" placeholder="病院名や処方されたお薬の内容を入力..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise"></textarea>
+          </div>
+        </div>
+
+        <div class="flex space-x-2">
+          <button onclick="closeAddRecordModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-200 transition">
+            キャンセル
+          </button>
+          <button onclick="closeAddRecordModal()" class="flex-1 py-3 bg-turquoise text-white rounded-xl font-bold text-xs hover:bg-turquoise-dark transition shadow-md shadow-turquoise/20">
+            保存する
           </button>
         </div>
       </div>
-
-      <!-- Restart Sparring Button -->
-      <button id="restartBtn" class="w-full py-2 text-xs text-slate-400 hover:text-white transition flex items-center justify-center gap-1">
-        <i class="fa-solid fa-rotate-left"></i> もう一度3分スパーリングを行う
-      </button>
-
-    </main>
+    </div>
 
   </div>
 
   <script>
-    // State Variables
-    let isSpeaking = false;
-    let isMuted = false;
-    let timerInterval = null;
-    let secondsLeft = 180;
-    let isTimerRunning = false;
+    // ペット切り替えロジック
+    function switchPet(petId) {
+      const tabMocha = document.getElementById('tab-mocha');
+      const tabLuna = document.getElementById('tab-luna');
+      const petName = document.getElementById('pet-name');
+      const petBreed = document.getElementById('pet-breed');
+      const petAgeWeight = document.getElementById('pet-age-weight');
 
-    // DOM Elements
-    const screenA = document.getElementById('screenA');
-    const screenB = document.getElementById('screenB');
-    const micBtn = document.getElementById('micBtn');
-    const muteBtn = document.getElementById('muteBtn');
-    const endBtn = document.getElementById('endBtn');
-    const restartBtn = document.getElementById('restartBtn');
-    const refreshTopicBtn = document.getElementById('refreshTopicBtn');
-    const shareBtn = document.getElementById('shareBtn');
-
-    const soundWave = document.getElementById('soundWave');
-    const glowCircle = document.getElementById('glowCircle');
-    const aiStatus = document.getElementById('aiStatus');
-    const timerText = document.getElementById('timerText');
-    const progressBar = document.getElementById('progressBar');
-    
-    const aiDialogue = document.getElementById('aiDialogue');
-    const userDialogue = document.getElementById('userDialogue');
-    const topicTitle = document.getElementById('topicTitle');
-    const topicDesc = document.getElementById('topicDesc');
-
-    // Dynamic Scenario Topics
-    const topics = [
-      {
-        title: "「新規事業アイデアの咄嗟の30秒プレゼン」",
-        desc: "クライアントから『面白い案ある?』と振られました。簡潔に核心を突いて提案してください。"
-      },
-      {
-        title: "「予想外のトラブル発生時の緊急謝罪と代替案」",
-        desc: "システム障害により納期が半日遅延。怒っている上司に現状と最速のリカバリー策を説明してください。"
-      },
-      {
-        title: "「予算倍増を狙う追加予算交渉」",
-        desc: "『なぜこの費用が必要なのか?』という質問に対し、ROI(投資対効果)を根拠に納得させてください。"
+      if (petId === 'mocha') {
+        tabMocha.className = "w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all";
+        tabLuna.className = "w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all";
+        petName.innerText = "モカ";
+        petBreed.innerText = "トイプードル";
+        petAgeWeight.innerText = "3歳 (♀) • 4.2 kg";
+      } else {
+        tabLuna.className = "w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all";
+        tabMocha.className = "w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all";
+        petName.innerText = "ルナ";
+        petBreed.innerText = "スコティッシュフォールド";
+        petAgeWeight.innerText = "2歳 (♀) • 3.1 kg";
       }
-    ];
+    }
 
-    let currentTopicIdx = 0;
+    // アコーディオン開閉ロジック
+    function toggleAccordion(id) {
+      const content = document.getElementById('content-' + id);
+      const icon = document.getElementById('icon-' + id);
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        content.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
 
-    refreshTopicBtn.addEventListener('click', () => {
-      currentTopicIdx = (currentTopicIdx + 1) % topics.length;
-      topicTitle.textContent = topics[currentTopicIdx].title;
-      topicDesc.textContent = topics[currentTopicIdx].desc;
-    });
+    // モーダル操作
+    function openEmergencyModal() {
+      document.getElementById('emergency-modal').classList.remove('hidden');
+    }
+    function closeEmergencyModal() {
+      document.getElementById('emergency-modal').classList.add('hidden');
+    }
 
-    // Start 3-Min Timer
-    function startTimer() {
-      if (isTimerRunning) return;
-      isTimerRunning = true;
+    function openAddRecordModal() {
+      document.getElementById('add-record-modal').classList.remove('hidden');
+    }
+    function closeAddRecordModal() {
+      document.getElementById('add-record-modal').classList.add('hidden');
+    }
 
-      timerInterval = setInterval(() => {
-        secondsLeft--;
-        updateTimerDisplay();
+    function openSettings() {
+      alert("設定・家族間リアルタイム共有メニューを開きます。");
+    }
 
-        if (secondsLeft <= 0) {
-          clearInterval(timerInterval);
-          finishSparring();
+    // ボトムタブ切り替えダミー
+    function switchTab(tab) {
+      const tabs = ['home', 'timeline', 'calendar', 'share'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('nav-' + t);
+        if (t === tab) {
+          btn.className = "flex flex-col items-center text-turquoise transition";
+          btn.querySelector('span').className = "text-[10px] font-bold mt-1";
+        } else {
+          btn.className = "flex flex-col items-center text-slate-400 hover:text-slate-600 transition";
+          btn.querySelector('span').className = "text-[10px] font-medium mt-1";
         }
-      }, 1000);
+      });
     }
-
-    function updateTimerDisplay() {
-      const mins = Math.floor(secondsLeft / 60);
-      const secs = secondsLeft % 60;
-      timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      
-      const percentage = (secondsLeft / 180) * 100;
-      progressBar.style.width = `${percentage}%`;
-    }
-
-    // Toggle Mic / Speaking State
-    micBtn.addEventListener('click', () => {
-      if (!isTimerRunning) {
-        startTimer();
-      }
-
-      isSpeaking = !isSpeaking;
-
-      if (isSpeaking) {
-        soundWave.classList.remove('wave-inactive');
-        glowCircle.classList.add('bg-brand-blue/30', 'scale-125');
-        aiStatus.innerHTML = `<i class="fa-solid fa-microphone text-orange-400 mr-1.5 animate-pulse"></i> あなたの声を聞き取り中...`;
-        micBtn.classList.add('neon-glow-orange', 'from-orange-500', 'to-amber-500');
-        micBtn.classList.remove('neon-glow-blue', 'from-cyan-500', 'to-cyan-400');
-        
-        userDialogue.textContent = "「ターゲットは20〜30代の若手社会人で、AIを活用したリアルタイム即答トレーニングを提供します。」";
-        userDialogue.classList.remove('italic');
-        userDialogue.classList.add('text-slate-100');
-
-        setTimeout(() => {
-          if (isSpeaking) {
-            aiDialogue.textContent = "「なるほど!レスポンス速度と習慣化の仕掛けについての強みは?」";
-            aiStatus.innerHTML = `<i class="fa-solid fa-bolt text-brand-blue mr-1.5"></i> AIが応答中 (0.4s)`;
-          }
-        }, 2500);
-
-      } else {
-        soundWave.classList.add('wave-inactive');
-        glowCircle.classList.remove('bg-brand-blue/30', 'scale-125');
-        aiStatus.innerHTML = `<i class="fa-solid fa-headset text-brand-blue mr-1.5"></i> タップして次の発言をする`;
-        micBtn.classList.remove('neon-glow-orange', 'from-orange-500', 'to-amber-500');
-        micBtn.classList.add('neon-glow-blue', 'from-cyan-500', 'to-cyan-400');
-      }
-    });
-
-    // Mute Toggle
-    muteBtn.addEventListener('click', () => {
-      isMuted = !isMuted;
-      if (isMuted) {
-        muteBtn.classList.add('bg-red-500/20', 'text-red-400', 'border-red-500/50');
-      } else {
-        muteBtn.classList.remove('bg-red-500/20', 'text-red-400', 'border-red-500/50');
-      }
-    });
-
-    // End Sparring
-    endBtn.addEventListener('click', () => {
-      finishSparring();
-    });
-
-    function finishSparring() {
-      clearInterval(timerInterval);
-      screenA.classList.add('hidden');
-      screenB.classList.remove('hidden');
-      screenB.classList.add('flex');
-    }
-
-    // Restart Sparring
-    restartBtn.addEventListener('click', () => {
-      secondsLeft = 180;
-      isTimerRunning = false;
-      isSpeaking = false;
-      updateTimerDisplay();
-      
-      soundWave.classList.add('wave-inactive');
-      userDialogue.textContent = "(マイクボタンを押して回答を開始してください)";
-      userDialogue.classList.add('italic');
-      userDialogue.classList.remove('text-slate-100');
-
-      screenB.classList.remove('flex');
-      screenB.classList.add('hidden');
-      screenA.classList.remove('hidden');
-    });
-
-    // SNS Share Simulation
-    shareBtn.addEventListener('click', () => {
-      alert("「🔥 HabitSpeak AIで7日連続スパーリングを達成!即答力スコア: 88点!」をSNSへシェアする画面を起動しました。");
-    });
   </script>
 </body>
 </html>
