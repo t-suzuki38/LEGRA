@@ -3,450 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>あまりものレスキューWeb - 買い物不要の即席レシピジェネレーター</title>
-  <!-- Tailwind CSS CDN -->
+  <title>OshiPocket(推しポケット) - 推し活専用オールインワン家計簿&スケジュール</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="[link removed]">
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="[link removed]">
-  <link rel="preconnect" href="[link removed]" crossorigin>
-  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
-              orange: '#FF7A00',
-              green: '#2ECC71',
-              bg: '#FAFAFA'
+              navy: '#1A1A2E',
+              purple: '#E94560',
+              accent: '#00B4D8',
+              gold: '#FFD700',
+              plum: '#2D1E2F'
             }
-          },
-          fontFamily: {
-            sans: ['Noto Sans JP', 'sans-serif'],
           }
         }
       }
     }
   </script>
   <style>
+    @import url('[link removed]');
     body {
-      background-color: #FAFAFA;
       font-family: 'Noto Sans JP', sans-serif;
     }
-    .custom-shadow {
-      box-shadow: 0 10px 25px -5px rgba(255, 122, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    }
-    .card-shadow {
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    .glass-card {
+      background: rgba(26, 26, 46, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(233, 69, 96, 0.2);
     }
   </style>
 </head>
-<body class="text-gray-800 antialiased flex flex-col min-h-screen">
-
-  <!-- Header -->
-  <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <a href="#" class="flex items-center space-x-2">
-        <div class="bg-[#FF7A00] text-white p-2 rounded-xl flex items-center justify-center w-10 h-10 shadow-sm">
-          <i class="fa-solid fa-utensils text-lg"></i>
-        </div>
-        <span class="font-bold text-xl tracking-tight text-gray-900">あまりものレスキュー</span>
-      </a>
-      <nav class="flex items-center space-x-6 text-sm font-medium">
-        <a href="#how-to-use" class="text-gray-600 hover:text-[#FF7A00] transition">使い方</a>
-        <a href="#recommended-goods" class="text-gray-600 hover:text-[#FF7A00] transition">おすすめキッチングッズ</a>
-      </nav>
+<body class="bg-[#0f0f1a] text-gray-100 min-h-screen flex flex-col justify-between selection:bg-[#E94560] selection:text-white">
+  <!-- ヘッダー -->
+  <header class="sticky top-0 z-50 glass-card border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="relative">
+        <img src="[link removed]" alt="推しアイコン" class="w-10 h-10 rounded-full border-2 border-[#E94560] object-cover">
+        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1A1A2E] rounded-full"></span>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold text-white flex items-center gap-1">
+          <span>OshiPocket</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#E94560]/20 text-[#E94560]">推し: 莉犬 (Red)</span>
+        </h1>
+        <p class="text-xs text-gray-400">当落発表まであと 3日</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button class="relative text-gray-300 hover:text-white transition p-1">
+        <i class="fa-solid fa-bell text-lg"></i>
+        <span class="absolute top-1 right-1 w-2 h-2 bg-[#E94560] rounded-full"></span>
+      </button>
+      <button class="text-gray-300 hover:text-white transition p-1">
+        <i class="fa-solid fa-gear text-lg"></i>
+      </button>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="bg-gradient-to-b from-orange-50/60 to-[#FAFAFA] py-12 md:py-16">
-    <div class="max-w-4xl mx-auto px-4 text-center">
-      <div class="inline-flex items-center space-x-2 bg-emerald-50 text-[#2ECC71] px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border border-emerald-100">
-        <i class="fa-solid fa-leaf"></i>
-        <span>買い物不要の即席レシピジェネレーター</span>
-      </div>
-      <h1 class="text-3xl md:text-5xl font-black text-gray-900 leading-tight mb-4">
-        追加の買い物ゼロ!<br class="hidden sm:inline">今ある食材だけで今すぐ作れる即席レシピ
-      </h1>
-      <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-        アプリ不要でブラウザから即座に利用可能。あまりものの食材と調味料を選ぶだけで、無駄なく作れるおいしいレシピを提案します。
-      </p>
-    </div>
-  </section>
-
-  <!-- Form Section: 厳格な食材制約UI -->
-  <main class="max-w-4xl mx-auto px-4 pb-16 flex-grow w-full">
-    <div class="bg-white rounded-3xl p-6 md:p-10 card-shadow border border-gray-100">
-      
-      <!-- Step 1: 手持ち食材の選択 -->
-      <div class="mb-10">
-        <div class="flex items-center space-x-3 mb-4">
-          <span class="bg-[#FF7A00] text-white text-xs font-bold px-3 py-1 rounded-full">STEP 1</span>
-          <h2 class="text-xl font-bold text-gray-900">手持ち食材の選択</h2>
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-6 pb-24">
+    <!-- リアルタイム予算残高カード -->
+    <div class="glass-card rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-32 h-32 bg-[#E94560]/15 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">今月の推し活予算残高</p>
+          <h2 class="text-2xl font-extrabold tracking-tight text-white mt-1">¥42,800 <span class="text-xs font-normal text-gray-400">/ ¥80,000</span></h2>
         </div>
-        <p class="text-sm text-gray-500 mb-4">家にある食材をタップして選択するか、追加フォームから入力してください。</p>
-
-        <!-- カテゴリ別ワンタップ選択タグ -->
-        <div class="space-y-4 mb-6">
-          <div>
-            <span class="text-xs font-bold text-gray-400 block mb-2"><i class="fa-solid fa-drumstick-bite mr-1"></i> 肉・魚</span>
-            <div class="flex flex-wrap gap-2" id="meat-fish-tags">
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">豚コマ肉</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">鶏もも肉</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">ツナ缶</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">鮭切り身</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">ウインナー</button>
-            </div>
-          </div>
-
-          <div>
-            <span class="text-xs font-bold text-gray-400 block mb-2"><i class="fa-solid fa-carrot mr-1"></i> 野菜・きのこ</span>
-            <div class="flex flex-wrap gap-2" id="veggie-tags">
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">キャベツ</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">玉ねぎ</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">人参</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">もやし</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">しめじ</button>
-            </div>
-          </div>
-
-          <div>
-            <span class="text-xs font-bold text-gray-400 block mb-2"><i class="fa-solid fa-egg mr-1"></i> 卵・豆腐・その他</span>
-            <div class="flex flex-wrap gap-2" id="other-tags">
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">卵</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">豆腐</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">チーズ</button>
-              <button onclick="toggleTag(this)" class="tag-btn bg-gray-100 hover:bg-orange-50 hover:text-[#FF7A00] text-gray-700 text-sm font-medium px-3.5 py-1.5 rounded-xl transition border border-transparent">うどん</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- インクリメンタル検索付きの食材追加入力フォーム -->
-        <div class="relative mb-4">
-          <div class="flex items-center bg-gray-50 rounded-2xl border border-gray-200 focus-within:border-[#FF7A00] focus-within:ring-2 focus-within:ring-orange-100 transition px-4 py-2">
-            <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
-            <input type="text" id="ingredient-input" placeholder="その他の食材を入力して追加 (例: じゃがいも)" class="bg-transparent border-none outline-none text-sm w-full py-1 text-gray-800 placeholder-gray-400" onkeydown="handleInputKeydown(event)">
-            <button onclick="addCustomIngredient()" class="bg-[#FF7A00] text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-orange-600 transition shrink-0 ml-2">追加</button>
-          </div>
-        </div>
-
-        <!-- Selected Tags Display Area -->
-        <div class="bg-orange-50/50 rounded-2xl p-4 border border-orange-100/60 min-h-[60px]">
-          <span class="text-xs font-bold text-[#FF7A00] block mb-2">選択中の食材:</span>
-          <div id="selected-ingredients" class="flex flex-wrap gap-2">
-            <!-- Selected items appear here dynamically -->
-          </div>
-        </div>
-      </div>
-
-      <hr class="border-gray-100 my-8">
-
-      <!-- Step 2: 手持ち調味料のチェック -->
-      <div class="mb-10">
-        <div class="flex items-center space-x-3 mb-4">
-          <span class="bg-[#2ECC71] text-white text-xs font-bold px-3 py-1 rounded-full">STEP 2</span>
-          <h2 class="text-xl font-bold text-gray-900">手持ち調味料のチェック</h2>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">家にある基本調味料のチェックボックス一覧(足りない調味料はAIが代用提案します)。</p>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="醤油" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">醤油</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="塩・コショウ" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">塩・コショウ</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="砂糖" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">砂糖</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="料理酒" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">料理酒</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" id="mirin-checkbox" value="みりん" class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">みりん</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="味噌" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">味噌</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="マヨネーズ" checked class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">マヨネーズ</span>
-          </label>
-          <label class="flex items-center p-3 rounded-xl border border-gray-200 hover:border-[#2ECC71] cursor-pointer transition bg-white">
-            <input type="checkbox" value="めんつゆ" class="w-4 h-4 text-[#2ECC71] rounded border-gray-300 focus:ring-[#2ECC71]">
-            <span class="ml-2.5 text-sm font-medium text-gray-700">めんつゆ</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- 検索ボタン -->
-      <div class="text-center pt-2">
-        <button onclick="generateRecipe()" class="w-full sm:w-auto px-10 py-4 bg-[#FF7A00] hover:bg-orange-600 text-white font-bold text-lg rounded-2xl shadow-lg custom-shadow transform hover:-translate-y-0.5 active:translate-y-0 transition flex items-center justify-center mx-auto space-x-3">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>手持ちの食材だけでレシピを生成</span>
-        </button>
-      </div>
-
-    </div>
-
-    <!-- レシピ検索結果 & 代用調味料提案エリア -->
-    <div id="result-section" class="mt-12 hidden">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-black text-gray-900 flex items-center space-x-2">
-          <i class="fa-solid fa-utensils text-[#FF7A00]"></i>
-          <span>生成されたレスキューレシピ</span>
-        </h2>
-        <span class="text-xs sm:text-sm font-semibold text-[#2ECC71] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-          <i class="fa-solid fa-check mr-1"></i> 追加買い出し不要
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+          <i class="fa-solid fa-shield-halved"></i> 健全 53%
         </span>
       </div>
-
-      <!-- レシピ結果カード -->
-      <div class="grid md:grid-cols-2 gap-6 mb-8">
-        
-        <!-- Recipe Card 1 -->
-        <div class="bg-white rounded-3xl overflow-hidden card-shadow border border-gray-100 flex flex-col">
-          <div class="relative h-48 bg-gray-100">
-            <img src="[link removed]" alt="豚肉とキャベツのスタミナ炒め" class="w-full h-full object-cover">
-            <div class="absolute top-3 left-3 bg-[#FF7A00] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-              入力した食材のみで作れる
-            </div>
-            <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-lg">
-              <i class="fa-regular fa-clock mr-1"></i> 調理時間: 10分
-            </div>
-          </div>
-          <div class="p-6 flex-grow flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">豚コマ肉とキャベツの甘辛スタミナ炒め</h3>
-              <p class="text-xs text-gray-500 mb-4">使用する手持ち食材: 豚コマ肉、キャベツ、玉ねぎ</p>
-              <div class="space-y-1.5 text-sm text-gray-600 mb-4">
-                <div class="flex items-start"><span class="font-bold text-[#FF7A00] mr-2">1.</span> 食材を食べやすい大きさにカットします。</div>
-                <div class="flex items-start"><span class="font-bold text-[#FF7A00] mr-2">2.</span> フライパンで豚肉を炒め、色が変わったら野菜を投入。</div>
-                <div class="flex items-start"><span class="font-bold text-[#FF7A00] mr-2">3.</span> 醤油・酒・砂糖(+下記代用みりん)を絡めて完成!</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recipe Card 2 -->
-        <div class="bg-white rounded-3xl overflow-hidden card-shadow border border-gray-100 flex flex-col">
-          <div class="relative h-48 bg-gray-100">
-            <img src="[link removed]" alt="具だくさん即席スープ" class="w-full h-full object-cover">
-            <div class="absolute top-3 left-3 bg-[#2ECC71] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-              超時短レスキュー
-            </div>
-            <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-lg">
-              <i class="fa-regular fa-clock mr-1"></i> 調理時間: 7分
-            </div>
-          </div>
-          <div class="p-6 flex-grow flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">あまりもの野菜とふんわり卵の旨味スープ</h3>
-              <p class="text-xs text-gray-500 mb-4">使用する手持ち食材: 卵、キャベツ、人参、しめじ</p>
-              <div class="space-y-1.5 text-sm text-gray-600 mb-4">
-                <div class="flex items-start"><span class="font-bold text-[#2ECC71] mr-2">1.</span> 鍋にお湯を沸かし、余り野菜を細切りにして煮ます。</div>
-                <div class="flex items-start"><span class="font-bold text-[#2ECC71] mr-2">2.</span> 醤油と塩コショウで味を調えます。</div>
-                <div class="flex items-start"><span class="font-bold text-[#2ECC71] mr-2">3.</span> 溶き卵を回し入れ、ふんわり固まったら出来上がり。</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <!-- プログレスバー -->
+      <div class="w-full bg-gray-800/80 rounded-full h-2.5 mb-3 overflow-hidden p-0.5">
+        <div class="bg-gradient-to-r from-[#00B4D8] to-[#E94560] h-full rounded-full transition-all duration-500" style="width: 53%"></div>
       </div>
-
-      <!-- 代用調味料提案エンジン表示ブロック -->
-      <div class="bg-emerald-50/70 border border-emerald-200 rounded-3xl p-6 md:p-8 mb-8">
-        <div class="flex items-center space-x-3 mb-4">
-          <div class="bg-[#2ECC71] text-white p-2.5 rounded-xl">
-            <i class="fa-solid fa-flask text-lg"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-bold text-gray-900">代用調味料提案エンジン</h3>
-            <p class="text-xs text-gray-600">手持ち調味料から科学的に味を再現する代用アイデア</p>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 border border-emerald-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center space-x-3">
-            <span class="text-red-500 font-bold text-xs sm:text-sm bg-red-50 px-2.5 py-1 rounded-lg">「みりん」が無い場合</span>
-            <i class="fa-solid fa-arrow-right text-gray-400 text-xs"></i>
-            <span class="text-emerald-700 font-bold text-xs sm:text-sm bg-emerald-100 px-2.5 py-1 rounded-lg">「酒 + 砂糖」で代用再現</span>
-          </div>
-          <div class="text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-full sm:w-auto text-center">
-            配合比率: <span class="font-bold text-gray-800">酒 大さじ1 : 砂糖 大さじ1/3</span>
-          </div>
-        </div>
+      <div class="flex justify-between text-xs text-gray-400">
+        <span>支出合計: ¥37,200</span>
+        <span>目標貯金: ¥20,000</span>
       </div>
-
-      <!-- ボトム・シェアエリア -->
-      <div class="bg-white rounded-3xl p-6 border border-gray-100 text-center card-shadow mb-12">
-        <h4 class="font-bold text-gray-800 mb-2">完成した料理をSNSでシェアしよう!</h4>
-        <p class="text-xs text-gray-500 mb-4">「#あまりものレシピ」でSNSへ完成写真を投稿できるシェアボタン</p>
-        <div class="flex justify-center space-x-3">
-          <button class="bg-black text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-800 transition flex items-center space-x-2">
-            <i class="fa-brands fa-x-twitter"></i>
-            <span>#あまりものレシピ で投稿</span>
-          </button>
-        </div>
-      </div>
-
     </div>
 
-    <!-- おすすめキッチングッズ・アフィリエイト枠 -->
-    <section id="recommended-goods" class="mt-12">
-      <div class="text-center mb-6">
-        <h3 class="text-xl font-bold text-gray-900">自炊を快適にするキッチン家電・便利グッズ</h3>
-        <p class="text-xs text-gray-500 mt-1">おすすめの自炊サポート便利アイテム</p>
+    <!-- カウントダウン&クイックアクセス -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="glass-card p-4 rounded-xl flex flex-col justify-between hover:border-[#E94560]/50 transition cursor-pointer group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-8 h-8 rounded-lg bg-[#E94560]/10 flex items-center justify-center text-[#E94560]">
+            <i class="fa-solid fa-ticket"></i>
+          </div>
+          <span class="text-[10px] bg-[#E94560]/20 text-[#E94560] px-2 py-0.5 rounded font-medium">当落</span>
+        </div>
+        <div>
+          <h3 class="text-xs text-gray-400 group-hover:text-gray-300 transition">冬ツアー東京公演</h3>
+          <p class="text-sm font-bold text-white mt-0.5">あと3日 発表</p>
+        </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-        <div class="bg-white p-4 rounded-2xl border border-gray-100 card-shadow flex items-center space-x-4">
-          <div class="w-14 h-14 bg-orange-50 rounded-xl flex-shrink-0 flex items-center justify-center text-[#FF7A00]">
-            <i class="fa-solid fa-microchip text-xl"></i>
+      <div class="glass-card p-4 rounded-xl flex flex-col justify-between hover:border-[#00B4D8]/50 transition cursor-pointer group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-8 h-8 rounded-lg bg-[#00B4D8]/10 flex items-center justify-center text-[#00B4D8]">
+            <i class="fa-solid fa-plane-departure"></i>
           </div>
-          <div>
-            <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded font-bold">PR</span>
-            <h4 class="text-sm font-bold text-gray-800 line-clamp-1">万能シリコンスチーマー</h4>
-            <p class="text-xs text-gray-500 mt-0.5">レンジで即席ヘルシー調理</p>
-          </div>
+          <span class="text-[10px] bg-[#00B4D8]/20 text-[#00B4D8] px-2 py-0.5 rounded font-medium">遠征</span>
         </div>
-
-        <div class="bg-white p-4 rounded-2xl border border-gray-100 card-shadow flex items-center space-x-4">
-          <div class="w-14 h-14 bg-emerald-50 rounded-xl flex-shrink-0 flex items-center justify-center text-[#2ECC71]">
-            <i class="fa-solid fa-blender text-xl"></i>
-          </div>
-          <div>
-            <span class="text-[10px] bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded font-bold">PR</span>
-            <h4 class="text-sm font-bold text-gray-800 line-clamp-1">コンパクトチョッパー</h4>
-            <p class="text-xs text-gray-500 mt-0.5">あまりもの野菜を秒でみじん切り</p>
-          </div>
+        <div>
+          <h3 class="text-xs text-gray-400 group-hover:text-gray-300 transition">大阪遠征 (宿・交通)</h3>
+          <p class="text-sm font-bold text-white mt-0.5">予約完了</p>
         </div>
+      </div>
+    </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-gray-100 card-shadow flex items-center space-x-4">
-          <div class="w-14 h-14 bg-blue-50 rounded-xl flex-shrink-0 flex items-center justify-center text-blue-500">
-            <i class="fa-solid fa-box text-xl"></i>
+    <!-- 直近の支出・遠征費サマリー -->
+    <section class="glass-card rounded-2xl p-5 shadow-lg">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-receipt text-[#E94560]"></i> 直近の推し活支出
+        </h3>
+        <button class="text-xs text-[#E94560] hover:underline font-medium">すべて見る</button>
+      </div>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between py-2.5 border-b border-gray-800/60">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-pink-500/10 flex items-center justify-center text-[#E94560]">
+              <i class="fa-solid fa-compact-disc"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white">ニューシングルCD 3形態</p>
+              <p class="text-[10px] text-gray-400">10月20日 ・ グッズ・CD</p>
+            </div>
           </div>
-          <div>
-            <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded font-bold">PR</span>
-            <h4 class="text-sm font-bold text-gray-800 line-clamp-1">密閉保存容器セット</h4>
-            <p class="text-xs text-gray-500 mt-0.5">食材の鮮度を長持ち保存</p>
-          </div>
+          <span class="text-xs font-bold text-white">-¥4,500</span>
         </div>
-
+        <div class="flex items-center justify-between py-2.5 border-b border-gray-800/60">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-[#00B4D8]">
+              <i class="fa-solid fa-hotel"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white">遠征ホテル前払い (大阪)</p>
+              <p class="text-[10px] text-gray-400">10月18日 ・ 遠征費</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-white">-¥12,800</span>
+        </div>
+        <div class="flex items-center justify-between py-2.5">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400">
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white">アリーナツアーチケット代</p>
+              <p class="text-[10px] text-gray-400">10月15日 ・ チケット</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-white">-¥9,800</span>
+        </div>
       </div>
     </section>
 
+    <!-- 推し活貯金・グッズ進捗 -->
+    <section class="glass-card rounded-2xl p-5 border-l-4 border-l-[#FFD700] shadow-lg">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-piggy-bank text-[#FFD700]"></i> 未来の遠征・グッズ貯金
+        </h3>
+        <span class="text-xs text-[#FFD700] font-bold bg-[#FFD700]/10 px-2 py-0.5 rounded-full">達成率 75%</span>
+      </div>
+      <p class="text-xs text-gray-300 mb-3">「次のドームツアー遠征費」に向けて順調に貯金が続いています!</p>
+      <div class="flex items-center justify-between text-xs bg-gray-900/50 p-3 rounded-xl border border-gray-800">
+        <span class="text-gray-400">貯金箱の中身:</span>
+        <span class="text-white font-bold text-sm">¥60,000 <span class="text-gray-400 font-normal text-xs">/ ¥80,000</span></span>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-gray-100 py-8 text-center text-xs text-gray-400">
-    <div class="max-w-4xl mx-auto px-4">
-      <p class="mb-2">あまりものレスキューWeb - 買い物不要の即席レシピジェネレーター</p>
-      <p>&copy; 2026 あまりものレスキュー. All rights reserved.</p>
-    </div>
-  </footer>
+  <!-- フッターナビゲーション -->
+  <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-gray-800 px-6 py-2.5 z-50 max-w-md mx-auto shadow-2xl">
+    <ul class="flex justify-between items-center">
+      <li>
+        <a href="#" class="flex flex-col items-center text-[#E94560] transition-transform active:scale-95">
+          <i class="fa-solid fa-house text-lg"></i>
+          <span class="text-[10px] mt-1 font-medium">ホーム</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
+          <i class="fa-solid fa-wallet text-lg"></i>
+          <span class="text-[10px] mt-1 font-medium">家計簿</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
+          <i class="fa-solid fa-plane text-lg"></i>
+          <span class="text-[10px] mt-1 font-medium">遠征タビ</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
+          <i class="fa-solid fa-box-archive text-lg"></i>
+          <span class="text-[10px] mt-1 font-medium">グッズ台帳</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
+          <i class="fa-solid fa-user-heart text-lg"></i>
+          <span class="text-[10px] mt-1 font-medium">推し設定</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
-  <!-- JavaScript Logic -->
   <script>
-    const selectedIngredients = new Set(['豚コマ肉', 'キャベツ']);
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set initial tag highlights
-      const buttons = document.querySelectorAll('.tag-btn');
-      buttons.forEach(btn => {
-        if (selectedIngredients.has(btn.innerText.trim())) {
-          btn.classList.add('bg-[#FF7A00]', 'text-white');
-          btn.classList.remove('bg-gray-100', 'text-gray-700');
-        }
+    document.querySelectorAll('nav a').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('nav a').forEach(i => {
+          i.classList.remove('text-[#E94560]');
+          i.classList.add('text-gray-400');
+        });
+        this.classList.remove('text-gray-400');
+        this.classList.add('text-[#E94560]');
       });
-      renderSelectedTags();
     });
-
-    // Toggle Tag Selection
-    function toggleTag(button) {
-      const ingredient = button.innerText.trim();
-      if (selectedIngredients.has(ingredient)) {
-        selectedIngredients.delete(ingredient);
-        button.classList.remove('bg-[#FF7A00]', 'text-white');
-        button.classList.add('bg-gray-100', 'text-gray-700');
-      } else {
-        selectedIngredients.add(ingredient);
-        button.classList.add('bg-[#FF7A00]', 'text-white');
-        button.classList.remove('bg-gray-100', 'text-gray-700');
-      }
-      renderSelectedTags();
-    }
-
-    // Add Custom Ingredient
-    function addCustomIngredient() {
-      const input = document.getElementById('ingredient-input');
-      const value = input.value.trim();
-      if (value && !selectedIngredients.has(value)) {
-        selectedIngredients.add(value);
-        renderSelectedTags();
-        input.value = '';
-      }
-    }
-
-    function handleInputKeydown(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        addCustomIngredient();
-      }
-    }
-
-    // Remove Selected Ingredient
-    function removeIngredient(ingredient) {
-      selectedIngredients.delete(ingredient);
-      
-      const buttons = document.querySelectorAll('.tag-btn');
-      buttons.forEach(btn => {
-        if (btn.innerText.trim() === ingredient) {
-          btn.classList.remove('bg-[#FF7A00]', 'text-white');
-          btn.classList.add('bg-gray-100', 'text-gray-700');
-        }
-      });
-
-      renderSelectedTags();
-    }
-
-    // Render Selected Tags
-    function renderSelectedTags() {
-      const container = document.getElementById('selected-ingredients');
-      container.innerHTML = '';
-      
-      if (selectedIngredients.size === 0) {
-        container.innerHTML = '<span class="text-xs text-gray-400 italic">食材が選択されていません</span>';
-        return;
-      }
-
-      selectedIngredients.forEach(item => {
-        const chip = document.createElement('div');
-        chip.className = 'inline-flex items-center bg-[#FF7A00] text-white text-xs font-medium px-3 py-1 rounded-xl shadow-sm';
-        chip.innerHTML = `
-          <span>${item}</span>
-          <button onclick="removeIngredient('${item}')" class="ml-1.5 hover:text-gray-200 transition">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        `;
-        container.appendChild(chip);
-      });
-    }
-
-    // Recipe Generation Simulation
-    function generateRecipe() {
-      const resultSection = document.getElementById('result-section');
-      resultSection.classList.remove('hidden');
-      resultSection.scrollIntoView({ behavior: 'smooth' });
-    }
   </script>
 </body>
 </html>
