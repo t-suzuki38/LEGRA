@@ -1,457 +1,299 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ピタッとあまりもの献立AI</title>
-  <!-- Tailwind CSS -->
+  <title>ツン読プラットフォーム - 読書ゲーミフィケーション</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="[link removed]">
-  <!-- Google Fonts -->
-  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brandGreen: '#4CAF50',
-            brandGreenDark: '#388E3C',
-            brandOrange: '#FF9800',
-            brandOrangeHover: '#F57C00',
-            bgLight: '#F8F9FA'
-          },
-          fontFamily: {
-            sans: ['"Noto Sans JP"', 'sans-serif']
+            deepNavy: '#0F172A',
+            neonPurple: '#8B5CF6',
+            emeraldGreen: '#10B981',
           }
         }
       }
     }
   </script>
+  <link rel="stylesheet" href="[link removed]">
+  <link href="[link removed]" rel="stylesheet">
   <style>
     body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: #F8F9FA;
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background-color: #0F172A;
+      color: #F8FAFC;
+    }
+    .font-mono-custom {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .glass-card-accent {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
   </style>
 </head>
-<body class="text-gray-800 pb-24 md:pb-12">
+<body class="bg-deepNavy text-slate-100 min-h-screen pb-24">
 
-  <!-- ヘッダーエリア -->
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-      <!-- 左側: アプリロゴ -->
-      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <div class="w-10 h-10 rounded-xl bg-brandGreen text-white flex items-center justify-center font-bold text-xl shadow-md">
-          <i class="fa-solid fa-utensils"></i>
+  <!-- ヘッダー -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonPurple to-emeraldGreen flex items-center justify-center shadow-lg shadow-neonPurple/30">
+        <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-sm tracking-wide text-slate-100">ツン読アドベンチャー</h1>
+        <span class="text-xs text-emeraldGreen font-mono-custom">LV. 14 冒険者</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <div class="hidden sm:block text-right">
+        <div class="text-xs text-slate-400 font-mono-custom">EXP: 3,450 / 5,000</div>
+        <div class="w-28 bg-slate-800 h-2 rounded-full overflow-hidden mt-1">
+          <div class="bg-gradient-to-r from-neonPurple to-emeraldGreen h-full w-[69%]"></div>
         </div>
-        <span class="font-bold text-lg md:text-xl text-gray-800 tracking-tight">ピタッとあまりもの献立AI</span>
       </div>
-      <!-- 右側: 通知ベルアイコン / マイページ・設定アイコン -->
-      <div class="flex items-center space-x-2">
-        <button aria-label="通知" class="relative p-2.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
-          <i class="fa-regular fa-bell text-lg"></i>
-          <span class="absolute top-2 right-2 w-2 h-2 bg-brandOrange rounded-full"></span>
-        </button>
-        <button aria-label="マイページ・設定" class="p-2.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
-          <i class="fa-regular fa-user text-lg"></i>
-        </button>
-      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-neonPurple/20 text-neonPurple border border-neonPurple/30 flex items-center gap-1">
+        <i class="fa-solid fa-crown text-[10px]"></i> プレミアム
+      </span>
+      <button class="w-9 h-9 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white transition">
+        <i class="fa-solid fa-gear"></i>
+      </button>
     </div>
   </header>
 
-  <!-- メインコンテンツエリア -->
-  <main class="max-w-5xl mx-auto px-4 pt-6 space-y-8">
+  <!-- メインコンテンツ -->
+  <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
-    <!-- メインビジュアル / 入力エリア(ホーム画面) -->
-    <section class="bg-gradient-to-br from-green-50 via-white to-orange-50 rounded-3xl p-6 md:p-8 border border-green-100 shadow-sm">
-      <div class="text-center max-w-2xl mx-auto mb-6">
-        <span class="inline-block bg-green-100 text-brandGreenDark text-xs font-bold px-3 py-1 rounded-full mb-3">
-          <i class="fa-solid fa-leaf mr-1"></i> フードロス削減 & 節約サポート
-        </span>
-        <!-- キャッチコピー -->
-        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 leading-snug">
-          追加買い出しゼロ!<br class="sm:hidden">あまりもの食材・調味料で今すぐ作れる
-        </h1>
+    <!-- ダッシュボード / 進捗グラフィックカード -->
+    <section class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-xl shadow-neonPurple/5">
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-neonPurple/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-10 -top-10 w-48 h-48 bg-emeraldGreen/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+          <span class="text-xs font-mono-custom text-neonPurple uppercase tracking-wider">Holotower Progress</span>
+          <h2 class="text-xl font-bold mt-1">積読タワー消化率</h2>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
+          <i class="fa-solid fa-book text-emeraldGreen"></i>
+          <span class="text-sm font-mono-custom">残タワー高: 1.4m (12冊)</span>
+        </div>
       </div>
 
-      <!-- 手持ち条件フィルターブロック -->
-      <div class="bg-white rounded-2xl p-5 md:p-6 shadow-md border border-gray-100 space-y-5">
-        <!-- クイック検索バー -->
-        <div>
-          <label class="block text-sm font-bold text-gray-700 mb-2">
-            <i class="fa-solid fa-magnifying-glass text-brandGreen mr-1"></i> 手持ち食材・調味料・調理器具の入力
-          </label>
-          <div class="flex gap-2">
-            <input type="text" id="itemInput" placeholder="例: キャベツ, 醤油, フライパン..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brandGreen focus:border-transparent outline-none transition-all text-sm">
-            <button onclick="addItemFromInput()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-3 rounded-xl font-bold transition-all text-sm flex items-center">
-              <i class="fa-solid fa-plus mr-1"></i> 追加
-            </button>
+      <!-- プログレスリング&バー -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <div class="col-span-2 space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-300">今月の消化クエスト完了度</span>
+            <span class="font-mono-custom text-emeraldGreen font-bold">78%</span>
           </div>
-        </div>
-
-        <!-- 在庫タグ選択UI (冷蔵庫の残り物カテゴリ別選択) -->
-        <div>
-          <span class="block text-xs font-semibold text-gray-500 mb-2">ワンタップ追加(冷蔵庫のよくある余りもの)</span>
-          <div class="flex flex-wrap gap-2" id="quickTags">
-            <button onclick="toggleTag(this, 'キャベツ')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">キャベツ</button>
-            <button onclick="toggleTag(this, '豚肉')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">豚肉</button>
-            <button onclick="toggleTag(this, '豆腐')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">豆腐</button>
-            <button onclick="toggleTag(this, '卵')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">卵</button>
-            <button onclick="toggleTag(this, '醤油')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">醤油</button>
-            <button onclick="toggleTag(this, '電子レンジ')" class="tag-btn bg-gray-100 text-gray-700 hover:bg-green-50 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border border-gray-200">電子レンジ</button>
+          <div class="w-full bg-slate-900/80 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+            <div class="bg-gradient-to-r from-neonPurple to-emeraldGreen h-full rounded-full transition-all duration-1000" style="width: 78%;"></div>
           </div>
+          <p class="text-xs text-slate-400">あと3冊読了すると「知識の魔導書庫」ランクにアップグレードします!</p>
         </div>
-
-        <!-- 選択中の手持ち条件表示エリア -->
-        <div class="pt-2 border-t border-gray-100">
-          <span class="block text-xs font-semibold text-gray-500 mb-2">現在設定中の条件:</span>
-          <div id="selectedTagsList" class="flex flex-wrap gap-2">
-            <!-- JavaScriptで動的に生成 -->
-          </div>
-        </div>
-
-        <!-- 厳密フィルター・代替調味料提案のオン/オフ切り替えスイッチ -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
-          <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
-            <div>
-              <p class="text-sm font-bold text-gray-800">厳密フィルター</p>
-              <p class="text-xs text-gray-500">手持ち条件のみで作れるレシピに限定</p>
+        <div class="flex justify-center">
+          <div class="relative w-28 h-28 flex items-center justify-center rounded-full bg-slate-900/80 border-2 border-neonPurple/40 shadow-inner">
+            <div class="text-center">
+              <span class="text-2xl font-bold font-mono-custom text-white">LV.14</span>
+              <div class="text-[10px] text-emeraldGreen font-mono-custom">NEXT +1,550XP</div>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="strictFilter" class="sr-only peer" checked>
-              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brandGreen"></div>
-            </label>
-          </div>
-
-          <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
-            <div>
-              <p class="text-sm font-bold text-gray-800">代替調味料提案</p>
-              <p class="text-xs text-gray-500">不足調味料の代用ガイドを表示</p>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="substituteToggle" class="sr-only peer" checked>
-              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brandGreen"></div>
-            </label>
           </div>
         </div>
+      </div>
 
-        <!-- プライマリーボタン -->
-        <button onclick="generateRecipes()" class="w-full bg-brandOrange hover:bg-brandOrangeHover text-white text-lg font-bold py-4 rounded-2xl shadow-lg shadow-orange-200 transition-all transform active:scale-[0.99] flex items-center justify-center space-x-2">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>献立を自動作成する</span>
+      <!-- ハイライトバナー -->
+      <div class="mt-6 bg-gradient-to-r from-emeraldGreen/10 to-neonPurple/10 rounded-xl p-4 border border-emeraldGreen/30 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-emeraldGreen/20 flex items-center justify-center text-emeraldGreen">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <div class="text-xs text-emeraldGreen font-mono-custom">DAILY QUEST</div>
+            <div class="text-sm font-bold text-slate-100">本日のクエスト: 15分間のマイクロリーディング</div>
+          </div>
+        </div>
+        <button class="bg-emeraldGreen hover:bg-emerald-600 text-deepNavy font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-emeraldGreen/20">
+          開始する
         </button>
       </div>
     </section>
 
-    <!-- レシピ提案・結果画面エリア -->
-    <section id="recipeResults" class="space-y-6">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <i class="fa-solid fa-utensils text-brandGreen"></i>
-          <span>提案レシピ一覧</span>
-        </h2>
-        <span class="text-xs text-gray-500 font-medium bg-gray-200 px-2.5 py-1 rounded-full">3件ヒット</span>
-      </div>
-
-      <!-- レシピ提案カードリスト (グリッド構造) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <!-- レシピカード 1 -->
-        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
-          <div>
-            <div class="relative h-44 bg-gray-200">
-              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
-              <!-- 一致度バッジ -->
-              <span class="absolute top-3 left-3 bg-brandGreen text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
-                <i class="fa-solid fa-circle-check"></i> 手持ち品のみで作成可能
-              </span>
-            </div>
-            <div class="p-5 space-y-3">
-              <h3 class="font-bold text-lg text-gray-800 leading-snug">残り野菜と豚肉の特製スタミナ炒め</h3>
-              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
-                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 15分</span>
-                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約450円</span>
-              </div>
-              
-              <!-- 代替調味料ガイド -->
-              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
-                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
-                <p>オイスターソースがない場合: <strong>「醤油+砂糖+中華だし」</strong>で代用可能</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- アクションボタン群 -->
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="startCooking('残り野菜と豚肉の特製スタミナ炒め')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-play text-xs"></i> 調理スタート
-            </button>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="shareSNS('残り野菜と豚肉の特製スタミナ炒め', 450)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                <i class="fa-solid fa-share-nodes"></i> SNSシェア
-              </button>
-              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
-                <i class="fa-solid fa-crown"></i> 栄養分析
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- レシピカード 2 -->
-        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
-          <div>
-            <div class="relative h-44 bg-gray-200">
-              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
-              <!-- 一致度バッジ -->
-              <span class="absolute top-3 left-3 bg-brandGreen text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
-                <i class="fa-solid fa-circle-check"></i> 手持ち品のみで作成可能
-              </span>
-            </div>
-            <div class="p-5 space-y-3">
-              <h3 class="font-bold text-lg text-gray-800 leading-snug">あまりもの豆腐と卵のふんわりスープ</h3>
-              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
-                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 10分</span>
-                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約200円</span>
-              </div>
-              
-              <!-- 代替調味料ガイド -->
-              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
-                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
-                <p>鶏ガラスープの素がない場合: <strong>「コンソメ+塩+ごま油」</strong>で代用可能</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- アクションボタン群 -->
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="startCooking('あまりもの豆腐と卵のふんわりスープ')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-play text-xs"></i> 調理スタート
-            </button>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="shareSNS('あまりもの豆腐と卵のふんわりスープ', 200)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                <i class="fa-solid fa-share-nodes"></i> SNSシェア
-              </button>
-              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
-                <i class="fa-solid fa-crown"></i> 栄養分析
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- レシピカード 3 -->
-        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col justify-between transition-transform hover:-translate-y-1">
-          <div>
-            <div class="relative h-44 bg-gray-200">
-              <img src="[link removed]" alt="完成料理写真" class="w-full h-full object-cover">
-              <!-- 一致度バッジ -->
-              <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
-                <i class="fa-solid fa-arrows-rotate"></i> 代替調味料を使用
-              </span>
-            </div>
-            <div class="p-5 space-y-3">
-              <h3 class="font-bold text-lg text-gray-800 leading-snug">キャベツとあまりもの調味料の和風パスタ</h3>
-              <div class="flex items-center justify-between text-xs text-gray-600 font-medium pt-1">
-                <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brandOrange"></i> 調理時間: 12分</span>
-                <span class="flex items-center gap-1 text-emerald-600 font-bold"><i class="fa-solid fa-piggy-bank"></i> 節約目安: 約350円</span>
-              </div>
-              
-              <!-- 代替調味料ガイド -->
-              <div class="substitute-guide bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
-                <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> 代替調味料ガイド</p>
-                <p>めんつゆがない場合: <strong>「醤油+本みりん+ほんだし」</strong>で代用可能</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- アクションボタン群 -->
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="startCooking('キャベツとあまりもの調味料の和風パスタ')" class="w-full bg-brandGreen hover:bg-brandGreenDark text-white py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-play text-xs"></i> 調理スタート
-            </button>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="shareSNS('キャベツとあまりもの調味料の和風パスタ', 350)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
-                <i class="fa-solid fa-share-nodes"></i> SNSシェア
-              </button>
-              <button onclick="showPremiumModal()" class="w-full bg-orange-50 hover:bg-orange-100 text-brandOrange font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 border border-orange-200">
-                <i class="fa-solid fa-crown"></i> 栄養分析
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 節約達成感・レポート可視化セクション -->
-    <section class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center space-x-4">
-        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brandOrange flex items-center justify-center text-2xl font-bold">
-          <i class="fa-solid fa-coins"></i>
-        </div>
-        <div>
-          <h4 class="font-bold text-gray-800 text-sm">今月の自炊・あまりもの活用成果</h4>
-          <p class="text-2xl font-extrabold text-brandGreen">累計 ¥12,400 節約 <span class="text-xs font-normal text-gray-500">(食材ロス削減: 3.2kg)</span></p>
-        </div>
-      </div>
-      <button onclick="switchTab('report')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2.5 rounded-xl font-bold text-xs transition-colors whitespace-nowrap">
-        節約レポートを見る <i class="fa-solid fa-chevron-right text-xs ml-1"></i>
+    <!-- タブ切り替えエリア -->
+    <div class="flex space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
+      <button onclick="switchTab('rpg')" id="btn-rpg" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-neonPurple text-white shadow-lg shadow-neonPurple/20 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-gamepad"></i> ツン読アドベンチャー(RPG)
       </button>
-    </section>
+      <button onclick="switchTab('ai')" id="btn-ai" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-brain"></i> Re:Book(AIコーチング)
+      </button>
+      <button onclick="switchTab('guild')" id="btn-guild" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-users"></i> 積読バスターズ(ギルド)
+      </button>
+    </div>
+
+    <!-- タブコンテンツ 1: RPG -->
+    <div id="tab-rpg" class="tab-content space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass-card rounded-2xl p-5 space-y-3">
+          <div class="flex justify-between items-start">
+            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-mono-custom bg-neonPurple/20 text-neonPurple border border-neonPurple/30">主力の積読本</span>
+            <span class="text-xs text-slate-400 font-mono-custom">HP: 85/100</span>
+          </div>
+          <h3 class="font-bold text-base text-slate-100">『リーディング・ファウンデーション』</h3>
+          <p class="text-xs text-slate-400">スキマ時間の読書量に応じてキャラクターが成長するゲーミフィケーション進行中。</p>
+          <div class="pt-2 flex justify-between items-center">
+            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mr-4">
+              <div class="bg-neonPurple h-full w-[45%]"></div>
+            </div>
+            <span class="text-xs font-mono-custom text-slate-300 whitespace-nowrap">45% 攻略</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 space-y-3">
+          <div class="flex justify-between items-start">
+            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-mono-custom bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30">討伐間近</span>
+            <span class="text-xs text-slate-400 font-mono-custom">HP: 20/100</span>
+          </div>
+          <h3 class="font-bold text-base text-slate-100">『ゼロからわかるデザインシステム』</h3>
+          <p class="text-xs text-slate-400">ストーリー・リワード設計により読書の罪悪感をエンタメの楽しさに変換。</p>
+          <div class="pt-2 flex justify-between items-center">
+            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mr-4">
+              <div class="bg-emeraldGreen h-full w-[85%]"></div>
+            </div>
+            <span class="text-xs font-mono-custom text-slate-300 whitespace-nowrap">85% 攻略</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- タブコンテンツ 2: AIコーチング -->
+    <div id="tab-ai" class="tab-content space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono-custom text-emeraldGreen">AI AUTO SCHEDULER</span>
+            <h3 class="text-lg font-bold">本日のAIカスタム読書スケジュール</h3>
+          </div>
+          <button class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
+            再生成する
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <label class="flex items-start gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800 cursor-pointer hover:bg-slate-900 transition">
+            <input type="checkbox" checked class="mt-1 accent-emeraldGreen w-4 h-4 rounded">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <span class="text-sm font-bold text-slate-200">07:30 - 通勤マイクロリーディング (15分)</span>
+                <span class="text-xs text-emeraldGreen font-mono-custom">完了済</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">『ゼロからわかるデザインシステム』第3章の要点自動分解パート</p>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800 cursor-pointer hover:bg-slate-900 transition">
+            <input type="checkbox" class="mt-1 accent-emeraldGreen w-4 h-4 rounded">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <span class="text-sm font-bold text-slate-200">12:30 - ランチタイム・定着度テスト (10分)</span>
+                <span class="text-xs text-neonPurple font-mono-custom">未実施</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">AIコーチによる3問の理解度チェッククイズに挑戦</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- タブコンテンツ 3: ギルド -->
+    <div id="tab-guild" class="tab-content space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="text-xs font-mono-custom text-neonPurple">SOCIAL GUILD</span>
+            <h3 class="text-lg font-bold">積読バスターズ - 第4支部ギルドフィード</h3>
+          </div>
+          <span class="text-xs bg-neonPurple/20 text-neonPurple px-3 py-1 rounded-full border border-neonPurple/30">メンバー 12名</span>
+        </div>
+
+        <div class="space-y-3">
+          <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-neonPurple to-emeraldGreen flex items-center justify-center font-bold text-xs">美</div>
+                <span class="text-sm font-semibold text-slate-200">ミサキさん</span>
+              </div>
+              <span class="text-xs text-slate-500 font-mono-custom">10分前</span>
+            </div>
+            <p class="text-xs text-slate-300">「思考の整理学」の積読タワーをまた一つ崩しました!ギルドボーナス獲得です🎉</p>
+          </div>
+
+          <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emeraldGreen to-blue-500 flex items-center justify-center font-bold text-xs">健</div>
+                <span class="text-sm font-semibold text-slate-200">ケンタさん</span>
+              </div>
+              <span class="text-xs text-slate-500 font-mono-custom">1時間前</span>
+            </div>
+            <p class="text-xs text-slate-300">今夜21時から「Re:Book」を使った同時読書会を開催します。参加お待ちしてます!</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
-  <!-- フッターナビゲーション -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-40">
-    <div class="max-w-md mx-auto grid grid-cols-4 h-16">
-      <!-- タブ1: ホーム -->
-      <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-brandGreen font-bold text-xs space-y-1">
+  <!-- ボトムナビゲーション (フローティング型バー) -->
+  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-[92%] max-w-md">
+    <div class="glass-card-accent rounded-2xl px-4 py-3 flex justify-around items-center shadow-2xl shadow-neonPurple/20">
+      <button class="flex flex-col items-center text-emeraldGreen transition">
         <i class="fa-solid fa-house text-lg"></i>
-        <span>ホーム</span>
+        <span class="text-[10px] mt-1 font-mono-custom">ホーム</span>
       </button>
-      <!-- タブ2: レシピ保存・栄養分析(プレミアム) -->
-      <button onclick="showPremiumModal()" id="tab-save" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1 relative">
-        <i class="fa-solid fa-bookmark text-lg"></i>
-        <span>保存・栄養</span>
-        <span class="absolute top-1 right-3 bg-brandOrange text-white text-[9px] px-1 rounded-full font-bold">PRO</span>
+      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-scroll text-lg"></i>
+        <span class="text-[10px] mt-1 font-mono-custom">クエスト</span>
       </button>
-      <!-- タブ3: 節約レポート -->
-      <button onclick="switchTab('report')" id="tab-report" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1">
-        <i class="fa-solid fa-chart-line text-lg"></i>
-        <span>節約レポート</span>
+      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-users-rectangle text-lg"></i>
+        <span class="text-[10px] mt-1 font-mono-custom">ギルド</span>
       </button>
-      <!-- タブ4: コミュニティ / シェア一覧 -->
-      <button onclick="switchTab('community')" id="tab-community" class="flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 font-medium text-xs space-y-1">
-        <i class="fa-solid fa-users text-lg"></i>
-        <span>シェア一覧</span>
+      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-user text-lg"></i>
+        <span class="text-[10px] mt-1 font-mono-custom">マイページ</span>
       </button>
     </div>
   </nav>
 
-  <!-- モーダル: 月額プレミアムプラン案内 -->
-  <div id="premiumModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 relative shadow-2xl">
-      <button onclick="closePremiumModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2">
-        <i class="fa-solid fa-xmark text-xl"></i>
-      </button>
-      <div class="text-center space-y-2">
-        <div class="w-14 h-14 bg-orange-100 text-brandOrange rounded-full flex items-center justify-center mx-auto text-2xl">
-          <i class="fa-solid fa-crown"></i>
-        </div>
-        <h3 class="text-xl font-bold text-gray-900">月額プレミアムプラン</h3>
-        <p class="text-xs text-gray-500">無制限レシピ保存 & 高精度AI栄養分析</p>
-      </div>
-      <div class="bg-orange-50 rounded-2xl p-4 border border-orange-100 space-y-3">
-        <div class="flex items-center space-x-3 text-sm text-gray-700">
-          <i class="fa-solid fa-circle-check text-brandOrange"></i>
-          <span>レシピの無制限お気に入り保存</span>
-        </div>
-        <div class="flex items-center space-x-3 text-sm text-gray-700">
-          <i class="fa-solid fa-circle-check text-brandOrange"></i>
-          <span>AIによるPFCバランス・栄養素分析</span>
-        </div>
-        <div class="flex items-center space-x-3 text-sm text-gray-700">
-          <i class="fa-solid fa-circle-check text-brandOrange"></i>
-          <span>週間節約レポート & 優先サポート</span>
-        </div>
-      </div>
-      <button onclick="alert('プレミアムプランの事前登録を受け付けました!')" class="w-full bg-brandOrange hover:bg-brandOrangeHover text-white font-bold py-3.5 rounded-xl shadow-md transition-all">
-        月額プレミアムを体験する
-      </button>
-    </div>
-  </div>
-
   <script>
-    // 在庫タグの初期状態
-    let selectedItems = ['キャベツ', '豚肉', '豆腐', '醤油'];
-
-    // 選択されたタグのレンダリング
-    function renderTags() {
-      const container = document.getElementById('selectedTagsList');
-      container.innerHTML = '';
-      selectedItems.forEach(item => {
-        const tag = document.createElement('span');
-        tag.className = 'inline-flex items-center gap-1 bg-green-100 text-brandGreenDark text-xs font-bold px-3 py-1.5 rounded-lg border border-green-200';
-        tag.innerHTML = `${item} <i class="fa-solid fa-xmark cursor-pointer hover:text-red-500 ml-1" onclick="removeItem('${item}')"></i>`;
-        container.appendChild(tag);
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.add('hidden');
       });
-    }
-
-    // クイックタグの切り替え
-    function toggleTag(btn, name) {
-      if (!selectedItems.includes(name)) {
-        selectedItems.push(name);
-      } else {
-        selectedItems = selectedItems.filter(i => i !== name);
-      }
-      renderTags();
-    }
-
-    // 入力フォームからの条件追加
-    function addItemFromInput() {
-      const input = document.getElementById('itemInput');
-      const val = input.value.trim();
-      if (val && !selectedItems.includes(val)) {
-        selectedItems.push(val);
-        input.value = '';
-        renderTags();
-      }
-    }
-
-    // タグの削除
-    function removeItem(name) {
-      selectedItems = selectedItems.filter(i => i !== name);
-      renderTags();
-    }
-
-    // 献立自動作成のアクション
-    function generateRecipes() {
-      const results = document.getElementById('recipeResults');
-      results.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // 代替調味料トグルの切り替え連動
-    document.getElementById('substituteToggle').addEventListener('change', (e) => {
-      const guides = document.querySelectorAll('.substitute-guide');
-      guides.forEach(g => {
-        g.style.display = e.target.checked ? 'block' : 'none';
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('bg-neonPurple', 'text-white', 'shadow-lg', 'shadow-neonPurple/20');
+        el.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/50');
       });
-    });
 
-    // 調理スタート
-    function startCooking(recipeName) {
-      alert(`「${recipeName}」の調理モードを開始します!`);
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      
+      const activeBtn = document.getElementById('btn-' + tabName);
+      activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/50');
+      activeBtn.classList.add('bg-neonPurple', 'text-white', 'shadow-lg', 'shadow-neonPurple/20');
     }
-
-    // SNSシェアアクション
-    function shareSNS(recipeName, savings) {
-      alert(`【SNSシェア】\n『ピタッとあまりもの献立AI』で「${recipeName}」を作成!約${savings}円の節約になりました! #あまりもの献立 #フードロス削減 #節約`);
-    }
-
-    // プレミアムモーダルの表示・非表示
-    function showPremiumModal() {
-      document.getElementById('premiumModal').classList.remove('hidden');
-    }
-
-    function closePremiumModal() {
-      document.getElementById('premiumModal').classList.add('hidden');
-    }
-
-    // タブ切り替え
-    function switchTab(tab) {
-      if (tab === 'home') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (tab === 'report') {
-        alert('【節約レポート】今月の累計節約金額や自炊ログをご確認いただけます。');
-      } else if (tab === 'community') {
-        alert('【コミュニティ/シェア一覧】他ユーザーのあまりもの活用投稿を閲覧できます。');
-      }
-    }
-
-    // 初期化
-    document.addEventListener('DOMContentLoaded', () => {
-      renderTags();
-    });
   </script>
 </body>
 </html>
