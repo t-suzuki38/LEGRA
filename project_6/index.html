@@ -1,350 +1,239 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LEGRA 防災BtoCアプリ ポートフォリオ&コンセプト</title>
+  <title>Circadian AI - 生活リズム最適化アプリ</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            nightBlue: '#0b132b',
+            cardBlue: '#131e3d',
+            sunriseOrange: '#ff7a00',
+            scientificEmerald: '#10b981',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="[link removed]">
   <style>
-    @import url('[link removed]');
     body {
-      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background-color: #0b132b;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
-    .custom-shadow {
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b132b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center font-bold text-lg shadow-md">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <span class="text-xl font-bold tracking-tight text-slate-900">LEGRA 防災アプリ企画</span>
+<body class="bg-nightBlue text-slate-100 min-h-screen flex flex-col justify-between selection:bg-sunriseOrange selection:text-white">
+
+  <!-- ヘッダー -->
+  <header class="w-full border-b border-slate-800/80 bg-nightBlue/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sunriseOrange to-amber-500 flex items-center justify-center shadow-lg shadow-sunriseOrange/20">
+        <i class="fa-solid fa-atom text-white text-lg"></i>
       </div>
-      <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-        <a href="#planA" class="hover:text-blue-600 transition-colors">stocky</a>
-        <a href="#planB" class="hover:text-red-500 transition-colors">ローメシ!</a>
-        <a href="#planC" class="hover:text-emerald-600 transition-colors">そなえのわ</a>
-      </nav>
-      <div>
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
-          BtoC Modern UI
-        </span>
+      <span class="font-bold text-lg tracking-wide bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">Circadian AI</span>
+    </div>
+    <div class="flex items-center space-x-3">
+      <!-- ウェアラブル接続ステータス -->
+      <div class="hidden sm:flex items-center space-x-1.5 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full text-xs">
+        <span class="w-2 h-2 rounded-full bg-scientificEmerald animate-pulse"></span>
+        <span class="text-slate-300 font-medium">Apple Watch 連携中</span>
       </div>
+      <!-- 通知ベル -->
+      <button class="w-10 h-10 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all relative">
+        <i class="fa-regular fa-bell"></i>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-sunriseOrange rounded-full"></span>
+      </button>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="bg-gradient-to-b from-white to-slate-100 py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-        共働き世帯・ファミリーのための<br><span class="text-blue-600">次世代防災ローリングストック</span>
-      </h1>
-      <p class="text-base sm:text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-        日常に溶け込み、家族みんなで楽しく無理なく続けられる3つのモダンなスマートフォンアプリコンセプトをご紹介します。
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a href="#planA" class="px-6 py-3 bg-[#2A5C8A] text-white font-medium rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center space-x-2">
-          <span>stockyを見る</span>
-          <i class="fa-solid fa-arrow-down"></i>
-        </a>
-        <a href="#planB" class="px-6 py-3 bg-[#E63946] text-white font-medium rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center space-x-2">
-          <span>ローメシ!を見る</span>
-          <i class="fa-solid fa-arrow-down"></i>
-        </a>
-        <a href="#planC" class="px-6 py-3 bg-[#2A9D8F] text-white font-medium rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center space-x-2">
-          <span>そなえのわを見る</span>
-          <i class="fa-solid fa-arrow-down"></i>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
     
-    <!-- Plan A -->
-    <section id="planA" class="bg-white rounded-3xl p-6 sm:p-10 custom-shadow border border-slate-100 scroll-mt-24">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div class="lg:col-span-6 space-y-6">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-[#2A5C8A]/10 text-[#2A5C8A]">
-            <span>プラン A</span>
-            <span>•</span>
-            <span>スマホアプリ</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">stocky(ストッキィ)- 家族でシェアする防災ローリングストック管理</h2>
-          <p class="text-slate-600 leading-relaxed"><strong class="text-slate-900">コンセプト:</strong>共働き世帯の負担をゼロにする、バーコード読み取り式の家族共有型防災備蓄・賞味期限管理アプリ。</p>
-          
-          <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">コアバリュー & ユーザーベネフィット</h3>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#FF7A00] mr-2"></i><strong>コアバリュー:</strong> バーコード高速スキャン精度、家族全員のスマホ間でのリアルタイム同期速度、賞味期限切れ直前のプッシュ通知の確実性。</p>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#FF7A00] mr-2"></i><strong>ベネフィット:</strong> 「何があったっけ?」の不安や買い忘れ・期限切れによる無駄が一切なくなり、夫婦で分担して無理なく防災備蓄をローテーションできる爽快感。</p>
-          </div>
+    <!-- サーカディアン・ダッシュボード -->
+    <section class="bg-cardBlue/60 border border-slate-800/80 rounded-3xl p-6 shadow-xl relative overflow-hidden backdrop-blur-sm">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-sunriseOrange/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-scientificEmerald/5 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div class="flex items-center justify-between pt-2">
-            <div>
-              <span class="text-xs text-slate-500 block">マネタイズモデル</span>
-              <span class="text-sm font-semibold text-slate-800">基本無料 / プレミアム月額サブスク</span>
-            </div>
-            <div class="space-x-2">
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#2A5C8A] text-white">ディープセーフティブルー</span>
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#FF7A00] text-white">サンライズオレンジ</span>
-            </div>
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <!-- 円形プログレスグラフィック -->
+        <div class="relative w-48 h-48 flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <!-- 背景円 -->
+            <circle cx="50" cy="50" r="42" stroke="#1e293b" stroke-width="8" fill="transparent"></circle>
+            <!-- プログレス円 (85% = 224 stroke-dashoffset のイメージ) -->
+            <circle cx="50" cy="50" r="42" stroke="url(#gradient)" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="40" stroke-linecap="round" fill="transparent"></circle>
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff7a00" />
+                <stop offset="100%" stop-color="#10b981" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute flex flex-col items-center text-center">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">同期状態</span>
+            <span class="text-3xl font-extrabold text-white tracking-tight mt-0.5">85%</span>
+            <span class="text-[10px] text-scientificEmerald font-medium mt-0.5"><i class="fa-solid fa-arrow-trend-up"></i> 良好なリズム</span>
           </div>
         </div>
 
-        <!-- Wireframe mockup A -->
-        <div class="lg:col-span-6 bg-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border-4 border-slate-800">
-          <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-3 h-3 rounded-full bg-red-500"></div>
-              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        <!-- ステータス・テキスト情報 -->
+        <div class="flex-1 space-y-4 text-center md:text-left">
+          <div class="inline-flex items-center space-x-2 bg-sunriseOrange/10 border border-sunriseOrange/20 px-3 py-1 rounded-full text-xs text-sunriseOrange font-medium">
+            <i class="fa-solid fa-bolt"></i>
+            <span>エネルギーピーク調整中</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            体内時計は順調に同期されています
+          </h1>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            直近の生体データ解析によると、現在のパフォーマンス予測は高い水準を維持しています。最適な活動時間を逃さないようにしましょう。
+          </p>
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5">
+              <span class="text-xs text-slate-400 block">現在のパフォーマンス予測</span>
+              <span class="text-xl font-bold text-scientificEmerald mt-1 block">85%</span>
             </div>
-            <span class="text-xs text-slate-400 font-mono">stocky - UI Wireframe</span>
-            <div class="flex space-x-2 text-slate-400 text-sm">
-              <i class="fa-solid fa-users"></i>
-              <i class="fa-solid fa-bell"></i>
-            </div>
-          </div>
-          
-          <!-- Mockup Header -->
-          <div class="bg-slate-800 rounded-xl p-4 mb-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-lg bg-[#2A5C8A] flex items-center justify-center font-bold text-lg text-white">S</div>
-              <div>
-                <h4 class="font-bold text-sm">stocky パントリー</h4>
-                <p class="text-xs text-slate-400">家族共有: 2名オンライン</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400 font-medium">同期完了</span>
-          </div>
-
-          <!-- Mockup Main -->
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-800 p-4 rounded-xl flex flex-col justify-between">
-              <span class="text-xs text-slate-400 mb-2">ストック状態</span>
-              <div class="flex items-center justify-center py-2">
-                <div class="w-20 h-20 rounded-full border-4 border-[#2A5C8A] border-t-[#FF7A00] flex items-center justify-center text-xs font-bold">85%</div>
-              </div>
-              <span class="text-center text-xs text-slate-300 mt-2">十分な備蓄量</span>
-            </div>
-            <div class="bg-slate-800 p-4 rounded-xl flex flex-col justify-between">
-              <span class="text-xs text-slate-400 mb-2">期限間近ハイライト</span>
-              <div class="bg-red-500/10 border border-red-500/30 p-2.5 rounded-lg">
-                <p class="text-xs font-bold text-red-400">アルファ米 (あと3日)</p>
-                <p class="text-[10px] text-slate-400">ローメシ!で消費推奨</p>
-              </div>
-              <div class="bg-slate-700/50 p-2.5 rounded-lg mt-2">
-                <p class="text-xs font-bold text-slate-300">ミネラルウォーター (あと14日)</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mockup Action Button -->
-          <div class="text-center pt-2">
-            <button class="w-full py-3 bg-[#FF7A00] text-white font-bold rounded-xl shadow-lg hover:bg-[#FF7A00]/90 transition-all flex items-center justify-center space-x-2">
-              <i class="fa-solid fa-barcode text-lg"></i>
-              <span>バーコード高速スキャン</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Plan B -->
-    <section id="planB" class="bg-white rounded-3xl p-6 sm:p-10 custom-shadow border border-slate-100 scroll-mt-24">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <!-- Wireframe mockup B -->
-        <div class="lg:col-span-6 order-2 lg:order-1 bg-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border-4 border-slate-800">
-          <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-3 h-3 rounded-full bg-red-500"></div>
-              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div class="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-            <span class="text-xs text-slate-400 font-mono">ローメシ! - UI Wireframe</span>
-            <div class="text-slate-400 text-sm">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-          </div>
-          
-          <!-- Mockup Header -->
-          <div class="bg-slate-800 rounded-xl p-4 mb-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-lg bg-[#E63946] flex items-center justify-center font-bold text-lg text-white">飯</div>
-              <div>
-                <h4 class="font-bold text-sm">ローメシ!レシピ提案</h4>
-                <p class="text-xs text-slate-400">お気に入り保存数: 12件</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs bg-[#F4A261]/20 text-[#F4A261] font-medium">時短・簡単</span>
-          </div>
-
-          <!-- Mockup Carousel Banner -->
-          <div class="bg-gradient-to-r from-[#E63946]/20 to-[#F4A261]/20 border border-[#E63946]/30 p-4 rounded-xl mb-4">
-            <span class="text-[10px] uppercase font-bold text-[#F4A261] tracking-wider">AIレコメンド</span>
-            <h5 class="font-bold text-sm text-white mt-1">期限間近の食材で作る子どもウケ抜群の時短おかず</h5>
-            <p class="text-xs text-slate-300 mt-1">ツナ缶とアルファ米のリゾット風</p>
-          </div>
-
-          <!-- Mockup Checkbox group -->
-          <div class="space-y-2 mb-4">
-            <label class="flex items-center space-x-3 bg-slate-800 p-2.5 rounded-lg text-xs cursor-pointer">
-              <input type="checkbox" checked class="rounded text-[#E63946] focus:ring-0">
-              <span class="text-white font-medium">アルファ米パック (期限: 3日後)</span>
-            </label>
-            <label class="flex items-center space-x-3 bg-slate-800 p-2.5 rounded-lg text-xs cursor-pointer">
-              <input type="checkbox" checked class="rounded text-[#E63946] focus:ring-0">
-              <span class="text-white font-medium">ツナ缶オリーブオイル漬け (期限: 5日後)</span>
-            </label>
-          </div>
-
-          <!-- Mockup Action Button -->
-          <div class="text-center">
-            <button class="w-full py-3 bg-[#E63946] text-white font-bold rounded-xl shadow-lg hover:bg-[#E63946]/90 transition-all flex items-center justify-center space-x-2">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-              <span>今すぐレシピを作る</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="lg:col-span-6 order-1 lg:order-2 space-y-6">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-[#E63946]/10 text-[#E63946]">
-            <span>プラン B</span>
-            <span>•</span>
-            <span>スマホアプリ</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">ローメシ!- 期限間近の備蓄品で作る家族ごはん</h2>
-          <p class="text-slate-600 leading-relaxed"><strong class="text-slate-900">コンセプト:</strong>賞味期限が近づいた防災備蓄品を美味しく消費するための、子どもが喜ぶ時短・簡単レシピ提案アプリ。</p>
-          
-          <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">コアバリュー & ユーザーベネフィット</h3>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#E63946] mr-2"></i><strong>コアバリュー:</strong> 期限間近の食材を複数選択した際の、AIによる瞬時のレシピ提案精度と、子どもウケする味付けのバリエーション。</p>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#E63946] mr-2"></i><strong>ベネフィット:</strong> 「賞味期限切れで捨てる罪悪感」が完全に解消され、日常の献立に悩む共働きパパ・ママの夕食作りが劇的に楽になる。</p>
-          </div>
-
-          <div class="flex items-center justify-between pt-2">
-            <div>
-              <span class="text-xs text-slate-500 block">マネタイズモデル</span>
-              <span class="text-sm font-semibold text-slate-800">食品メーカータイアップ広告 / ECアフィリエイト</span>
-            </div>
-            <div class="space-x-2">
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#E63946] text-white">フレッシュトマトレッド</span>
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#F4A261] text-white">ナチュラルウッド</span>
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5">
+              <span class="text-xs text-slate-400 block">次の最適アクションまで</span>
+              <span class="text-xl font-bold text-sunriseOrange mt-1 block">45分</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Plan C -->
-    <section id="planC" class="bg-white rounded-3xl p-6 sm:p-10 custom-shadow border border-slate-100 scroll-mt-24">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div class="lg:col-span-6 space-y-6">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-[#2A9D8F]/10 text-[#2A9D8F]">
-            <span>プラン C</span>
-            <span>•</span>
-            <span>スマホアプリ</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">そなえのわ - 家族で楽しむ防災クエスト&ストック</h2>
-          <p class="text-slate-600 leading-relaxed"><strong class="text-slate-900">コンセプト:</strong>家族みんなで防災備蓄の管理や点検をゲーム感覚でクリアしていく、ファミリー向け防災モチベーション維持アプリ。</p>
-          
-          <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">コアバリュー & ユーザーベネフィット</h3>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#E9C46A] mr-2"></i><strong>コアバリュー:</strong> 子どもでも直感的に操作できるUI/UXと、飽きさせないゲーミフィケーション(ポイント、バッジ、アバター育成要素)。</p>
-            <p class="text-sm text-slate-700"><i class="fa-solid fa-check text-[#E9C46A] mr-2"></i><strong>ベネフィット:</strong> 面倒くさい防災準備が、家族のイベントやゲームに変わり、自然と子どもと一緒に防災意識を高められる楽しさ。</p>
-          </div>
+    <!-- AIコーチング・セクション -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-sunriseOrange"></i>
+          <span>本日の個別改善アクション</span>
+        </h2>
+        <span class="text-xs text-slate-400">ウェアラブル連動データに基づく提案</span>
+      </div>
 
-          <div class="flex items-center justify-between pt-2">
-            <div>
-              <span class="text-xs text-slate-500 block">マネタイズモデル</span>
-              <span class="text-sm font-semibold text-slate-800">防災グッズ限定アイテム課金 / 企業協賛イベント</span>
-            </div>
-            <div class="space-x-2">
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#2A9D8F] text-white">エナジェティックグリーン</span>
-              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-[#E9C46A] text-slate-900">ゴールドイエロー</span>
-            </div>
+      <!-- アクションカード -->
+      <div class="bg-gradient-to-br from-cardBlue/80 to-slate-900/80 border border-slate-800/80 rounded-3xl p-6 shadow-lg space-y-5">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-scientificEmerald/10 text-scientificEmerald border border-scientificEmerald/20 inline-block">最適タイミング:14:30 - 15:00</span>
+            <h3 class="text-xl font-bold text-white mt-2">15分間のパワー・ブライト光療法</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mt-1">
+              午後の眠気とパフォーマンス低下を防ぐため、窓際での日光浴または高照度ライトによる刺激を取り入れてください。サーカディアンリズムの覚醒スイッチが入ります。
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-sunriseOrange/10 border border-sunriseOrange/20 flex items-center justify-center shrink-0 text-sunriseOrange text-xl">
+            <i class="fa-solid fa-sun"></i>
           </div>
         </div>
 
-        <!-- Wireframe mockup C -->
-        <div class="lg:col-span-6 bg-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border-4 border-slate-800">
-          <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-3 h-3 rounded-full bg-red-500"></div>
-              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div class="w-3 h-3 rounded-full bg-green-500"></div>
-            </div>
-            <span class="text-xs text-slate-400 font-mono">そなえのわ - UI Wireframe</span>
-            <div class="flex items-center space-x-2 bg-slate-800 px-3 py-1 rounded-full text-xs text-[#E9C46A] font-bold">
-              <i class="fa-solid fa-coins"></i>
-              <span>1,240 pt</span>
-            </div>
-          </div>
-          
-          <!-- Mockup Header -->
-          <div class="bg-slate-800 rounded-xl p-4 mb-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-full bg-[#2A9D8F] flex items-center justify-center font-bold text-lg text-white">
-                <i class="fa-solid fa-user-ninja"></i>
-              </div>
-              <div>
-                <h4 class="font-bold text-sm">パパ & 太郎 (Lv.4)</h4>
-                <p class="text-xs text-slate-400">バッジ獲得数: 8個</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs bg-[#E9C46A]/20 text-[#E9C46A] font-medium">冒険中</span>
-          </div>
-
-          <!-- Mockup Map Graphic -->
-          <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl mb-4 text-center">
-            <span class="text-[10px] text-slate-400 uppercase tracking-widest block mb-2">防災クエストマップ</span>
-            <div class="flex justify-around items-center my-3">
-              <div class="w-10 h-10 rounded-full bg-[#2A9D8F] flex items-center justify-center text-white text-xs font-bold shadow-md"><i class="fa-solid fa-check"></i></div>
-              <div class="h-1 flex-1 bg-[#2A9D8F]"></div>
-              <div class="w-10 h-10 rounded-full bg-[#E9C46A] text-slate-900 flex items-center justify-center text-xs font-bold shadow-md animate-pulse">2</div>
-              <div class="h-1 flex-1 bg-slate-700"></div>
-              <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 text-xs font-bold">3</div>
-            </div>
-            <p class="text-xs text-[#E9C46A] font-semibold">現在地: 非常持出袋の点検ミッション</p>
-          </div>
-
-          <!-- Mockup Action Buttons -->
-          <div class="space-y-2">
-            <button class="w-full py-3 bg-[#E9C46A] text-slate-900 font-bold rounded-xl shadow-lg hover:bg-[#E9C46A]/90 transition-all flex items-center justify-center space-x-2">
-              <i class="fa-solid fa-gamepad text-lg"></i>
-              <span>今日の防災クエストに挑戦する!</span>
-            </button>
-            <button class="w-full py-2.5 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-all text-xs">
-              ストック確認
-            </button>
-          </div>
+        <!-- アクションボタン群 -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+          <button onclick="completeAction(this)" class="w-full sm:flex-1 bg-gradient-to-r from-sunriseOrange to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium py-3 px-5 rounded-xl shadow-lg shadow-sunriseOrange/20 transition-all flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-check"></i>
+            <span>アクションを完了する</span>
+          </button>
+          <button onclick="openAICoach()" class="w-full sm:flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-5 rounded-xl border border-slate-700 transition-all flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-comments text-scientificEmerald"></i>
+            <span>AIコーチに相談する</span>
+          </button>
         </div>
       </div>
+    </section>
+
+    <!-- サブスクリプション訴求バナー (マネタイズ) -->
+    <section class="bg-gradient-to-r from-blue-950/40 via-indigo-950/40 to-slate-900/60 border border-indigo-500/20 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="space-y-1 text-center sm:text-left">
+        <span class="text-xs font-bold uppercase tracking-wider text-sunriseOrange">プレミアムプラン</span>
+        <h3 class="text-base font-bold text-white">詳細な生活改善プログラムと個別AIコーチング</h3>
+        <p class="text-slate-400 text-xs">慢性的な疲労感や日中の強い眠気から完全に解放され、最高の生産性を維持。</p>
+      </div>
+      <button class="bg-white hover:bg-slate-100 text-slate-950 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shrink-0 shadow-md">
+        詳細を見る
+      </button>
     </section>
 
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-20 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
-      <p>&copy; 2026 LEGRA Inc. All rights reserved.</p>
-      <div class="flex space-x-6 mt-4 sm:mt-0">
-        <a href="#planA" class="hover:text-slate-900">stocky</a>
-        <a href="#planB" class="hover:text-slate-900">ローメシ!</a>
-        <a href="#planC" class="hover:text-slate-900">そなえのわ</a>
-      </div>
+  <!-- ボトムナビゲーションバー -->
+  <nav class="w-full bg-nightBlue/90 backdrop-blur-md border-t border-slate-800/80 sticky bottom-0 z-40 py-2 px-6">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <button onclick="switchTab(this)" class="flex flex-col items-center space-y-1 text-sunriseOrange transition-all group">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-medium">ホーム</span>
+      </button>
+      <button onclick="switchTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-all group">
+        <i class="fa-solid fa-chart-pie text-lg"></i>
+        <span class="text-[10px] font-medium">生体データ分析</span>
+      </button>
+      <button onclick="switchTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-all group">
+        <i class="fa-solid fa-robot text-lg"></i>
+        <span class="text-[10px] font-medium">AIコーチ</span>
+      </button>
+      <button onclick="switchTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-all group">
+        <i class="fa-solid fa-gear text-lg"></i>
+        <span class="text-[10px] font-medium">設定</span>
+      </button>
     </div>
-  </footer>
+  </nav>
 
+  <!-- JavaScriptの記述 -->
   <script>
-    console.log("LEGRA UI Concept loaded successfully.");
+    function completeAction(button) {
+      const card = button.closest('.space-y-5');
+      button.innerHTML = '<i class="fa-solid fa-check-double"></i> 完了済み';
+      button.classList.remove('from-sunriseOrange', 'to-amber-500', 'hover:from-orange-600', 'hover:to-amber-600', 'shadow-sunriseOrange/20');
+      button.classList.add('bg-scientificEmerald', 'text-white', 'opacity-90');
+      button.disabled = true;
+      
+      // 成功フィードバック演出
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-scientificEmerald text-white px-4 py-2 rounded-xl text-xs font-medium shadow-xl transition-all z-50';
+      toast.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i> アクションが記録されました!';
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+
+    function openAICoach() {
+      alert('AIコーチ画面へ接続します。パーソナライズされたアドバイスをリアルタイムで生成中...');
+    }
+
+    function switchTab(clickedBtn) {
+      const navButtons = clickedBtn.parentElement.querySelectorAll('button');
+      navButtons.forEach(btn => {
+        btn.classList.remove('text-sunriseOrange');
+        btn.classList.add('text-slate-400');
+      });
+      clickedBtn.classList.remove('text-slate-400');
+      clickedBtn.classList.add('text-sunriseOrange');
+    }
   </script>
 </body>
 </html>
