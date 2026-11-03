@@ -3,417 +3,220 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マルチペットカルテ - 複数飼い専用の医療・健康一元管理アプリ</title>
-  <!-- Tailwind CSS CDN -->
+  <title>今日のアクションナビ:パーソナライズ未病対策</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            turquoise: {
-              DEFAULT: '#0EA5E9',
-              dark: '#0284C7',
-              light: '#E0F2FE',
+            mint: {
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              500: '#10B981',
+              600: '#059669',
             },
-            warmBeige: {
-              DEFAULT: '#FDE68A',
-              dark: '#FCD34D',
-              light: '#FEF3C7',
-            },
-            baseWhite: '#FFFFFF',
-            lightGray: '#F8FAFC',
+            darkSlate: '#0F172A',
           },
           fontFamily: {
             sans: ['"Noto Sans JP"', 'sans-serif'],
-          },
+          }
         }
       }
     }
   </script>
-  <!-- Google Fonts: Noto Sans JP -->
-  <link href="[link removed]" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="[link removed]">
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      background-color: #F1F5F9;
+      background-color: #F8FAFC;
+      color: #0F172A;
     }
-    /* スクロールバー非表示(アプリ風デザイン維持) */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .custom-shadow {
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08), 0 8px 10px -6px rgba(16, 185, 129, 0.08);
     }
   </style>
 </head>
-<body class="bg-slate-100 flex justify-center items-center min-h-screen p-0 sm:py-6">
+<body class="bg-[#F8FAFC] text-darkSlate min-h-screen flex flex-col justify-between selection:bg-mint-100 selection:text-mint-600">
 
-  <!-- アプリケーションコンテナ (スマホフレームサイズ) -->
-  <div class="w-full sm:max-w-md bg-lightGray min-h-screen sm:min-h-[850px] sm:rounded-3xl shadow-2xl flex flex-col relative overflow-hidden border border-slate-200">
-
-    <!-- ヘッダーエリア -->
-    <header class="bg-baseWhite px-4 py-3 border-b border-slate-100 flex items-center justify-between sticky top-0 z-30">
-      <div class="flex items-center space-x-2">
-        <div class="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center text-turquoise shadow-sm">
-          <i class="fa-solid fa-notes-medical text-lg"></i>
-        </div>
-        <span class="font-bold text-slate-800 tracking-tight text-lg">ペットカルテ</span>
+  <!-- ヘッダー -->
+  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-xl bg-mint-500 flex items-center justify-center text-white shadow-sm">
+        <i class="fa-solid fa-compass text-sm"></i>
       </div>
+      <span class="font-bold text-lg tracking-tight text-darkSlate">今日のアクションナビ</span>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button class="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1 hover:opacity-95 transition">
+        <i class="fa-solid fa-crown text-[10px]"></i>
+        <span>プレミアム</span>
+      </button>
+      <button id="myPageBtn" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+        <i class="fa-regular fa-user text-sm"></i>
+      </button>
+    </div>
+  </header>
 
-      <!-- 右側: ペットのプロファイル瞬時切り替え & 設定 -->
-      <div class="flex items-center space-x-3">
-        <div class="flex space-x-1 bg-slate-100 p-1 rounded-full">
-          <button onclick="switchPet('mocha')" id="tab-mocha" class="w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all">M</button>
-          <button onclick="switchPet('luna')" id="tab-luna" class="w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all">L</button>
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-md w-full mx-auto px-5 py-6 space-y-6 pb-24">
+
+    <!-- メインビジュアル / 健診結果OCR読み取りステータス -->
+    <section class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-mint-50 rounded-full pointer-events-none"></div>
+      <div class="flex items-start justify-between relative z-10">
+        <div>
+          <span class="inline-block bg-mint-50 text-mint-600 text-xs font-bold px-2.5 py-1 rounded-full mb-2">
+            <i class="fa-solid fa-circle-check mr-1"></i>健診データ連携済み
+          </span>
+          <h2 class="text-base font-bold text-darkSlate">最新の健康状態を解析完了</h2>
+          <p class="text-xs text-slate-500 mt-0.5">前回の数値より血糖値の改善傾向が見られます</p>
         </div>
-        <button onclick="openSettings()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
-          <i class="fa-solid fa-gear text-sm"></i>
+      </div>
+      <div class="mt-5 relative z-10">
+        <button id="scanBtn" class="w-full bg-slate-50 hover:bg-mint-50 border border-dashed border-slate-200 hover:border-mint-500 text-slate-700 hover:text-mint-600 font-medium py-3 px-4 rounded-2xl text-sm flex items-center justify-center space-x-2 transition group">
+          <i class="fa-solid fa-cloud-arrow-up text-mint-500 group-hover:scale-110 transition-transform"></i>
+          <span>新しい健診結果を読み込ませる</span>
         </button>
       </div>
-    </header>
+    </section>
 
-    <!-- メインコンテンツ領域 -->
-    <main class="flex-1 overflow-y-auto no-scrollbar pb-24">
+    <!-- タスク提示エリア (センター・最重要) -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase">Today's Action</h3>
+        <span class="text-xs text-mint-600 font-bold bg-mint-50 px-2 py-0.5 rounded">本日 1個限定</span>
+      </div>
 
-      <!-- メインビジュアル/ダッシュボード -->
-      <section class="p-4 bg-gradient-to-b from-baseWhite to-lightGray">
-        <!-- ステータスカード -->
-        <div class="bg-baseWhite rounded-2xl p-5 shadow-sm border border-slate-100 relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-bl-full -z-0 opacity-50"></div>
-          
-          <div class="flex items-start justify-between relative z-10 mb-4">
-            <div class="flex items-center space-x-3">
-              <div class="w-14 h-14 rounded-2xl bg-warmBeige-light flex items-center justify-center text-2xl shadow-inner border border-warmBeige">
-                🐕
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <h1 id="pet-name" class="text-xl font-bold text-slate-800">モカ</h1>
-                  <span id="pet-breed" class="text-xs px-2 py-0.5 bg-warmBeige text-slate-800 font-medium rounded-full">トイプードル</span>
-                </div>
-                <p id="pet-age-weight" class="text-xs text-slate-500 mt-0.5">3歳 (♀) • 4.2 kg</p>
-              </div>
-            </div>
-            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full flex items-center gap-1 border border-emerald-100">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 健康安定
-            </span>
+      <!-- アクションカード -->
+      <div id="actionCard" class="bg-white rounded-3xl p-6 border border-slate-100 custom-shadow transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-mint-500 text-white flex items-center justify-center text-xl shadow-md shadow-mint-500/20">
+            <i class="fa-solid fa-utensils"></i>
           </div>
-
-          <!-- 次回予定バッジ -->
-          <div class="bg-slate-50 rounded-xl p-3 flex items-center justify-between text-xs text-slate-700 mb-4 border border-slate-100">
-            <div class="flex items-center space-x-2">
-              <i class="fa-regular fa-calendar-days text-turquoise"></i>
-              <span class="font-medium">次回ワクチン予定:</span>
-            </div>
-            <span class="font-bold text-slate-900">2026年11月15日</span>
-          </div>
-
-          <!-- 緊急時用クイックアクセスボタン -->
-          <button onclick="openEmergencyModal()" class="w-full py-3 px-4 bg-gradient-to-r from-turquoise to-turquoise-dark text-white rounded-xl font-bold shadow-md shadow-turquoise/20 flex items-center justify-center space-x-2 hover:opacity-95 transition transform active:scale-[0.98]">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span>獣医師に見せるサマリー(緊急モード)</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- タイムラインエリア -->
-      <section class="px-4 pt-2">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left text-turquoise"></i> 医療・健康タイムライン
-          </h2>
-          <span class="text-xs text-turquoise font-bold cursor-pointer hover:underline">すべて見る</span>
-        </div>
-
-        <!-- タイムラインフィード -->
-        <div class="space-y-3" id="timeline-feed">
-          <!-- タイムラインアイテム1 -->
-          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
-            <div onclick="toggleAccordion('item-1')" class="flex items-start justify-between cursor-pointer">
-              <div class="flex items-start space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-sky-50 text-turquoise flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-hospital-user"></i>
-                </div>
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs font-bold px-2 py-0.5 bg-sky-50 text-turquoise rounded-md">定期通院</span>
-                    <span class="text-xs text-slate-400">10月12日</span>
-                  </div>
-                  <h3 class="text-sm font-bold text-slate-800 mt-1">ひまわり動物病院</h3>
-                  <p class="text-xs text-slate-500 mt-0.5">耳の洗浄および皮膚のチェック</p>
-                </div>
-              </div>
-              <button class="text-slate-400 hover:text-slate-600 p-1">
-                <i id="icon-item-1" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
-              </button>
-            </div>
-            <!-- アコーディオン詳細 -->
-            <div id="content-item-1" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
-              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
-                <p><span class="font-bold text-slate-700">処方薬:</span> イヤオニック滴用液 (1日2回)</p>
-                <p><span class="font-bold text-slate-700">ドクターのメモ:</span> 湿気が溜まりやすいので、お風呂後はしっかり乾かしてください。</p>
-                <p><span class="font-bold text-slate-700">体重:</span> 4.2 kg (前回比 ±0)</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- タイムラインアイテム2 -->
-          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
-            <div onclick="toggleAccordion('item-2')" class="flex items-start justify-between cursor-pointer">
-              <div class="flex items-start space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-pills"></i>
-                </div>
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs font-bold px-2 py-0.5 bg-amber-50 text-amber-600 rounded-md">投薬記録</span>
-                    <span class="text-xs text-slate-400">10月10日</span>
-                  </div>
-                  <h3 class="text-sm font-bold text-slate-800 mt-1">フィラリア予防薬投薬</h3>
-                  <p class="text-xs text-slate-500 mt-0.5">ネクスガードスペクトラ投与完了</p>
-                </div>
-              </div>
-              <button class="text-slate-400 hover:text-slate-600 p-1">
-                <i id="icon-item-2" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
-              </button>
-            </div>
-            <!-- アコーディオン詳細 -->
-            <div id="content-item-2" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
-              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
-                <p><span class="font-bold text-slate-700">担当:</span> 夫 (タカノリ)</p>
-                <p><span class="font-bold text-slate-700">副作用・特記事項:</span> なし。食いつき良好。</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- タイムラインアイテム3 -->
-          <div class="bg-baseWhite rounded-2xl p-4 shadow-sm border border-slate-100 transition hover:shadow-md">
-            <div onclick="toggleAccordion('item-3')" class="flex items-start justify-between cursor-pointer">
-              <div class="flex items-start space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-syringe"></i>
-                </div>
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs font-bold px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md">ワクチン</span>
-                    <span class="text-xs text-slate-400">5月20日</span>
-                  </div>
-                  <h3 class="text-sm font-bold text-slate-800 mt-1">混合ワクチン接種 (8種)</h3>
-                  <p class="text-xs text-slate-500 mt-0.5">ひまわり動物病院にて接種</p>
-                </div>
-              </div>
-              <button class="text-slate-400 hover:text-slate-600 p-1">
-                <i id="icon-item-3" class="fa-solid fa-chevron-down text-xs transition-transform"></i>
-              </button>
-            </div>
-            <!-- アコーディオン詳細 -->
-            <div id="content-item-3" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-2">
-              <div class="bg-slate-50 p-3 rounded-xl space-y-1">
-                <p><span class="font-bold text-slate-700">証明書:</span> デジタル保管済み</p>
-                <p><span class="font-bold text-slate-700">副反応:</span> 当日は安静に過ごし、発熱等の異常なし。</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-    </main>
-
-    <!-- 下部アクションバー (フローティングボタン) -->
-    <div class="absolute bottom-16 right-4 z-20">
-      <button onclick="openAddRecordModal()" class="w-14 h-14 bg-turquoise hover:bg-turquoise-dark text-white rounded-full shadow-lg shadow-turquoise/30 flex items-center justify-center text-xl transition transform hover:scale-105 active:scale-95">
-        <i class="fa-solid fa-plus"></i>
-      </button>
-    </div>
-
-    <!-- ボトムナビゲーション -->
-    <nav class="absolute bottom-0 left-0 right-0 bg-baseWhite border-t border-slate-100 px-6 py-3 flex justify-between items-center z-30">
-      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-turquoise transition">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] font-bold mt-1">ホーム</span>
-      </button>
-      <button onclick="switchTab('timeline')" id="nav-timeline" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
-        <i class="fa-solid fa-timeline text-lg"></i>
-        <span class="text-[10px] font-medium mt-1">タイムライン</span>
-      </button>
-      <button onclick="switchTab('calendar')" id="nav-calendar" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
-        <i class="fa-regular fa-calendar text-lg"></i>
-        <span class="text-[10px] font-medium mt-1">カレンダー</span>
-      </button>
-      <button onclick="switchTab('share')" id="nav-share" class="flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
-        <i class="fa-solid fa-user-group text-lg"></i>
-        <span class="text-[10px] font-medium mt-1">共有・設定</span>
-      </button>
-    </nav>
-
-    <!-- ─── モーダル: 緊急時サマリー ─── -->
-    <div id="emergency-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div class="bg-baseWhite w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-in fade-in duration-200">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-          <div class="flex items-center space-x-2 text-rose-500">
-            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-            <h2 class="font-bold text-slate-900 text-base">緊急診察サマリー</h2>
-          </div>
-          <button onclick="closeEmergencyModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div class="py-4 space-y-4 text-xs">
-          <div class="bg-rose-50 border border-rose-100 rounded-xl p-3 text-rose-800">
-            <p class="font-bold mb-1">⚠️ 獣医師へご提示ください</p>
-            <p class="text-[11px] text-rose-700">直近の服薬履歴やアレルギー情報を瞬時にまとめています。</p>
-          </div>
-
-          <div class="space-y-3">
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <span class="text-slate-400 block text-[10px] uppercase font-bold">ペット情報</span>
-              <p class="font-bold text-slate-800 text-sm mt-0.5">モカ (トイプードル / 3歳 / 雌 / 4.2kg)</p>
-            </div>
-
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <span class="text-slate-400 block text-[10px] uppercase font-bold">既往歴・アレルギー</span>
-              <p class="font-bold text-slate-800 mt-0.5">特にななし(ノミ・マダニ・フィラリア予防実施中)</p>
-            </div>
-
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <span class="text-slate-400 block text-[10px] uppercase font-bold">直近の投薬・処方</span>
-              <p class="font-bold text-slate-800 mt-0.5">ネクスガードスペクトラ (10/10投与)</p>
-              <p class="text-slate-600">イヤオニック滴用液 (10/12〜処方中)</p>
-            </div>
+          <div>
+            <span class="text-xs text-mint-600 font-bold block">食事・栄養アドバイス</span>
+            <h4 class="text-lg font-bold text-darkSlate leading-tight">夕食は炭水化物を控えめに</h4>
           </div>
         </div>
 
-        <button onclick="closeEmergencyModal()" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-900 transition">
-          閉じる
+        <p class="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl mb-5 border border-slate-100/80">
+          「今日の夕食は主食(ご飯や麺類)を普段の半分にし、最初に野菜スープやサラダからゆっくり食べましょう。」
+        </p>
+
+        <!-- ベネフィット可視化ゲージ -->
+        <div class="mb-6 space-y-2">
+          <div class="flex justify-between text-xs font-medium">
+            <span class="text-slate-500">生活習慣改善へのインパクト</span>
+            <span class="text-mint-600 font-bold">血糖値安定化 (期待度 高)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-mint-500 h-full rounded-full w-4/5 transition-all duration-1000"></div>
+          </div>
+        </div>
+
+        <!-- 完了チェックボタン -->
+        <button id="completeBtn" class="w-full bg-mint-500 hover:bg-mint-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-mint-500/25 flex items-center justify-center space-x-2 transition active:scale-[0.98]">
+          <i class="fa-solid fa-check text-base"></i>
+          <span id="completeBtnText">今日のアクションを完了する</span>
         </button>
       </div>
-    </div>
+    </section>
 
-    <!-- ─── モーダル: 新規記録追加 ─── -->
-    <div id="add-record-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div class="bg-baseWhite w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-          <h2 class="font-bold text-slate-900 text-base">新規健康記録を追加</h2>
-          <button onclick="closeAddRecordModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div class="py-4 space-y-4 text-xs">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">記録カテゴリ</label>
-            <div class="grid grid-cols-3 gap-2">
-              <button class="py-2.5 bg-sky-50 text-turquoise border border-turquoise rounded-xl font-bold text-center">通院</button>
-              <button class="py-2.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl font-medium text-center">投薬</button>
-              <button class="py-2.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl font-medium text-center">ワクチン</button>
-            </div>
+    <!-- サブセクション:専門家へのチャット相談バナー -->
+    <section>
+      <div class="bg-gradient-to-br from-slate-900 to-darkSlate text-white rounded-3xl p-6 relative overflow-hidden shadow-lg">
+        <div class="absolute -right-8 -top-8 w-32 h-32 bg-mint-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="space-y-1 pr-4">
+            <span class="bg-mint-500/20 text-mint-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">プレミアム機能</span>
+            <h4 class="text-base font-bold">専門家へ直接チャット相談</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">管理栄養士や医師のパーソナライズされた個別食事指導を受けられます。</p>
           </div>
-
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">タイトル</label>
-            <input type="text" placeholder="例: 定期健診、フィラリア薬など" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise">
-          </div>
-
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">日付</label>
-            <input type="date" value="2026-10-21" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise">
-          </div>
-
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">メモ・ドクターの所見</label>
-            <textarea rows="3" placeholder="病院名や処方されたお薬の内容を入力..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-turquoise"></textarea>
+          <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-mint-400 shrink-span">
+            <i class="fa-solid fa-comments text-xl"></i>
           </div>
         </div>
-
-        <div class="flex space-x-2">
-          <button onclick="closeAddRecordModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-200 transition">
-            キャンセル
-          </button>
-          <button onclick="closeAddRecordModal()" class="flex-1 py-3 bg-turquoise text-white rounded-xl font-bold text-xs hover:bg-turquoise-dark transition shadow-md shadow-turquoise/20">
-            保存する
+        <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-xs text-slate-400">月額サブスクリプション</span>
+          <button id="upgradeBtn" class="text-xs font-bold bg-mint-500 hover:bg-mint-600 text-white px-4 py-2 rounded-xl transition flex items-center space-x-1">
+            <span>詳細を見る</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
           </button>
         </div>
       </div>
-    </div>
+    </section>
 
-  </div>
+  </main>
 
+  <!-- フッターナビゲーション (下部固定) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-100 py-3 px-6 z-40 max-w-md mx-auto">
+    <ul class="flex justify-around items-center">
+      <li>
+        <a href="#" class="flex flex-col items-center space-y-1 text-mint-500 transition">
+          <i class="fa-solid fa-house text-lg"></i>
+          <span class="text-[10px] font-bold">ホーム</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-chart-pie text-lg"></i>
+          <span class="text-[10px] font-medium">食事・運動</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-comments text-lg"></i>
+          <span class="text-[10px] font-medium">専門家チャット</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-gear text-lg"></i>
+          <span class="text-[10px] font-medium">設定</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- インタラクション用JavaScript -->
   <script>
-    // ペット切り替えロジック
-    function switchPet(petId) {
-      const tabMocha = document.getElementById('tab-mocha');
-      const tabLuna = document.getElementById('tab-luna');
-      const petName = document.getElementById('pet-name');
-      const petBreed = document.getElementById('pet-breed');
-      const petAgeWeight = document.getElementById('pet-age-weight');
+    // 完了ボタンのインタラクション
+    const completeBtn = document.getElementById('completeBtn');
+    const completeBtnText = document.getElementById('completeBtnText');
+    const actionCard = document.getElementById('actionCard');
+    let isCompleted = false;
 
-      if (petId === 'mocha') {
-        tabMocha.className = "w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all";
-        tabLuna.className = "w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all";
-        petName.innerText = "モカ";
-        petBreed.innerText = "トイプードル";
-        petAgeWeight.innerText = "3歳 (♀) • 4.2 kg";
+    completeBtn.addEventListener('click', () => {
+      isCompleted = !isCompleted;
+      if (isCompleted) {
+        completeBtn.classList.remove('bg-mint-500', 'hover:bg-mint-600', 'shadow-mint-500/25');
+        completeBtn.classList.add('bg-slate-800', 'hover:bg-slate-900', 'shadow-slate-800/25');
+        completeBtnText.textContent = '完了済み(明日もお楽しみに!)';
+        actionCard.classList.add('border-mint-500', 'bg-mint-50/20');
       } else {
-        tabLuna.className = "w-7 h-7 rounded-full bg-turquoise text-white flex items-center justify-center text-xs font-bold shadow-sm transition-all";
-        tabMocha.className = "w-7 h-7 rounded-full bg-transparent text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs font-bold transition-all";
-        petName.innerText = "ルナ";
-        petBreed.innerText = "スコティッシュフォールド";
-        petAgeWeight.innerText = "2歳 (♀) • 3.1 kg";
+        completeBtn.classList.remove('bg-slate-800', 'hover:bg-slate-900', 'shadow-slate-800/25');
+        completeBtn.classList.add('bg-mint-500', 'hover:bg-mint-600', 'shadow-mint-500/25');
+        completeBtnText.textContent = '今日のアクションを完了する';
+        actionCard.classList.remove('border-mint-500', 'bg-mint-50/20');
       }
-    }
+    });
 
-    // アコーディオン開閉ロジック
-    function toggleAccordion(id) {
-      const content = document.getElementById('content-' + id);
-      const icon = document.getElementById('icon-' + id);
-      if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-      } else {
-        content.classList.add('hidden');
-        icon.classList.remove('rotate-180');
-      }
-    }
+    // ダミーのファイルスキャンボタンイベント
+    document.getElementById('scanBtn').addEventListener('click', () => {
+      alert('健診結果ファイル(PDF/画像)の選択画面を開きます(シミュレーション)');
+    });
 
-    // モーダル操作
-    function openEmergencyModal() {
-      document.getElementById('emergency-modal').classList.remove('hidden');
-    }
-    function closeEmergencyModal() {
-      document.getElementById('emergency-modal').classList.add('hidden');
-    }
+    // マイページボタン
+    document.getElementById('myPageBtn').addEventListener('click', () => {
+      alert('マイページ・プロフィール画面へ遷移します');
+    });
 
-    function openAddRecordModal() {
-      document.getElementById('add-record-modal').classList.remove('hidden');
-    }
-    function closeAddRecordModal() {
-      document.getElementById('add-record-modal').classList.add('hidden');
-    }
-
-    function openSettings() {
-      alert("設定・家族間リアルタイム共有メニューを開きます。");
-    }
-
-    // ボトムタブ切り替えダミー
-    function switchTab(tab) {
-      const tabs = ['home', 'timeline', 'calendar', 'share'];
-      tabs.forEach(t => {
-        const btn = document.getElementById('nav-' + t);
-        if (t === tab) {
-          btn.className = "flex flex-col items-center text-turquoise transition";
-          btn.querySelector('span').className = "text-[10px] font-bold mt-1";
-        } else {
-          btn.className = "flex flex-col items-center text-slate-400 hover:text-slate-600 transition";
-          btn.querySelector('span').className = "text-[10px] font-medium mt-1";
-        }
-      });
-    }
+    // アップグレードボタン
+    document.getElementById('upgradeBtn').addEventListener('click', () => {
+      alert('プレミアムプラン入会画面へ遷移します');
+    });
   </script>
 </body>
 </html>
