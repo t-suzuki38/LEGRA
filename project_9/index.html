@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スマートパッキングキャンプ - 3D積載シミュレーション</title>
+  <title>レシートぽちっと - レシート瞬間スキャン・ポチポチ確定申告</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="[link removed]">
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            forest: {
-              DEFAULT: '#1E3F20',
-              light: '#2D5A31',
-              dark: '#142B16',
-            },
-            sunset: {
-              DEFAULT: '#FF6B35',
-              light: '#FF8A5C',
+            brand: {
+              navy: '#0B132B',
+              navyLight: '#1C2541',
+              mint: '#00F5D4',
+              mintHover: '#00D4B6',
+              mintSoft: '#E6FFFA',
+              accent: '#3A86FF'
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
           }
         }
       }
@@ -27,161 +32,225 @@
   </script>
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
     }
-    .hide-scrollbar::-webkit-scrollbar {
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen p-0 sm:p-4">
-  <div class="w-full max-w-md h-screen sm:h-[844px] bg-slate-900 sm:rounded-[40px] shadow-2xl flex flex-col overflow-hidden relative border border-slate-800">
-    <!-- ヘッダー -->
-    <header class="flex items-center justify-between px-6 py-4 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 z-10">
+<body class="bg-slate-100 text-brand-navy min-h-screen flex justify-center items-center p-0 sm:p-4">
+
+  <!-- Mobile App Frame Container (Desktop view simulates mobile container, mobile view is full width) -->
+  <div class="w-full sm:max-w-md bg-white sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col h-screen sm:h-[844px] relative border border-slate-200">
+
+    <!-- Header Section -->
+    <header class="bg-brand-navy text-white px-5 py-4 flex justify-between items-center z-10 shrink-0">
       <div class="flex items-center space-x-2">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-forest-light to-forest flex items-center justify-center shadow-md text-sunset">
-          <i class="fa-solid fa-mountain text-sm"></i>
-          <i class="fa-solid fa-boxes-stacked text-[10px] ml-0.5"></i>
+        <div class="w-8 h-8 rounded-xl bg-brand-mint flex items-center justify-center text-brand-navy font-bold shadow-md">
+          <i class="fa-solid fa-receipt text-sm"></i>
         </div>
-        <span class="font-bold text-lg tracking-tight text-white">SmartPacking</span>
+        <span class="font-bold text-lg tracking-tight">レシートぽちっと</span>
       </div>
-      <div class="flex items-center space-x-3">
-        <button class="relative p-2 rounded-full bg-slate-800 text-slate-300 hover:text-white transition">
-          <i class="fa-regular fa-bell text-sm"></i>
-          <span class="absolute top-1 right-1 w-2 h-2 bg-sunset rounded-full animate-pulse"></span>
-        </button>
-        <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
-          <i class="fa-solid fa-user text-slate-400 text-sm"></i>
-        </div>
+      <div class="flex items-center space-x-2">
+        <span class="bg-brand-navyLight border border-brand-mint/30 text-brand-mint text-xs px-2.5 py-1 rounded-full font-medium flex items-center space-x-1 shadow-inner">
+          <i class="fa-solid fa-crown text-[10px] text-amber-400"></i>
+          <span>無料プラン</span>
+        </span>
       </div>
     </header>
 
-    <!-- メインスクロールエリア -->
-    <main class="flex-1 overflow-y-auto hide-scrollbar pb-24">
-      <!-- 上部エリア: 気象データ・環境・移動手段 -->
-      <section class="p-6 pb-4">
-        <div class="bg-gradient-to-r from-forest/50 to-slate-900 border border-forest-light/40 rounded-2xl p-4 shadow-lg">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center space-x-2 text-xs text-emerald-400 font-medium bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800/50">
-              <i class="fa-solid fa-cloud-sun text-sunset"></i>
-              <span>晴れ 22°C / 富士山麓キャンプ場</span>
-            </div>
-            <span class="text-xs text-slate-400 font-medium">移動: SUV車載</span>
+    <!-- Main Scrollable Content Area -->
+    <main class="flex-1 overflow-y-auto no-scrollbar pb-24">
+      
+      <!-- Status Card Section -->
+      <div class="p-5 bg-gradient-to-b from-brand-navy to-brand-navyLight text-white rounded-b-3xl shadow-lg">
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-slate-300 font-medium flex items-center">
+              <i class="fa-solid fa-bolt text-brand-mint mr-1.5"></i> タップ3回以内で完了
+            </span>
+            <span class="text-xs bg-brand-mint/20 text-brand-mint px-2 py-0.5 rounded-full font-bold">OCR精度 99%超</span>
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex justify-between items-end">
             <div>
-              <p class="text-xs text-slate-400">推奨積載率</p>
-              <h2 class="text-xl font-bold tracking-tight text-white">最適バランス (82%)</h2>
+              <p class="text-xs text-slate-300">本日の仕訳達成ステータス</p>
+              <h2 class="text-2xl font-bold mt-0.5">3件 <span class="text-sm font-normal text-slate-300">/ 未処理 0件</span></h2>
             </div>
-            <div class="px-3 py-1.5 bg-sunset/20 border border-sunset/40 text-sunset rounded-xl text-xs font-semibold flex items-center space-x-1">
-              <i class="fa-solid fa-circle-check"></i>
-              <span>準備万端</span>
+            <div class="text-right">
+              <span class="text-brand-mint font-bold text-sm bg-brand-mint/10 px-3 py-1.5 rounded-xl border border-brand-mint/20 inline-block">
+                すべて完了 🎉
+              </span>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- 中央エリア: 3D積載シミュレーションプレビュー -->
-      <section class="px-6 mb-6">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-300 flex items-center space-x-2">
-            <i class="fa-solid fa-cube text-sunset"></i>
-            <span>3D積載シミュレーション</span>
-          </h3>
-          <span class="text-xs text-emerald-400 font-medium">アルゴリズム稼働中</span>
-        </div>
-        <div class="relative w-full h-52 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center shadow-inner group">
-          <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-30"></div>
-          
-          <div class="relative w-48 h-32 border-2 border-forest-light/60 rounded-xl bg-forest/20 backdrop-blur-sm flex flex-col items-center justify-center transform perspective-1000 rotate-x-12 rotate-y-12 shadow-2xl transition duration-500 group-hover:scale-105">
-            <div class="absolute -top-3 px-2 py-0.5 bg-slate-800 border border-slate-700 text-[10px] text-slate-300 rounded font-mono">SUV Trunk 500L</div>
-            <div class="grid grid-cols-3 gap-1.5 p-2 w-full h-full items-center justify-items-center">
-              <div class="w-10 h-12 bg-sunset/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">テント</div>
-              <div class="w-12 h-10 bg-emerald-600/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">クーラー</div>
-              <div class="w-10 h-10 bg-amber-600/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">チェア</div>
-              <div class="w-12 h-10 bg-blue-600/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">寝袋</div>
-              <div class="w-10 h-10 bg-purple-600/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">ランタン</div>
-              <div class="w-10 h-12 bg-indigo-600/90 rounded-md shadow flex items-center justify-center text-[10px] font-bold text-white">バーナー</div>
+        <!-- Core Action Area: Giant Camera Button -->
+        <div class="mt-6 text-center">
+          <button onclick="triggerScan()" class="group relative w-full bg-gradient-to-r from-brand-mint to-emerald-400 hover:from-emerald-400 hover:to-brand-mint text-brand-navy font-bold py-4 px-6 rounded-2xl shadow-xl hover:shadow-brand-mint/20 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center space-x-3 border-2 border-white/20">
+            <div class="w-10 h-10 rounded-full bg-brand-navy text-brand-mint flex items-center justify-center shadow-md group-hover:rotate-12 transition-transform">
+              <i class="fa-solid fa-camera text-lg"></i>
             </div>
+            <div class="text-left">
+              <div class="text-lg font-extrabold tracking-wide">レシートを瞬間スキャン</div>
+              <div class="text-xs font-medium text-brand-navy/80">AIが自動仕訳・タップ3回で完了</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body Section -->
+      <div class="px-5 py-6 space-y-6">
+
+        <!-- Chat-style AI Assistant Box -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <div class="flex items-center space-x-2 mb-3">
+            <div class="w-7 h-7 rounded-full bg-brand-mintSoft text-brand-mint flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-800">AI確定申告アシスタント</h3>
           </div>
-          
-          <div class="absolute bottom-3 right-3">
-            <button class="px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-xs text-white rounded-lg backdrop-blur shadow transition flex items-center space-x-1.5">
-              <i class="fa-solid fa-rotate text-sunset"></i>
-              <span>アングル変更</span>
+          <div class="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 mb-3 border border-slate-100 leading-relaxed">
+            「今月の経費合計は48,200円です。消耗品費が大部分を占めていますね。質問があればチャット感覚でどうぞ!」
+          </div>
+          <div class="relative">
+            <input type="text" placeholder="例:カフェ代の勘定科目は?" class="w-full bg-slate-100 text-xs rounded-xl py-3 pl-4 pr-10 border border-slate-200 focus:outline-none focus:border-brand-accent transition-colors">
+            <button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-brand-navy text-white rounded-lg flex items-center justify-center text-xs hover:bg-brand-navyLight transition-colors">
+              <i class="fa-solid fa-paper-plane"></i>
             </button>
           </div>
         </div>
-      </section>
 
-      <!-- データ管理エリア: 総重量・容積・耐荷重アラート -->
-      <section class="px-6 mb-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <p class="text-xs text-slate-400">総重量 / 上限</p>
-              <p class="text-lg font-bold text-white">24.5 kg <span class="text-xs font-normal text-slate-400">/ 35.0 kg</span></p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs text-slate-400">総容積</p>
-              <p class="text-lg font-bold text-white">310 L <span class="text-xs font-normal text-slate-400">/ 500 L</span></p>
-            </div>
+        <!-- Recent Transactions Preview -->
+        <div>
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-sm text-slate-800 flex items-center">
+              <i class="fa-solid fa-clock-rotate-left mr-2 text-brand-accent"></i>最近の仕訳プレビュー
+            </h3>
+            <a href="#" class="text-xs text-brand-accent font-semibold hover:underline">すべて見る</a>
           </div>
-          
-          <div class="flex items-start space-x-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-xs">
-            <i class="fa-solid fa-triangle-exclamation text-sunset mt-0.5 text-sm"></i>
-            <div>
-              <span class="font-semibold text-white">自動警告アラート:</span> 耐荷重と重心バランスを最適化するため、重量のあるクーラーボックスは中央下部への配置を推奨します。
+
+          <div class="space-y-2.5">
+            <!-- Item 1 -->
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:border-brand-mint/50 transition-all">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                  <i class="fa-solid fa-mug-hot"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">スターバックス コーヒー</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5">本日 14:20 ・ 接客費 (OCR読取 99.8%)</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-800">¥680</span>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:border-brand-mint/50 transition-all">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-accent flex items-center justify-center text-sm font-bold">
+                  <i class="fa-solid fa-book"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">Amazon.co.jp (書籍)</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5">昨日 21:05 ・ 新聞図書費 (OCR読取 99.5%)</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-800">¥2,400</span>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:border-brand-mint/50 transition-all">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">
+                  <i class="fa-solid fa-train"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-800">JR東日本 交通費</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5">11月4日 ・ 旅費交通費 (OCR読取 99.9%)</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-800">¥1,210</span>
             </div>
           </div>
         </div>
-      </section>
+
+        <!-- Premium Banner Promotion -->
+        <div class="bg-gradient-to-r from-brand-navy to-brand-navyLight text-white rounded-2xl p-4 shadow-md relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-mint/10 rounded-full blur-xl"></div>
+          <div class="flex items-center justify-between relative z-10">
+            <div>
+              <span class="text-[10px] bg-brand-mint text-brand-navy font-bold px-2 py-0.5 rounded-md">プレミアム機能</span>
+              <h4 class="font-bold text-sm mt-1">確定申告書の出力・税理士連携</h4>
+              <p class="text-[11px] text-slate-300 mt-0.5">ワンクリックで完全自動申告へアップグレード</p>
+            </div>
+            <button class="bg-brand-mint text-brand-navy font-bold text-xs px-3 py-2 rounded-xl shadow hover:bg-brand-mintHover transition-colors shrink-0">
+              詳細を見る
+            </button>
+          </div>
+        </div>
+
+      </div>
     </main>
 
-    <!-- 下部固定CTAボタン -->
-    <div class="absolute bottom-16 left-0 right-0 px-6 bg-gradient-to-t from-slate-900 via-slate-900/90 to-transparent pt-4 pb-2 z-20">
-      <button class="w-full py-4 bg-gradient-to-r from-sunset to-amber-500 hover:from-sunset-light hover:to-amber-400 text-white font-bold rounded-2xl shadow-lg shadow-sunset/25 transition duration-300 flex items-center justify-center space-x-2 text-sm">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        <span>持ち物リスト・積載計画を自動生成する</span>
+    <!-- Footer Navigation (4 Tabs) -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex justify-around items-center z-20 shadow-lg">
+      <button onclick="switchTab('home')" class="flex flex-col items-center text-brand-accent space-y-1 transition-colors group">
+        <i class="fa-solid fa-house text-base"></i>
+        <span class="text-[10px] font-semibold">ホーム</span>
       </button>
-    </div>
-
-    <!-- ボトムタブバー -->
-    <nav class="absolute bottom-0 left-0 right-0 h-16 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex items-center justify-around px-2 z-30">
-      <button class="flex flex-col items-center justify-center w-1/4 text-sunset space-y-1">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] font-medium">ホーム</span>
+      <button onclick="switchTab('list')" class="flex flex-col items-center text-slate-400 hover:text-brand-accent space-y-1 transition-colors group">
+        <i class="fa-solid fa-list-check text-base"></i>
+        <span class="text-[10px] font-medium">仕訳一覧</span>
       </button>
-      <button class="flex flex-col items-center justify-center w-1/4 text-slate-400 hover:text-slate-200 space-y-1 transition">
-        <i class="fa-solid fa-cubes text-lg"></i>
-        <span class="text-[10px] font-medium">3Dパッキング</span>
+      <button onclick="switchTab('chat')" class="flex flex-col items-center text-slate-400 hover:text-brand-accent space-y-1 transition-colors group">
+        <i class="fa-solid fa-comments text-base"></i>
+        <span class="text-[10px] font-medium">AIチャット相談</span>
       </button>
-      <button class="flex flex-col items-center justify-center w-1/4 text-slate-400 hover:text-slate-200 space-y-1 transition">
-        <i class="fa-solid fa-suitcase text-lg"></i>
-        <span class="text-[10px] font-medium">ギア管理</span>
-      </button>
-      <button class="flex flex-col items-center justify-center w-1/4 text-slate-400 hover:text-slate-200 space-y-1 transition">
-        <i class="fa-solid fa-robot text-lg"></i>
-        <span class="text-[10px] font-medium">AIアシスト</span>
+      <button onclick="switchTab('setting')" class="flex flex-col items-center text-slate-400 hover:text-brand-accent space-y-1 transition-colors group">
+        <i class="fa-solid fa-gear text-base"></i>
+        <span class="text-[10px] font-medium">設定</span>
       </button>
     </nav>
+
   </div>
 
   <script>
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('nav button').forEach(b => {
-          b.classList.remove('text-sunset');
-          b.classList.add('text-slate-400');
-        });
-        this.classList.remove('text-slate-400');
-        this.classList.add('text-sunset');
+    function triggerScan() {
+      // モックアップ用のスキャンアクション
+      alert("レシートカメラを起動しました。\nレシートを撮影するとOCR(精度99%以上)が自動で仕訳を実行します!");
+    }
+
+    function switchTab(tabName) {
+      // タブ切り替えのインタラクション制御
+      const buttons = document.querySelectorAll('nav button');
+      buttons.forEach(btn => {
+        btn.classList.remove('text-brand-accent');
+        btn.classList.add('text-slate-400');
+        const span = btn.querySelector('span');
+        if(span) span.classList.remove('font-semibold');
+        if(span) span.classList.add('font-medium');
       });
-    });
+      
+      // クリックされたタブをアクティブ化(簡略実装)
+      event.currentTarget.classList.remove('text-slate-400');
+      event.currentTarget.classList.add('text-brand-accent');
+      const activeSpan = event.currentTarget.querySelector('span');
+      if(activeSpan) {
+        activeSpan.classList.remove('font-medium');
+        activeSpan.classList.add('font-semibold');
+      }
+    }
   </script>
 </body>
 </html>
