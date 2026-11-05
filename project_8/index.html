@@ -3,231 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OshiPocket(推しポケット) - 推し活専用オールインワン家計簿&スケジュール</title>
+  <title>1分スキマリスキリング『ピタッと学習』</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="[link removed]">
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              navy: '#1A1A2E',
-              purple: '#E94560',
-              accent: '#00B4D8',
-              gold: '#FFD700',
-              plum: '#2D1E2F'
-            }
+            deepBlue: '#0F172A',
+            accentOrange: '#F97316',
           }
         }
       }
     }
   </script>
   <style>
-    @import url('[link removed]');
     body {
-      font-family: 'Noto Sans JP', sans-serif;
-    }
-    .glass-card {
-      background: rgba(26, 26, 46, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(233, 69, 96, 0.2);
+      background-color: #0F172A;
+      color: #F8FAFC;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
   </style>
 </head>
-<body class="bg-[#0f0f1a] text-gray-100 min-h-screen flex flex-col justify-between selection:bg-[#E94560] selection:text-white">
-  <!-- ヘッダー -->
-  <header class="sticky top-0 z-50 glass-card border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+<body class="min-h-screen pb-24 selection:bg-orange-500 selection:text-white">
+  <!-- ヘッダーエリア -->
+  <header class="flex justify-between items-center px-6 py-4 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-800/80">
     <div class="flex items-center space-x-3">
-      <div class="relative">
-        <img src="[link removed]" alt="推しアイコン" class="w-10 h-10 rounded-full border-2 border-[#E94560] object-cover">
-        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1A1A2E] rounded-full"></span>
+      <div class="w-10 h-10 bg-accentOrange rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-orange-500/30">
+        <i class="fa-solid fa-puzzle-piece"></i>
       </div>
-      <div>
-        <h1 class="text-sm font-bold text-white flex items-center gap-1">
-          <span>OshiPocket</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#E94560]/20 text-[#E94560]">推し: 莉犬 (Red)</span>
-        </h1>
-        <p class="text-xs text-gray-400">当落発表まであと 3日</p>
-      </div>
+      <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">ピタッと学習</span>
     </div>
     <div class="flex items-center space-x-3">
-      <button class="relative text-gray-300 hover:text-white transition p-1">
-        <i class="fa-solid fa-bell text-lg"></i>
-        <span class="absolute top-1 right-1 w-2 h-2 bg-[#E94560] rounded-full"></span>
-      </button>
-      <button class="text-gray-300 hover:text-white transition p-1">
-        <i class="fa-solid fa-gear text-lg"></i>
-      </button>
+      <div class="flex items-center space-x-1.5 bg-slate-800/80 px-3.5 py-1.5 rounded-full border border-slate-700/60 shadow-inner">
+        <i class="fa-solid fa-fire text-accentOrange animate-pulse"></i>
+        <span class="text-xs font-bold tracking-wide">5日連続</span>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shadow-md">
+        <i class="fa-solid fa-user text-slate-300 text-sm"></i>
+      </div>
     </div>
   </header>
 
   <!-- メインコンテンツ -->
-  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-6 pb-24">
-    <!-- リアルタイム予算残高カード -->
-    <div class="glass-card rounded-2xl p-5 shadow-2xl relative overflow-hidden">
-      <div class="absolute -right-10 -top-10 w-32 h-32 bg-[#E94560]/15 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="flex justify-between items-start mb-4">
-        <div>
-          <p class="text-xs text-gray-400 font-medium">今月の推し活予算残高</p>
-          <h2 class="text-2xl font-extrabold tracking-tight text-white mt-1">¥42,800 <span class="text-xs font-normal text-gray-400">/ ¥80,000</span></h2>
-        </div>
-        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-          <i class="fa-solid fa-shield-halved"></i> 健全 53%
-        </span>
+  <main class="max-w-md mx-auto px-4 pt-6 space-y-6">
+    <!-- メインビジュアルエリア -->
+    <section class="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-5 shadow-2xl space-y-5 relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-40 h-40 bg-accentOrange/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-slate-400 font-medium">本日の学習進捗</span>
+        <span class="text-accentOrange font-bold bg-orange-500/10 px-2.5 py-1 rounded-full border border-orange-500/20 text-xs">1 / 1 レッスン</span>
       </div>
+      
       <!-- プログレスバー -->
-      <div class="w-full bg-gray-800/80 rounded-full h-2.5 mb-3 overflow-hidden p-0.5">
-        <div class="bg-gradient-to-r from-[#00B4D8] to-[#E94560] h-full rounded-full transition-all duration-500" style="width: 53%"></div>
+      <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+        <div class="bg-gradient-to-r from-orange-500 to-amber-400 h-full w-full rounded-full shadow-lg shadow-orange-500/50 transition-all duration-500"></div>
       </div>
-      <div class="flex justify-between text-xs text-gray-400">
-        <span>支出合計: ¥37,200</span>
-        <span>目標貯金: ¥20,000</span>
-      </div>
-    </div>
-
-    <!-- カウントダウン&クイックアクセス -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="glass-card p-4 rounded-xl flex flex-col justify-between hover:border-[#E94560]/50 transition cursor-pointer group">
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-8 h-8 rounded-lg bg-[#E94560]/10 flex items-center justify-center text-[#E94560]">
-            <i class="fa-solid fa-ticket"></i>
-          </div>
-          <span class="text-[10px] bg-[#E94560]/20 text-[#E94560] px-2 py-0.5 rounded font-medium">当落</span>
+      
+      <!-- アニメーション解説プレビュー枠 -->
+      <div class="relative bg-gradient-to-br from-slate-900 to-slate-900/90 rounded-2xl h-52 border border-slate-700/80 overflow-hidden flex flex-col items-center justify-center p-6 group cursor-pointer shadow-inner">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.12)_0,transparent_70%)]"></div>
+        <div class="w-16 h-16 rounded-2xl bg-accentOrange/20 border border-accentOrange/40 flex items-center justify-center text-accentOrange text-xl mb-3 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-play ml-0.5"></i>
         </div>
-        <div>
-          <h3 class="text-xs text-gray-400 group-hover:text-gray-300 transition">冬ツアー東京公演</h3>
-          <p class="text-sm font-bold text-white mt-0.5">あと3日 発表</p>
-        </div>
-      </div>
-      <div class="glass-card p-4 rounded-xl flex flex-col justify-between hover:border-[#00B4D8]/50 transition cursor-pointer group">
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-8 h-8 rounded-lg bg-[#00B4D8]/10 flex items-center justify-center text-[#00B4D8]">
-            <i class="fa-solid fa-plane-departure"></i>
-          </div>
-          <span class="text-[10px] bg-[#00B4D8]/20 text-[#00B4D8] px-2 py-0.5 rounded font-medium">遠征</span>
-        </div>
-        <div>
-          <h3 class="text-xs text-gray-400 group-hover:text-gray-300 transition">大阪遠征 (宿・交通)</h3>
-          <p class="text-sm font-bold text-white mt-0.5">予約完了</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 直近の支出・遠征費サマリー -->
-    <section class="glass-card rounded-2xl p-5 shadow-lg">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-receipt text-[#E94560]"></i> 直近の推し活支出
-        </h3>
-        <button class="text-xs text-[#E94560] hover:underline font-medium">すべて見る</button>
-      </div>
-      <div class="space-y-3">
-        <div class="flex items-center justify-between py-2.5 border-b border-gray-800/60">
-          <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-pink-500/10 flex items-center justify-center text-[#E94560]">
-              <i class="fa-solid fa-compact-disc"></i>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-white">ニューシングルCD 3形態</p>
-              <p class="text-[10px] text-gray-400">10月20日 ・ グッズ・CD</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-white">-¥4,500</span>
-        </div>
-        <div class="flex items-center justify-between py-2.5 border-b border-gray-800/60">
-          <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-[#00B4D8]">
-              <i class="fa-solid fa-hotel"></i>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-white">遠征ホテル前払い (大阪)</p>
-              <p class="text-[10px] text-gray-400">10月18日 ・ 遠征費</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-white">-¥12,800</span>
-        </div>
-        <div class="flex items-center justify-between py-2.5">
-          <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400">
-              <i class="fa-solid fa-ticket"></i>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-white">アリーナツアーチケット代</p>
-              <p class="text-[10px] text-gray-400">10月15日 ・ チケット</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-white">-¥9,800</span>
-        </div>
+        <h3 class="font-bold text-base text-slate-100 tracking-tight text-center">1分でわかる!今日のリスキリング</h3>
+        <p class="text-xs text-slate-400 mt-1">音声なしで直感的に学べるアニメーション</p>
       </div>
     </section>
 
-    <!-- 推し活貯金・グッズ進捗 -->
-    <section class="glass-card rounded-2xl p-5 border-l-4 border-l-[#FFD700] shadow-lg">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-piggy-bank text-[#FFD700]"></i> 未来の遠征・グッズ貯金
-        </h3>
-        <span class="text-xs text-[#FFD700] font-bold bg-[#FFD700]/10 px-2 py-0.5 rounded-full">達成率 75%</span>
+    <!-- ボタン・操作エリア -->
+    <section class="text-center space-y-3">
+      <button onclick="startLesson()" class="w-full py-4.5 bg-gradient-to-r from-accentOrange to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-lg rounded-2xl shadow-xl shadow-orange-500/25 transition-all transform active:scale-95 flex items-center justify-center space-x-2.5 border border-orange-400/30">
+        <i class="fa-solid fa-bolt"></i>
+        <span>1分レッスンを始める</span>
+      </button>
+      <p class="text-xs text-slate-400">電車の待ち時間やスキマ時間で自己成長を実感</p>
+    </section>
+
+    <!-- コアバリューカードグリッド -->
+    <section class="grid grid-cols-2 gap-3.5 pt-2">
+      <div class="bg-slate-800/30 hover:bg-slate-800/50 border border-slate-700/40 p-4 rounded-2xl space-y-2 transition-colors">
+        <div class="w-8 h-8 rounded-xl bg-orange-500/10 text-accentOrange flex items-center justify-center font-bold text-sm">
+          <i class="fa-solid fa-gauge-high"></i>
+        </div>
+        <h4 class="font-bold text-xs text-slate-200">高速レスポンス</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">タップ一つで瞬時に起動し待ち時間ゼロ。</p>
       </div>
-      <p class="text-xs text-gray-300 mb-3">「次のドームツアー遠征費」に向けて順調に貯金が続いています!</p>
-      <div class="flex items-center justify-between text-xs bg-gray-900/50 p-3 rounded-xl border border-gray-800">
-        <span class="text-gray-400">貯金箱の中身:</span>
-        <span class="text-white font-bold text-sm">¥60,000 <span class="text-gray-400 font-normal text-xs">/ ¥80,000</span></span>
+      <div class="bg-slate-800/30 hover:bg-slate-800/50 border border-slate-700/40 p-4 rounded-2xl space-y-2 transition-colors">
+        <div class="w-8 h-8 rounded-xl bg-orange-500/10 text-accentOrange flex items-center justify-center font-bold text-sm">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <h4 class="font-bold text-xs text-slate-200">無理なく継続</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">1日1分で知識が確実定着する設計。</p>
       </div>
     </section>
   </main>
 
-  <!-- フッターナビゲーション -->
-  <nav class="fixed bottom-0 left-0 right-0 glass-card border-t border-gray-800 px-6 py-2.5 z-50 max-w-md mx-auto shadow-2xl">
-    <ul class="flex justify-between items-center">
-      <li>
-        <a href="#" class="flex flex-col items-center text-[#E94560] transition-transform active:scale-95">
-          <i class="fa-solid fa-house text-lg"></i>
-          <span class="text-[10px] mt-1 font-medium">ホーム</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
-          <i class="fa-solid fa-wallet text-lg"></i>
-          <span class="text-[10px] mt-1 font-medium">家計簿</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
-          <i class="fa-solid fa-plane text-lg"></i>
-          <span class="text-[10px] mt-1 font-medium">遠征タビ</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
-          <i class="fa-solid fa-box-archive text-lg"></i>
-          <span class="text-[10px] mt-1 font-medium">グッズ台帳</span>
-        </a>
-      </li>
-      <li>
-        <a href="#" class="flex flex-col items-center text-gray-400 hover:text-white transition-transform active:scale-95">
-          <i class="fa-solid fa-user-heart text-lg"></i>
-          <span class="text-[10px] mt-1 font-medium">推し設定</span>
-        </a>
-      </li>
-    </ul>
+  <!-- 固定ボトムナビゲーション -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0F172A]/90 backdrop-blur-lg border-t border-slate-800/80 py-2.5 px-6 flex justify-around items-center z-50">
+    <button onclick="switchTab(this)" class="nav-btn flex flex-col items-center space-y-1 text-accentOrange transition-colors">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] font-semibold">ホーム</span>
+    </button>
+    <button onclick="switchTab(this)" class="nav-btn flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-colors">
+      <i class="fa-solid fa-book-open text-lg"></i>
+      <span class="text-[10px] font-semibold">カリキュラム</span>
+    </button>
+    <button onclick="switchTab(this)" class="nav-btn flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-colors">
+      <i class="fa-solid fa-chart-line text-lg"></i>
+      <span class="text-[10px] font-semibold">実績</span>
+    </button>
+    <button onclick="switchTab(this)" class="nav-btn flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition-colors">
+      <i class="fa-solid fa-crown text-lg"></i>
+      <span class="text-[10px] font-semibold">プレミアム</span>
+    </button>
   </nav>
 
   <script>
-    document.querySelectorAll('nav a').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('nav a').forEach(i => {
-          i.classList.remove('text-[#E94560]');
-          i.classList.add('text-gray-400');
-        });
-        this.classList.remove('text-gray-400');
-        this.classList.add('text-[#E94560]');
+    function startLesson() {
+      // レッスン開始時のインタラクション
+      const btn = document.querySelector('button[onclick="startLesson()"]');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>読み込み中...</span>';
+      setTimeout(() => {
+        alert('1分レッスン(マイクロラーニング)を起動しました!');
+        btn.innerHTML = '<i class="fa-solid fa-bolt"></i><span>1分レッスンを始める</span>';
+      }, 500);
+    }
+
+    function switchTab(selectedButton) {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-accentOrange');
+        btn.classList.add('text-slate-400');
       });
-    });
+      selectedButton.classList.remove('text-slate-400');
+      selectedButton.classList.add('text-accentOrange');
+    }
   </script>
 </body>
 </html>
