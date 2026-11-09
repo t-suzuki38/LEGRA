@@ -1,299 +1,334 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ツン読プラットフォーム - 読書ゲーミフィケーション</title>
+  <title>スマート防災ストック:自動ローリングストック管理</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            deepNavy: '#0F172A',
-            neonPurple: '#8B5CF6',
-            emeraldGreen: '#10B981',
+            brandBlue: '#0F2C59',
+            brandOrange: '#FF7F3F',
+            brandLight: '#F8FAFC',
           }
         }
       }
     }
   </script>
-  <link rel="stylesheet" href="[link removed]">
-  <link href="[link removed]" rel="stylesheet">
   <style>
+    @import url('[link removed]');
     body {
-      font-family: 'Noto Sans JP', 'Inter', sans-serif;
-      background-color: #0F172A;
-      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #1E293B;
     }
-    .font-mono-custom {
-      font-family: 'JetBrains Mono', monospace;
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-    }
-    .glass-card-accent {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="bg-deepNavy text-slate-100 min-h-screen pb-24">
+<body class="bg-slate-50 text-slate-800 antialiased max-w-md mx-auto min-h-screen flex flex-col shadow-2xl relative overflow-x-hidden">
 
   <!-- ヘッダー -->
-  <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonPurple to-emeraldGreen flex items-center justify-center shadow-lg shadow-neonPurple/30">
-        <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+  <header class="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-100 sticky top-0 z-30">
+    <div class="flex items-center space-x-2">
+      <div class="w-9 h-9 rounded-xl bg-brandBlue flex items-center justify-center text-white shadow-md">
+        <i class="fa-solid fa-shield-halved text-brandOrange"></i>
       </div>
-      <div>
-        <h1 class="font-bold text-sm tracking-wide text-slate-100">ツン読アドベンチャー</h1>
-        <span class="text-xs text-emeraldGreen font-mono-custom">LV. 14 冒険者</span>
-      </div>
+      <span class="font-bold text-lg text-brandBlue tracking-tight">スマート防災</span>
     </div>
+    
     <div class="flex items-center space-x-3">
-      <div class="hidden sm:block text-right">
-        <div class="text-xs text-slate-400 font-mono-custom">EXP: 3,450 / 5,000</div>
-        <div class="w-28 bg-slate-800 h-2 rounded-full overflow-hidden mt-1">
-          <div class="bg-gradient-to-r from-neonPurple to-emeraldGreen h-full w-[69%]"></div>
-        </div>
+      <!-- 家族構成アイコン -->
+      <div class="flex items-center bg-slate-100 px-3 py-1 rounded-full text-xs font-medium text-slate-600">
+        <i class="fa-solid fa-users text-brandOrange mr-1.5"></i> 3人家族
       </div>
-      <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-neonPurple/20 text-neonPurple border border-neonPurple/30 flex items-center gap-1">
-        <i class="fa-solid fa-crown text-[10px]"></i> プレミアム
-      </span>
-      <button class="w-9 h-9 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white transition">
+      <!-- 通知アイコン -->
+      <button class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition relative">
+        <i class="fa-regular fa-bell"></i>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-brandOrange rounded-full"></span>
+      </button>
+      <!-- 設定アイコン -->
+      <button class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
         <i class="fa-solid fa-gear"></i>
       </button>
     </div>
   </header>
 
-  <!-- メインコンテンツ -->
-  <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-
-    <!-- ダッシュボード / 進捗グラフィックカード -->
-    <section class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-xl shadow-neonPurple/5">
-      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-neonPurple/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -left-10 -top-10 w-48 h-48 bg-emeraldGreen/10 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- メインコンテンツ領域 -->
+  <main class="flex-1 pb-24 overflow-y-auto">
+    
+    <!-- ホームタブビュー -->
+    <div id="view-home" class="p-6 space-y-6">
       
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          <span class="text-xs font-mono-custom text-neonPurple uppercase tracking-wider">Holotower Progress</span>
-          <h2 class="text-xl font-bold mt-1">積読タワー消化率</h2>
+      <!-- メインビジュアル: 防災備蓄の充足率 -->
+      <div class="bg-gradient-to-br from-brandBlue to-slate-800 text-white p-6 rounded-3xl shadow-xl relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/5 rounded-full pointer-events-none"></div>
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <span class="text-xs uppercase tracking-wider text-orange-300 font-semibold bg-orange-500/20 px-2.5 py-1 rounded-full">AI自動診断</span>
+            <h2 class="text-2xl font-bold mt-2">現在の充足率</h2>
+          </div>
+          <span class="text-xs text-slate-300">更新: 今日 07:00</span>
         </div>
-        <div class="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-800">
-          <i class="fa-solid fa-book text-emeraldGreen"></i>
-          <span class="text-sm font-mono-custom">残タワー高: 1.4m (12冊)</span>
-        </div>
-      </div>
 
-      <!-- プログレスリング&バー -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-        <div class="col-span-2 space-y-3">
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-300">今月の消化クエスト完了度</span>
-            <span class="font-mono-custom text-emeraldGreen font-bold">78%</span>
+        <div class="flex items-center justify-between my-4">
+          <div class="relative w-28 h-28 flex items-center justify-center">
+            <!-- 円形プログレスリング模擬 -->
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-700" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="text-brandOrange" stroke-dasharray="88, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <div class="absolute flex flex-col items-center justify-center text-center">
+              <span class="text-3xl font-ext500 font-bold tracking-tight">88%</span>
+              <span class="text-[10px] text-slate-300">安心レベル</span>
+            </div>
           </div>
-          <div class="w-full bg-slate-900/80 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-            <div class="bg-gradient-to-r from-neonPurple to-emeraldGreen h-full rounded-full transition-all duration-1000" style="width: 78%;"></div>
-          </div>
-          <p class="text-xs text-slate-400">あと3冊読了すると「知識の魔導書庫」ランクにアップグレードします!</p>
-        </div>
-        <div class="flex justify-center">
-          <div class="relative w-28 h-28 flex items-center justify-center rounded-full bg-slate-900/80 border-2 border-neonPurple/40 shadow-inner">
-            <div class="text-center">
-              <span class="text-2xl font-bold font-mono-custom text-white">LV.14</span>
-              <div class="text-[10px] text-emeraldGreen font-mono-custom">NEXT +1,550XP</div>
+
+          <div class="space-y-2 text-right">
+            <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl">
+              <p class="text-xs text-slate-300">水・食料の目安</p>
+              <p class="text-sm font-bold text-white">あと 12日分 (推奨14日)</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl">
+              <p class="text-xs text-slate-300">期限間近アイテム</p>
+              <p class="text-sm font-bold text-orange-400">3件あり</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ハイライトバナー -->
-      <div class="mt-6 bg-gradient-to-r from-emeraldGreen/10 to-neonPurple/10 rounded-xl p-4 border border-emeraldGreen/30 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-lg bg-emeraldGreen/20 flex items-center justify-center text-emeraldGreen">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <div>
-            <div class="text-xs text-emeraldGreen font-mono-custom">DAILY QUEST</div>
-            <div class="text-sm font-bold text-slate-100">本日のクエスト: 15分間のマイクロリーディング</div>
-          </div>
+      <!-- クイックアクション: レシート・バーコード読み取り -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-slate-800 text-sm">一括スマート登録</h3>
+          <p class="text-xs text-slate-500 mt-0.5">レシートやバーコードで簡単追加</p>
         </div>
-        <button class="bg-emeraldGreen hover:bg-emerald-600 text-deepNavy font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-emeraldGreen/20">
-          開始する
+        <button onclick="alert('カメラを起動してレシート/バーコードをスキャンします')" class="bg-brandOrange hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-orange-500/30 flex items-center space-x-2 transition transform active:scale-95">
+          <i class="fa-solid fa-camera"></i>
+          <span>スキャンする</span>
         </button>
       </div>
-    </section>
 
-    <!-- タブ切り替えエリア -->
-    <div class="flex space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
-      <button onclick="switchTab('rpg')" id="btn-rpg" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-neonPurple text-white shadow-lg shadow-neonPurple/20 flex items-center gap-2 whitespace-nowrap">
-        <i class="fa-solid fa-gamepad"></i> ツン読アドベンチャー(RPG)
-      </button>
-      <button onclick="switchTab('ai')" id="btn-ai" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 whitespace-nowrap">
-        <i class="fa-solid fa-brain"></i> Re:Book(AIコーチング)
-      </button>
-      <button onclick="switchTab('guild')" id="btn-guild" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 whitespace-nowrap">
-        <i class="fa-solid fa-users"></i> 積読バスターズ(ギルド)
-      </button>
-    </div>
-
-    <!-- タブコンテンツ 1: RPG -->
-    <div id="tab-rpg" class="tab-content space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="glass-card rounded-2xl p-5 space-y-3">
-          <div class="flex justify-between items-start">
-            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-mono-custom bg-neonPurple/20 text-neonPurple border border-neonPurple/30">主力の積読本</span>
-            <span class="text-xs text-slate-400 font-mono-custom">HP: 85/100</span>
-          </div>
-          <h3 class="font-bold text-base text-slate-100">『リーディング・ファウンデーション』</h3>
-          <p class="text-xs text-slate-400">スキマ時間の読書量に応じてキャラクターが成長するゲーミフィケーション進行中。</p>
-          <div class="pt-2 flex justify-between items-center">
-            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mr-4">
-              <div class="bg-neonPurple h-full w-[45%]"></div>
-            </div>
-            <span class="text-xs font-mono-custom text-slate-300 whitespace-nowrap">45% 攻略</span>
-          </div>
-        </div>
-
-        <div class="glass-card rounded-2xl p-5 space-y-3">
-          <div class="flex justify-between items-start">
-            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-mono-custom bg-emeraldGreen/20 text-emeraldGreen border border-emeraldGreen/30">討伐間近</span>
-            <span class="text-xs text-slate-400 font-mono-custom">HP: 20/100</span>
-          </div>
-          <h3 class="font-bold text-base text-slate-100">『ゼロからわかるデザインシステム』</h3>
-          <p class="text-xs text-slate-400">ストーリー・リワード設計により読書の罪悪感をエンタメの楽しさに変換。</p>
-          <div class="pt-2 flex justify-between items-center">
-            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mr-4">
-              <div class="bg-emeraldGreen h-full w-[85%]"></div>
-            </div>
-            <span class="text-xs font-mono-custom text-slate-300 whitespace-nowrap">85% 攻略</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- タブコンテンツ 2: AIコーチング -->
-    <div id="tab-ai" class="tab-content space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-6 space-y-4">
+      <!-- AIからの「今月のおすすめ補充・見直し提案」カード -->
+      <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200/60 p-5 rounded-2xl shadow-sm space-y-3">
         <div class="flex items-center justify-between">
-          <div>
-            <span class="text-xs font-mono-custom text-emeraldGreen">AI AUTO SCHEDULER</span>
-            <h3 class="text-lg font-bold">本日のAIカスタム読書スケジュール</h3>
+          <div class="flex items-center space-x-2 text-brandOrange font-bold text-sm">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>AIアドバイザーの提案</span>
           </div>
-          <button class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
-            再生成する
-          </button>
+          <span class="text-[10px] bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full font-semibold">重要</span>
+        </div>
+        <p class="text-xs text-slate-700 leading-relaxed">
+          家族の消費ペースに基づき、ミネラルウォーター(2L)の在庫が来週不足する見込みです。また、保存食の賞味期限が近い3品があります。
+        </p>
+        <div class="pt-1 flex space-x-2">
+          <button class="bg-brandBlue text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">おすすめを補充</button>
+          <button class="bg-white text-slate-700 border border-slate-200 text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition">詳細を確認</button>
+        </div>
+      </div>
+
+      <!-- ストック一覧プレビュー -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800">期限が近いストック</h3>
+          <button onclick="switchTab('stock')" class="text-xs text-brandOrange font-semibold hover:underline">すべて見る</button>
         </div>
 
-        <div class="space-y-3">
-          <label class="flex items-start gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800 cursor-pointer hover:bg-slate-900 transition">
-            <input type="checkbox" checked class="mt-1 accent-emeraldGreen w-4 h-4 rounded">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <span class="text-sm font-bold text-slate-200">07:30 - 通勤マイクロリーディング (15分)</span>
-                <span class="text-xs text-emeraldGreen font-mono-custom">完了済</span>
+        <div class="space-y-2">
+          <!-- アイテム1 -->
+          <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-lg bg-orange-100 text-brandOrange flex items-center justify-center font-bold">
+                <i class="fa-solid fa-bottle-water"></i>
               </div>
-              <p class="text-xs text-slate-400 mt-0.5">『ゼロからわかるデザインシステム』第3章の要点自動分解パート</p>
+              <div>
+                <h4 class="text-sm font-bold text-slate-800">天然水 2L × 6本</h4>
+                <p class="text-xs text-slate-400">飲料水 ・ カテゴリ: 水</p>
+              </div>
             </div>
-          </label>
+            <div class="text-right">
+              <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2.5 py-1 rounded-full">残り 5日</span>
+            </div>
+          </div>
 
-          <label class="flex items-start gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800 cursor-pointer hover:bg-slate-900 transition">
-            <input type="checkbox" class="mt-1 accent-emeraldGreen w-4 h-4 rounded">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <span class="text-sm font-bold text-slate-200">12:30 - ランチタイム・定着度テスト (10分)</span>
-                <span class="text-xs text-neonPurple font-mono-custom">未実施</span>
+          <!-- アイテム2 -->
+          <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-bowl-food"></i>
               </div>
-              <p class="text-xs text-slate-400 mt-0.5">AIコーチによる3問の理解度チェッククイズに挑戦</p>
+              <div>
+                <h4 class="text-sm font-bold text-slate-800">アルファ米 白飯</h4>
+                <p class="text-xs text-slate-400">非常食 ・ カテゴリ: 食品</p>
+              </div>
             </div>
-          </label>
+            <div class="text-right">
+              <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full">残り 14日</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ストック一覧タブビュー -->
+    <div id="view-stock" class="p-6 space-y-4 hidden">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-slate-800">ストック一覧</h2>
+        <button class="bg-brandBlue text-white text-xs px-3 py-2 rounded-lg font-medium">+ 手動追加</button>
+      </div>
+
+      <!-- カテゴリ別タブ -->
+      <div class="flex space-x-2 overflow-x-auto hide-scrollbar pb-1">
+        <button class="bg-brandBlue text-white text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap shadow-sm">すべて</button>
+        <button class="bg-white text-slate-600 border border-slate-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap">水・飲料</button>
+        <button class="bg-white text-slate-600 border border-slate-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap">非常食</button>
+        <button class="bg-white text-slate-600 border border-slate-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap">日用品</button>
+        <button class="bg-white text-slate-600 border border-slate-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap">医療・衛生</button>
+      </div>
+
+      <!-- リスト -->
+      <div class="space-y-2 pt-2">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-lg bg-orange-100 text-brandOrange flex items-center justify-center">
+              <i class="fa-solid fa-bottle-water"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-800">天然水 2L</h4>
+              <p class="text-xs text-slate-400">残り: 6本 / 消費ペース: 0.5本/日</p>
+            </div>
+          </div>
+          <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2.5 py-1 rounded-full">残り 5日</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+              <i class="fa-solid fa-bowl-food"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-800">アルファ米 白飯</h4>
+              <p class="text-xs text-slate-400">残り: 12食 / 消費ペース: 0.2食/日</p>
+            </div>
+          </div>
+          <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full">残り 14日</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-50 text-brandBlue flex items-center justify-center">
+              <i class="fa-solid fa-toilet-paper"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-800">トイレットペーパー 芯なし</h4>
+              <p class="text-xs text-slate-400">残り: 18ロール / 消費ペース: 1ロール/日</p>
+            </div>
+          </div>
+          <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full">余裕あり</span>
         </div>
       </div>
     </div>
 
-    <!-- タブコンテンツ 3: ギルド -->
-    <div id="tab-guild" class="tab-content space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-6 space-y-4">
-        <div class="flex justify-between items-center">
-          <div>
-            <span class="text-xs font-mono-custom text-neonPurple">SOCIAL GUILD</span>
-            <h3 class="text-lg font-bold">積読バスターズ - 第4支部ギルドフィード</h3>
-          </div>
-          <span class="text-xs bg-neonPurple/20 text-neonPurple px-3 py-1 rounded-full border border-neonPurple/30">メンバー 12名</span>
-        </div>
+    <!-- AI提案タブビュー -->
+    <div id="view-ai" class="p-6 space-y-4 hidden">
+      <h2 class="text-xl font-bold text-slate-800">AIアドバイザー</h2>
+      <p class="text-xs text-slate-500">家族の人数・ライフスタイルに合わせた最適な防災計画を提案します。</p>
 
-        <div class="space-y-3">
-          <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-neonPurple to-emeraldGreen flex items-center justify-center font-bold text-xs">美</div>
-                <span class="text-sm font-semibold text-slate-200">ミサキさん</span>
-              </div>
-              <span class="text-xs text-slate-500 font-mono-custom">10分前</span>
-            </div>
-            <p class="text-xs text-slate-300">「思考の整理学」の積読タワーをまた一つ崩しました!ギルドボーナス獲得です🎉</p>
-          </div>
-
-          <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emeraldGreen to-blue-500 flex items-center justify-center font-bold text-xs">健</div>
-                <span class="text-sm font-semibold text-slate-200">ケンタさん</span>
-              </div>
-              <span class="text-xs text-slate-500 font-mono-custom">1時間前</span>
-            </div>
-            <p class="text-xs text-slate-300">今夜21時から「Re:Book」を使った同時読書会を開催します。参加お待ちしてます!</p>
-          </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+        <div class="flex items-center space-x-2 text-brandOrange font-bold text-sm">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>消費予測分析レポート</span>
         </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          現在の我が家の備蓄構成は、地震災害時の3日分ライフライン停止をクリアしています。次は1週間分の充足率引き上げを推奨します。
+        </p>
+        <div class="bg-slate-50 p-3 rounded-xl text-xs space-y-1 text-slate-700">
+          <div class="flex justify-between"><span>推奨追加アイテム:</span> <span class="font-bold">簡易トイレセット</span></div>
+          <div class="flex justify-between"><span>最適購入タイミング:</span> <span class="font-bold">今週末</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- プレミアムタブビュー -->
+    <div id="view-premium" class="p-6 space-y-4 hidden">
+      <div class="bg-gradient-to-br from-brandOrange to-amber-600 text-white p-6 rounded-3xl shadow-xl space-y-4">
+        <span class="text-xs uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full font-semibold">プレミアムプラン</span>
+        <h2 class="text-2xl font-bold">完全自動化で、安心を日常に。</h2>
+        <p class="text-xs text-orange-100 leading-relaxed">
+          家族間共有、賞味期限切れ前の自動寄付サポート、EC連携によるローリングストック自動補充機能がすべて使い放題。
+        </p>
+        <button class="w-full bg-white text-brandOrange py-3 rounded-xl font-bold text-sm shadow-md hover:bg-orange-50 transition">
+          月額480円で今すぐアップグレード
+        </button>
+      </div>
+    </div>
+
+    <!-- マイページタブビュー -->
+    <div id="view-mypage" class="p-6 space-y-4 hidden">
+      <h2 class="text-xl font-bold text-slate-800">マイページ</h2>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 divide-y divide-slate-100">
+        <div class="p-4 flex items-center justify-between text-sm"><span class="font-medium text-slate-700">家族構成の編集</span><i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i></div>
+        <div class="p-4 flex items-center justify-between text-sm"><span class="font-medium text-slate-700">通知設定</span><i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i></div>
+        <div class="p-4 flex items-center justify-between text-sm"><span class="font-medium text-slate-700">EC連携アカウント</span><i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i></div>
+        <div class="p-4 flex items-center justify-between text-sm"><span class="font-medium text-slate-700">利用規約・プライバシー</span><i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i></div>
       </div>
     </div>
 
   </main>
 
-  <!-- ボトムナビゲーション (フローティング型バー) -->
-  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-[92%] max-w-md">
-    <div class="glass-card-accent rounded-2xl px-4 py-3 flex justify-around items-center shadow-2xl shadow-neonPurple/20">
-      <button class="flex flex-col items-center text-emeraldGreen transition">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-1 font-mono-custom">ホーム</span>
-      </button>
-      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-scroll text-lg"></i>
-        <span class="text-[10px] mt-1 font-mono-custom">クエスト</span>
-      </button>
-      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-users-rectangle text-lg"></i>
-        <span class="text-[10px] mt-1 font-mono-custom">ギルド</span>
-      </button>
-      <button class="flex flex-col items-center text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-user text-lg"></i>
-        <span class="text-[10px] mt-1 font-mono-custom">マイページ</span>
-      </button>
-    </div>
+  <!-- フッターナビゲーション -->
+  <nav class="bg-white border-t border-slate-100 py-3 px-4 fixed bottom-0 left-0 right-0 max-w-md mx-auto flex justify-around items-center z-30 shadow-lg">
+    <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center space-y-1 text-brandOrange transition">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] font-semibold">ホーム</span>
+    </button>
+    <button onclick="switchTab('stock')" id="nav-stock" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+      <i class="fa-solid fa-boxes-stacked text-lg"></i>
+      <span class="text-[10px] font-semibold">ストック一覧</span>
+    </button>
+    <button onclick="switchTab('ai')" id="nav-ai" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+      <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+      <span class="text-[10px] font-semibold">AI提案</span>
+    </button>
+    <button onclick="switchTab('premium')" id="nav-premium" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+      <i class="fa-solid fa-crown text-lg"></i>
+      <span class="text-[10px] font-semibold">プレミアム</span>
+    </button>
+    <button onclick="switchTab('mypage')" id="nav-mypage" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
+      <i class="fa-solid fa-user text-lg"></i>
+      <span class="text-[10px] font-semibold">マイページ</span>
+    </button>
   </nav>
 
   <script>
     function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => {
-        el.classList.add('hidden');
+      const views = ['home', 'stock', 'ai', 'premium', 'mypage'];
+      views.forEach(v => {
+        const viewEl = document.getElementById('view-' + v);
+        const navEl = document.getElementById('nav-' + v);
+        if (v === tabName) {
+          viewEl.classList.remove('hidden');
+          navEl.classList.remove('text-slate-400');
+          navEl.classList.add('text-brandOrange');
+        } else {
+          viewEl.classList.add('hidden');
+          navEl.classList.remove('text-brandOrange');
+          navEl.classList.add('text-slate-400');
+        }
       });
-      document.querySelectorAll('.tab-btn').forEach(el => {
-        el.classList.remove('bg-neonPurple', 'text-white', 'shadow-lg', 'shadow-neonPurple/20');
-        el.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/50');
-      });
-
-      document.getElementById('tab-' + tabName).classList.remove('hidden');
-      
-      const activeBtn = document.getElementById('btn-' + tabName);
-      activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/50');
-      activeBtn.classList.add('bg-neonPurple', 'text-white', 'shadow-lg', 'shadow-neonPurple/20');
+      window.scrollTo(0, 0);
     }
   </script>
+
 </body>
 </html>
