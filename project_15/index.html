@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ネギ大百科 - ネギのすべてが網羅された日本最大級の専門Web大百科</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            freshGreen: '#2E8B57',
+            darkCharcoal: '#2D3748',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-darkCharcoal antialiased">
+  <!-- ヘッダー -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-freshGreen flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-seedling text-lg"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-darkCharcoal">ネギ大百科</span>
+      </div>
+      <!-- 検索バー -->
+      <div class="hidden md:flex flex-1 max-w-md mx-8">
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input type="text" id="searchInput" placeholder="品種、栽培法、レシピ、栄養素を検索..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-full text-sm focus:bg-white focus:border-freshGreen focus:ring-2 focus:ring-freshGreen/20 focus:outline-none transition-all">
+        </div>
+      </div>
+      <!-- ナビゲーションメニュー -->
+      <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-gray-600">
+        <a href="#varieties" class="hover:text-freshGreen transition-colors">品種一覧</a>
+        <a href="#cultivation" class="hover:text-freshGreen transition-colors">栽培法</a>
+        <a href="#recipes" class="hover:text-freshGreen transition-colors">レシピ</a>
+        <a href="#nutrients" class="hover:text-freshGreen transition-colors">栄養素</a>
+        <a href="#affiliate" class="hover:text-freshGreen transition-colors text-freshGreen font-semibold">おすすめ商品</a>
+      </nav>
+      <!-- モバイルメニューボタン -->
+      <div class="lg:hidden flex items-center">
+        <button id="menuBtn" class="text-gray-600 hover:text-freshGreen focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- モバイルナビゲーション -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-100 px-4 pt-2 pb-4 space-y-2">
+      <a href="#varieties" class="block py-2 text-gray-600 hover:text-freshGreen">品種一覧</a>
+      <a href="#cultivation" class="block py-2 text-gray-600 hover:text-freshGreen">栽培法</a>
+      <a href="#recipes" class="block py-2 text-gray-600 hover:text-freshGreen">レシピ</a>
+      <a href="#nutrients" class="block py-2 text-gray-600 hover:text-freshGreen">栄養素</a>
+      <a href="#affiliate" class="block py-2 text-freshGreen font-semibold">おすすめ商品</a>
+    </div>
+  </header>
+
+  <!-- メインビジュアル（ヒーローセクション） -->
+  <section class="relative bg-gradient-to-br from-freshGreen/10 via-white to-gray-100 py-24 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      <span class="inline-block bg-freshGreen/10 text-freshGreen font-semibold text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-6">日本最大級のネギ専門大百科</span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-darkCharcoal tracking-tight mb-6">ネギのすべてが網羅された<br class="hidden sm:inline">専門Web大百科</h1>
+      <p class="max-w-2xl mx-auto text-lg text-gray-600 mb-10">料理や栽培の目的に応じた最適なネギの知識や活用法がすぐに分かり、疑問や悩みを解消できる</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#varieties" class="bg-freshGreen hover:bg-freshGreen/90 text-white font-medium px-8 py-3 rounded-full shadow-lg shadow-freshGreen/20 transition-all transform hover:-translate-y-0.5">ネギの品種を探す</a>
+        <a href="#cultivation" class="bg-white hover:bg-gray-50 text-darkCharcoal font-medium border border-gray-200 px-8 py-3 rounded-full shadow-sm transition-all">栽培法を見る</a>
+        <a href="#recipes" class="bg-white hover:bg-gray-50 text-darkCharcoal font-medium border border-gray-200 px-8 py-3 rounded-full shadow-sm transition-all">レシピを見る</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- コンテンツセクション -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+    
+    <!-- データベースエリア（カテゴリ別カード型一覧） -->
+    <section id="varieties" class="space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 pb-4">
+        <div>
+          <span class="text-freshGreen font-semibold text-xs uppercase tracking-wider">Database</span>
+          <h2 class="text-3xl font-bold text-darkCharcoal mt-1">ネギの品種・カテゴリデータベース</h2>
+        </div>
+        <p class="text-sm text-gray-500 mt-2 md:mt-0">全国の代表的な品種から特徴を詳しく解説</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- カード1 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div>
+            <div class="w-full h-40 bg-freshGreen/10 rounded-xl mb-4 flex items-center justify-center text-freshGreen text-3xl font-bold">白ネギ</div>
+            <h3 class="text-lg font-bold text-darkCharcoal mb-2">白ネギ（長ネギ）</h3>
+            <p class="text-sm text-gray-600 mb-4">関東を中心に普及している根深ネギ。土寄せして育てるため、白い部分が長いのが特徴。</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>旬: 11月〜2月</span>
+            <span class="text-freshGreen font-semibold">詳細を見る →</span>
+          </div>
+        </div>
+        <!-- カード2 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div>
+            <div class="w-full h-40 bg-freshGreen/10 rounded-xl mb-4 flex items-center justify-center text-freshGreen text-3xl font-bold">青ネギ</div>
+            <h3 class="text-lg font-bold text-darkCharcoal mb-2">青ネギ（葉ネギ）</h3>
+            <p class="text-sm text-gray-600 mb-4">関西を中心に普及している葉ネギ。全体が緑色で、香り高く薬味に最適。</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>旬: 通年</span>
+            <span class="text-freshGreen font-semibold">詳細を見る →</span>
+          </div>
+        </div>
+        <!-- カード3 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div>
+            <div class="w-full h-40 bg-freshGreen/10 rounded-xl mb-4 flex items-center justify-center text-freshGreen text-3xl font-bold">下仁田</div>
+            <h3 class="text-lg font-bold text-darkCharcoal mb-2">下仁田ネギ</h3>
+            <p class="text-sm text-gray-600 mb-4">「殿様ネギ」とも呼ばれる群馬県特産のブランドネギ。加熱すると強い甘みが出る。</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>旬: 12月〜1月</span>
+            <span class="text-freshGreen font-semibold">詳細を見る →</span>
+          </div>
+        </div>
+        <!-- カード4 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div>
+            <div class="w-full h-40 bg-freshGreen/10 rounded-xl mb-4 flex items-center justify-center text-freshGreen text-3xl font-bold">九条</div>
+            <h3 class="text-lg font-bold text-darkCharcoal mb-2">九条ネギ</h3>
+            <p class="text-sm text-gray-600 mb-4">京都の伝統野菜。柔らかく甘みがあり、葉の中にぬめりがたっぷり詰まっている。</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>旬: 10月〜2月</span>
+            <span class="text-freshGreen font-semibold">詳細を見る →</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 栽培法・レシピ・栄養素セクション -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 栽培法 -->
+      <section id="cultivation" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-freshGreen/10 text-freshGreen flex items-center justify-center">
+            <i class="fa-solid fa-spa"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-darkCharcoal">栽培法ガイド</h2>
+        </div>
+        <p class="text-sm text-gray-600">初心者でも自宅の庭やプランターで美味しいネギを育てるためのステップバイステップガイド。</p>
+        <ul class="space-y-4 text-sm text-gray-600">
+          <li class="flex items-start space-x-3">
+            <span class="w-6 h-6 rounded-full bg-freshGreen/10 text-freshGreen flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+            <div><strong>土作りと種まき:</strong> 水はけの良い土を選び、適切な間隔で植え付けます。</div>
+          </li>
+          <li class="flex items-start space-x-3">
+            <span class="w-6 h-6 rounded-full bg-freshGreen/10 text-freshGreen flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+            <div><strong>土寄せ作業:</strong> 白ネギは成長に合わせて土を盛り、白い部分を増やします。</div>
+          </li>
+          <li class="flex items-start space-x-3">
+            <span class="w-6 h-6 rounded-full bg-freshGreen/10 text-freshGreen flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+            <div><strong>追肥と収穫:</strong> 定期的な肥料の追加と、適切な時期の収穫方法。</div>
+          </li>
+        </ul>
+        <a href="#" class="inline-block text-freshGreen font-semibold text-sm hover:underline">栽培マニュアル全文を読む →</a>
+      </section>
+
+      <!-- レシピ -->
+      <section id="recipes" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-freshGreen/10 text-freshGreen flex items-center justify-center">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-darkCharcoal">絶品レシピ</h2>
+        </div>
+        <p class="text-sm text-gray-600">ネギのポテンシャルを最大限に引き出す、毎日の献立に役立つ厳選レシピ。</p>
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+            <h4 class="font-bold text-darkCharcoal text-sm mb-1">とろ〜り甘い 丸ごと焼きネギ</h4>
+            <p class="text-xs text-gray-500">シンプルにオーブンで焼くだけで、驚きの甘さとジューシーさに。</p>
+          </div>
+          <div class="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+            <h4 class="font-bold text-darkCharcoal text-sm mb-1">シャキシャキ食感 ピリ辛ネギ塩ダレ</h4>
+            <p class="text-xs text-gray-500">お肉や冷奴のトッピングに抜群な万能ダレの作り方。</p>
+          </div>
+        </div>
+        <a href="#" class="inline-block text-freshGreen font-semibold text-sm hover:underline">すべてのレシピを見る →</a>
+      </section>
+
+      <!-- 栄養素 -->
+      <section id="nutrients" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-freshGreen/10 text-freshGreen flex items-center justify-center">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-darkCharcoal">栄養と健康効果</h2>
+        </div>
+        <p class="text-sm text-gray-600">ネギ特有の辛味成分やビタミン類がもたらす優れた健康・美容効果について。</p>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-freshGreen"></i>
+            <span><strong>アリシン:</strong> 疲労回復や免疫力アップをサポート</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-freshGreen"></i>
+            <span><strong>ビタミンC:</strong> 美肌効果と風邪予防</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-freshGreen"></i>
+            <span><strong>カルシウム・カリウム:</strong> 骨の健康とむくみ解消</span>
+          </li>
+        </ul>
+        <a href="#" class="inline-block text-freshGreen font-semibold text-sm hover:underline">栄養科学データを見る →</a>
+      </section>
+    </div>
+
+    <!-- ピックアップ記事エリア -->
+    <section class="space-y-8">
+      <div class="border-b border-gray-200 pb-4">
+        <span class="text-freshGreen font-semibold text-xs uppercase tracking-wider">Pickup</span>
+        <h2 class="text-3xl font-bold text-darkCharcoal mt-1">注目のピックアップ記事</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
+          <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 font-medium">記事アイキャッチ画像</div>
+          <div class="p-6 space-y-3">
+            <span class="text-xs bg-freshGreen/10 text-freshGreen px-2.5 py-1 rounded-full font-medium">選び方</span>
+            <h3 class="font-bold text-darkCharcoal text-lg">新鮮で美味しいネギの見分け方 3つのポイント</h3>
+            <p class="text-sm text-gray-600 line-clamp-2">スーパーでハズレを引かないための、巻きの固さや根元の特徴をプロが伝授します。</p>
+            <div class="pt-2 text-xs text-gray-400">2026.11.15</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
+          <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 font-medium">記事アイキャッチ画像</div>
+          <div class="p-6 space-y-3">
+            <span class="text-xs bg-freshGreen/10 text-freshGreen px-2.5 py-1 rounded-full font-medium">保存法</span>
+            <h3 class="font-bold text-darkCharcoal text-lg">ネギのシャキシャキ感を長持ちさせる冷凍・冷蔵保存術</h3>
+            <p class="text-sm text-gray-600 line-clamp-2">使い切れないネギもこれで安心。薬味用と鍋用に分けた正しい保存テクニック。</p>
+            <div class="pt-2 text-xs text-gray-400">2026.11.12</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
+          <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 font-medium">記事アイキャッチ画像</div>
+          <div class="p-6 space-y-3">
+            <span class="text-xs bg-freshGreen/10 text-freshGreen px-2.5 py-1 rounded-full font-medium">文化</span>
+            <h3 class="font-bold text-darkCharcoal text-lg">日本全国ネギ事情：東の白ネギ、西の青ネギの歴史</h3>
+            <p class="text-sm text-gray-600 line-clamp-2">なぜ関東と関西で好まれるネギが違うのか？その深くて面白い食文化の歴史を紐解く。</p>
+            <div class="pt-2 text-xs text-gray-400">2026.11.08</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- アフィリエイトレコメンドエリア -->
+    <section id="affiliate" class="bg-gradient-to-r from-freshGreen/10 via-freshGreen/5 to-white rounded-3xl p-8 sm:p-12 border border-freshGreen/20 space-y-8">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-freshGreen font-semibold text-xs uppercase tracking-wider">Affiliate Recommendation</span>
+        <h2 class="text-3xl font-bold text-darkCharcoal">ネギ生活を豊かにするおすすめアイテム</h2>
+        <p class="text-sm text-gray-600">調理を快適にする専用キッチングッズや、自宅で手軽に始められる栽培キットをご紹介します。</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 商品1 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-full h-36 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400 text-sm">商品画像</div>
+            <h3 class="font-bold text-darkCharcoal mb-1">ネギカッター 白髪ネギスライサー</h3>
+            <p class="text-xs text-gray-500 mb-4">プロ並みの美しい白髪ネギがワンストロークで簡単に作れる便利調理器具。</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-freshGreen font-bold text-lg">¥1,480 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshGreen hover:bg-freshGreen/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshGreen/20 transition-all text-sm">Amazonで詳細を見る <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i></a>
+          </div>
+        </div>
+        <!-- 商品2 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-full h-36 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400 text-sm">商品画像</div>
+            <h3 class="font-bold text-darkCharcoal mb-1">家庭菜園用 プランター＆培養土セット</h3>
+            <p class="text-xs text-gray-500 mb-4">ベランダでも手軽にネギ栽培をスタートできる、初心者向けのオールインワンセット。</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-freshGreen font-bold text-lg">¥2,980 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshGreen hover:bg-freshGreen/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshGreen/20 transition-all text-sm">楽天市場で詳細を見る <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i></a>
+          </div>
+        </div>
+        <!-- 商品3 -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-full h-36 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400 text-sm">商品画像</div>
+            <h3 class="font-bold text-darkCharcoal mb-1">プロ仕様 ステンレス料理バサミ</h3>
+            <p class="text-xs text-gray-500 mb-4">ネギの小口切りからパック開封までこれ一本でこなせる万能キッチンバサミ。</p>
+          </div>
+          <div class="space-y-3">
+            <div class="text-freshGreen font-bold text-lg">¥3,200 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshGreen hover:bg-freshGreen/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshGreen/20 transition-all text-sm">Yahoo!ショッピングで詳細を見る <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-darkCharcoal text-gray-400 py-12 mt-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-freshGreen flex items-center justify-center text-white">
+            <i class="fa-solid fa-seedling text-sm"></i>
+          </div>
+          <span class="text-white font-bold text-lg">ネギ大百科</span>
+        </div>
+        <div class="flex flex-wrap justify-center space-x-6 text-sm">
+          <a href="#" class="hover:text-white transition-colors">サイトマップ</a>
+          <a href="#" class="hover:text-white transition-colors">運営者情報</a>
+          <a href="#" class="hover:text-white transition-colors">プライバシーポリシー</a>
+          <a href="#" class="hover:text-white transition-colors">アフィリエイトに関する免責事項</a>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 pt-8 text-center text-xs text-gray-500">
+        <p>&copy; 2026 ネギ大百科 All Rights Reserved. 当サイトはアフィリエイトプログラムに参加しています。</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        alert('「' + searchInput.value + '」の検索結果を表示します（デモ版）');
+      }
+    });
+  </script>
+</body>
+</html>
