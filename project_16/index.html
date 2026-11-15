@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ワンタップ水やりボタニカル</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts: Inter / Noto Sans JP -->
+  <link href="[link removed]" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+      background-color: #F4F3EF;
+    }
+    .terracotta-color { color: #C85A32; }
+    .terracotta-bg { background-color: #C85A32; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #E2E0D8; border-radius: 4px; }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-0 sm:p-4">
+  <!-- App Container (Apple/Dribbble trend mobile UI frame) -->
+  <div class="w-full max-w-md bg-[#FCFBF9] sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-screen sm:h-[844px] relative border border-[#EBE9E1]">
+    
+    <!-- Header -->
+    <header class="px-6 py-4 flex items-center justify-between bg-[#FCFBF9]/90 backdrop-blur-md sticky top-0 z-20 border-b border-[#F0EEE6]">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+          <i class="fa-solid fa-seedling text-base"></i>
+        </div>
+        <span class="font-bold text-stone-800 tracking-tight text-lg">Botanical</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button onclick="openPremiumModal()" class="flex items-center space-x-1 px-3 py-1.5 bg-amber-50 border border-amber-200/70 rounded-full text-xs font-semibold text-amber-800 transition hover:bg-amber-100 shadow-sm">
+          <i class="fa-solid fa-crown text-amber-600"></i>
+          <span>Pro</span>
+        </button>
+        <button class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-200 transition">
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Scrollable Area -->
+    <main class="flex-1 overflow-y-auto px-6 py-5 pb-28 space-y-6">
+      
+      <!-- Main Visual / Plant Status Card -->
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-stone-100 relative overflow-hidden group">
+        <div class="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-emerald-700 flex items-center space-x-1.5 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>水やり最適期</span>
+        </div>
+        
+        <div class="relative h-56 rounded-2xl overflow-hidden mb-4 shadow-inner bg-stone-100">
+          <img src="[link removed]" alt="Monstera" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-stone-900/40 via-transparent to-transparent"></div>
+          <div class="absolute bottom-3 left-3 right-3 text-white flex justify-between items-end">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-stone-200 font-medium">リビング窓際</span>
+              <h2 class="text-xl font-bold">モンステラ</h2>
+            </div>
+            <span class="text-xs bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-lg">AI判定: 99%</span>
+          </div>
+        </div>
+
+        <!-- Status Grid -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="bg-[#F8F7F4] p-3.5 rounded-2xl border border-[#EFECE6]">
+            <div class="text-xs text-stone-500 mb-1">次回の水やり</div>
+            <div class="text-lg font-bold text-stone-800">今日 <span class="text-xs font-normal text-emerald-600">あと0日</span></div>
+          </div>
+          <div class="bg-[#F8F7F4] p-3.5 rounded-2xl border border-[#EFECE6]">
+            <div class="text-xs text-stone-500 mb-1">土壌湿度</div>
+            <div class="text-lg font-bold terracotta-color">ドライ <span class="text-xs font-normal text-stone-500">22%</span></div>
+          </div>
+        </div>
+
+        <button onclick="waterPlant()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-droplet"></i>
+          <span>水やりを完了する</span>
+        </button>
+      </div>
+
+      <!-- AI One-point Advice Section -->
+      <div class="bg-gradient-to-br from-amber-50/90 to-stone-50 rounded-3xl p-5 border border-amber-100 shadow-sm">
+        <div class="flex items-center space-x-2 mb-2 text-amber-800 font-bold text-sm">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+          <span>AI ワンポイント育成アドバイス</span>
+        </div>
+        <p class="text-stone-600 text-sm leading-relaxed">
+          写真の葉のツヤと土壌の状態から、現在の環境にとても適応しています。今週は日光浴の時間を少し長めにするとより成長が促されます。
+        </p>
+      </div>
+
+      <!-- Plant List Section -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-stone-800 text-sm">マイ植物リスト (3)</h3>
+          <span class="text-xs text-emerald-600 font-semibold cursor-pointer hover:underline">すべて見る</span>
+        </div>
+        <div class="space-y-3">
+          <div class="bg-white p-3.5 rounded-2xl border border-stone-100 flex items-center justify-between shadow-sm">
+            <div class="flex items-center space-x-3">
+              <img src="[link removed]" alt="Pachira" class="w-12 h-12 rounded-xl object-cover">
+              <div>
+                <h4 class="font-bold text-stone-800 text-sm">パキラ</h4>
+                <p class="text-xs text-stone-500">寝室 / あと3日</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">健康</span>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl border border-stone-100 flex items-center justify-between shadow-sm">
+            <div class="flex items-center space-x-3">
+              <img src="[link removed]" alt="Sansevieria" class="w-12 h-12 rounded-xl object-cover">
+              <div>
+                <h4 class="font-bold text-stone-800 text-sm">サンスベリア</h4>
+                <p class="text-xs text-stone-500">玄関 / あと7日</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">健康</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Action Area (Floating Button) -->
+    <div class="absolute bottom-6 left-0 right-0 flex justify-center z-30 pointer-events-none">
+      <button onclick="openCameraModal()" class="pointer-events-auto bg-stone-900 hover:bg-stone-800 text-white px-6 py-4 rounded-full shadow-2xl flex items-center space-x-3 transform hover:scale-105 active:scale-95 transition duration-300 border border-stone-700">
+        <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+          <i class="fa-solid fa-camera text-xs"></i>
+        </div>
+        <span class="font-bold text-sm tracking-wide">ワンタップ撮影・診断</span>
+      </button>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="absolute inset-0 bg-stone-900/80 backdrop-blur-md z-50 flex flex-col justify-end hidden transition-all">
+      <div class="bg-white rounded-t-[32px] p-6 text-center space-y-4">
+        <div class="w-12 h-1.5 bg-stone-200 rounded-full mx-auto"></div>
+        <div class="w-20 h-20 bg-emerald-50 rounded-3xl mx-auto flex items-center justify-center text-emerald-600 text-3xl shadow-inner">
+          <i class="fa-solid fa-camera-retro"></i>
+        </div>
+        <h3 class="text-xl font-bold text-stone-800">AI植物スキャン</h3>
+        <p class="text-stone-500 text-sm">植物の写真を1枚撮るだけで、AIが種類と最適な水やりタイミングを自動判定します。</p>
+        <div class="pt-2 space-y-2">
+          <button onclick="simulateScan()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/30">
+            写真を撮影してAI判定する
+          </button>
+          <button onclick="closeCameraModal()" class="w-full py-3 text-stone-500 font-semibold text-sm">
+            キャンセル
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scan Loader Modal -->
+    <div id="scanLoader" class="absolute inset-0 bg-stone-900/90 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden text-white space-y-4">
+      <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="font-bold text-lg tracking-wide">AIが植物を解析中...</p>
+      <p class="text-stone-400 text-xs">種類と水分状態を診断しています</p>
+    </div>
+
+    <!-- Premium Modal -->
+    <div id="premiumModal" class="absolute inset-0 bg-stone-900/80 backdrop-blur-md z-50 flex flex-col justify-end hidden">
+      <div class="bg-white rounded-t-[32px] p-6 space-y-5">
+        <div class="w-12 h-1.5 bg-stone-200 rounded-full mx-auto"></div>
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold text-stone-800 flex items-center space-x-2">
+            <i class="fa-solid fa-crown text-amber-500"></i>
+            <span>Botanical Pro</span>
+          </h3>
+          <button onclick="closePremiumModal()" class="text-stone-400 hover:text-stone-600">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        <p class="text-stone-600 text-sm">プレミアムプランで、ワンルームのボタニカルライフをもっと豊かに。</p>
+        <ul class="space-y-3 text-sm text-stone-700">
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-emerald-500"></i>
+            <span>無制限の植物登録と専用育成ガイド</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-emerald-500"></i>
+            <span>プレミアム通知デザインのカスタマイズ</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <i class="fa-solid fa-check text-emerald-500"></i>
+            <span>AIによる詳細な健康状態レポート</span>
+          </li>
+        </ul>
+        <div class="pt-2">
+          <button onclick="alert('プレミアムプランへのご登録ありがとうございます！'); closePremiumModal();" class="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-2xl shadow-lg shadow-amber-600/30">
+            月額480円で今すぐアップグレード
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function openCameraModal() {
+      document.getElementById('cameraModal').classList.remove('hidden');
+    }
+    function closeCameraModal() {
+      document.getElementById('cameraModal').classList.add('hidden');
+    }
+    function openPremiumModal() {
+      document.getElementById('premiumModal').classList.remove('hidden');
+    }
+    function closePremiumModal() {
+      document.getElementById('premiumModal').classList.add('hidden');
+    }
+    function waterPlant() {
+      alert('水やりを記録しました！植物は元気な状態です 🌿');
+    }
+    function simulateScan() {
+      closeCameraModal();
+      const loader = document.getElementById('scanLoader');
+      loader.classList.remove('hidden');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        alert('AI判定完了：モンステラ（健康状態：良好 / 次回水やり：5日後）');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
