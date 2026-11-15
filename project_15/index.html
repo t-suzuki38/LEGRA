@@ -10,7 +10,7 @@
       theme: {
         extend: {
           colors: {
-            freshRed: '#DC2626',
+            freshBlue: '#2563EB',
             darkCharcoal: '#2D3748',
           }
         }
@@ -28,7 +28,7 @@
   <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-full bg-freshRed flex items-center justify-center text-white shadow-md">
+        <div class="w-10 h-10 rounded-full bg-freshBlue flex items-center justify-center text-white shadow-md">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
         </div>
         <span class="text-xl font-bold tracking-tight text-darkCharcoal">ネギ大百科</span>
@@ -39,42 +39,42 @@
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </span>
-          <input type="text" id="searchInput" placeholder="品種、栽培法、レシピ、栄養素を検索..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-full text-sm focus:bg-white focus:border-freshRed focus:ring-2 focus:ring-freshRed/20 focus:outline-none transition-all">
+          <input type="text" id="searchInput" placeholder="品種、栽培法、レシピ、栄養素を検索..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-full text-sm focus:bg-white focus:border-freshBlue focus:ring-2 focus:ring-freshBlue/20 focus:outline-none transition-all">
         </div>
       </div>
       <!-- ナビゲーションメニュー -->
       <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-gray-600">
-        <a href="#varieties" class="hover:text-freshRed transition-colors">品種一覧</a>
-        <a href="#cultivation" class="hover:text-freshRed transition-colors">栽培法</a>
-        <a href="#recipes" class="hover:text-freshRed transition-colors">レシピ</a>
-        <a href="#nutrients" class="hover:text-freshRed transition-colors">栄養素</a>
-        <a href="#affiliate" class="hover:text-freshRed transition-colors text-freshRed font-semibold">おすすめ商品</a>
+        <a href="#varieties" class="hover:text-freshBlue transition-colors">品種一覧</a>
+        <a href="#cultivation" class="hover:text-freshBlue transition-colors">栽培法</a>
+        <a href="#recipes" class="hover:text-freshBlue transition-colors">レシピ</a>
+        <a href="#nutrients" class="hover:text-freshBlue transition-colors">栄養素</a>
+        <a href="#affiliate" class="hover:text-freshBlue transition-colors text-freshBlue font-semibold">おすすめ商品</a>
       </nav>
       <!-- モバイルメニューボタン -->
       <div class="lg:hidden flex items-center">
-        <button id="menuBtn" class="text-gray-600 hover:text-freshRed focus:outline-none">
+        <button id="menuBtn" class="text-gray-600 hover:text-freshBlue focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
       </div>
     </div>
     <!-- モバイルナビゲーション -->
     <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-gray-100 px-4 pt-2 pb-4 space-y-2">
-      <a href="#varieties" class="block py-2 text-gray-600 hover:text-freshRed">品種一覧</a>
-      <a href="#cultivation" class="block py-2 text-gray-600 hover:text-freshRed">栽培法</a>
-      <a href="#recipes" class="block py-2 text-gray-600 hover:text-freshRed">レシピ</a>
-      <a href="#nutrients" class="block py-2 text-gray-600 hover:text-freshRed">栄養素</a>
-      <a href="#affiliate" class="block py-2 text-freshRed font-semibold">おすすめ商品</a>
+      <a href="#varieties" class="block py-2 text-gray-600 hover:text-freshBlue">品種一覧</a>
+      <a href="#cultivation" class="block py-2 text-gray-600 hover:text-freshBlue">栽培法</a>
+      <a href="#recipes" class="block py-2 text-gray-600 hover:text-freshBlue">レシピ</a>
+      <a href="#nutrients" class="block py-2 text-gray-600 hover:text-freshBlue">栄養素</a>
+      <a href="#affiliate" class="block py-2 text-freshBlue font-semibold">おすすめ商品</a>
     </div>
   </header>
 
   <!-- メインビジュアル（ヒーローセクション） -->
-  <section class="relative bg-gradient-to-br from-freshRed/10 via-white to-gray-100 py-24 overflow-hidden">
+  <section class="relative bg-gradient-to-br from-freshBlue/10 via-white to-gray-100 py-24 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-      <span class="inline-block bg-freshRed/10 text-freshRed font-semibold text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-6">日本最大級のネギ専門大百科</span>
+      <span class="inline-block bg-freshBlue/10 text-freshBlue font-semibold text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-6">日本最大級のネギ専門大百科</span>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-darkCharcoal tracking-tight mb-6">ネギ大百科</h1>
       <p class="max-w-2xl mx-auto text-lg text-gray-600 mb-10">料理や栽培の目的に応じた最適なネギの知識や活用法がすぐに分かり、疑問や悩みを解消できる</p>
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="#varieties" class="bg-freshRed hover:bg-freshRed/90 text-white font-medium px-8 py-3 rounded-full shadow-lg shadow-freshRed/20 transition-all transform hover:-translate-y-0.5">ネギの品種を探す</a>
+        <a href="#varieties" class="bg-freshBlue hover:bg-freshBlue/90 text-white font-medium px-8 py-3 rounded-full shadow-lg shadow-freshBlue/20 transition-all transform hover:-translate-y-0.5">ネギの品種を探す</a>
         <a href="#cultivation" class="bg-white hover:bg-gray-50 text-darkCharcoal font-medium border border-gray-200 px-8 py-3 rounded-full shadow-sm transition-all">栽培法を見る</a>
         <a href="#recipes" class="bg-white hover:bg-gray-50 text-darkCharcoal font-medium border border-gray-200 px-8 py-3 rounded-full shadow-sm transition-all">レシピを見る</a>
       </div>
@@ -83,12 +83,12 @@
 
   <!-- コンテンツセクション -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
-          
+        
     <!-- データベースエリア（カテゴリ別カード型一覧） -->
     <section id="varieties" class="space-y-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 pb-4">
         <div>
-          <span class="text-freshRed font-semibold text-xs uppercase tracking-wider">Database</span>
+          <span class="text-freshBlue font-semibold text-xs uppercase tracking-wider">Database</span>
           <h2 class="text-3xl font-bold text-darkCharcoal mt-1">ネギの品種・カテゴリデータベース</h2>
         </div>
         <p class="text-sm text-gray-500 mt-2 md:mt-0">全国の代表的な品種から特徴を詳しく解説</p>
@@ -98,7 +98,7 @@
         <!-- カード1 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
           <div>
-            <div class="w-full h-40 bg-gradient-to-br from-freshRed/20 to-freshRed/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-40 bg-gradient-to-br from-freshBlue/20 to-freshBlue/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-4xl mb-1">🌿</span>
               <span class="text-sm tracking-widest">白ネギ</span>
             </div>
@@ -107,13 +107,13 @@
           </div>
           <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
             <span>旬: 11月〜2月</span>
-            <span class="text-freshRed font-semibold">詳細を見る →</span>
+            <span class="text-freshBlue font-semibold">詳細を見る →</span>
           </div>
         </div>
         <!-- カード2 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
           <div>
-            <div class="w-full h-40 bg-gradient-to-br from-freshRed/20 to-freshRed/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-40 bg-gradient-to-br from-freshBlue/20 to-freshBlue/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-4xl mb-1">🌱</span>
               <span class="text-sm tracking-widest">青ネギ</span>
             </div>
@@ -122,13 +122,13 @@
           </div>
           <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
             <span>旬: 通年</span>
-            <span class="text-freshRed font-semibold">詳細を見る →</span>
+            <span class="text-freshBlue font-semibold">詳細を見る →</span>
           </div>
         </div>
         <!-- カード3 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
           <div>
-            <div class="w-full h-40 bg-gradient-to-br from-freshRed/20 to-freshRed/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-40 bg-gradient-to-br from-freshBlue/20 to-freshBlue/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-4xl mb-1">👑</span>
               <span class="text-sm tracking-widest">下仁田</span>
             </div>
@@ -137,13 +137,13 @@
           </div>
           <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
             <span>旬: 12月〜1月</span>
-            <span class="text-freshRed font-semibold">詳細を見る →</span>
+            <span class="text-freshBlue font-semibold">詳細を見る →</span>
           </div>
         </div>
         <!-- カード4 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
           <div>
-            <div class="w-full h-40 bg-gradient-to-br from-freshRed/20 to-freshRed/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-40 bg-gradient-to-br from-freshBlue/20 to-freshBlue/10 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-4xl mb-1">🍵</span>
               <span class="text-sm tracking-widest">九条</span>
             </div>
@@ -152,7 +152,7 @@
           </div>
           <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
             <span>旬: 10月〜2月</span>
-            <span class="text-freshRed font-semibold">詳細を見る →</span>
+            <span class="text-freshBlue font-semibold">詳細を見る →</span>
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@
       <!-- 栽培法 -->
       <section id="cultivation" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-lg bg-freshRed/10 text-freshRed flex items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-freshBlue/10 text-freshBlue flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           </div>
           <h2 class="text-2xl font-bold text-darkCharcoal">栽培法ガイド</h2>
@@ -171,25 +171,25 @@
         <p class="text-sm text-gray-600">初心者でも自宅の庭やプランターで美味しいネギを育てるためのステップバイステップガイド。</p>
         <ul class="space-y-4 text-sm text-gray-600">
           <li class="flex items-start space-x-3">
-            <span class="w-6 h-6 rounded-full bg-freshRed/10 text-freshRed flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+            <span class="w-6 h-6 rounded-full bg-freshBlue/10 text-freshBlue flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
             <div><strong>土作りと種まき:</strong> 水はけの良い土を選び、適切な間隔で植え付けます。</div>
           </li>
           <li class="flex items-start space-x-3">
-            <span class="w-6 h-6 rounded-full bg-freshRed/10 text-freshRed flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+            <span class="w-6 h-6 rounded-full bg-freshBlue/10 text-freshBlue flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
             <div><strong>土寄せ作業:</strong> 白ネギは成長に合わせて土を盛り、白い部分を増やします。</div>
           </li>
           <li class="flex items-start space-x-3">
-            <span class="w-6 h-6 rounded-full bg-freshRed/10 text-freshRed flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+            <span class="w-6 h-6 rounded-full bg-freshBlue/10 text-freshBlue flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
             <div><strong>追肥と収穫:</strong> 定期的な肥料の追加と、適切な時期の収穫方法。</div>
           </li>
         </ul>
-        <a href="#" class="inline-block text-freshRed font-semibold text-sm hover:underline">栽培マニュアル全文を読む →</a>
+        <a href="#" class="inline-block text-freshBlue font-semibold text-sm hover:underline">栽培マニュアル全文を読む →</a>
       </section>
 
       <!-- レシピ -->
       <section id="recipes" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-lg bg-freshRed/10 text-freshRed flex items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-freshBlue/10 text-freshBlue flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
           </div>
           <h2 class="text-2xl font-bold text-darkCharcoal">絶品レシピ</h2>
@@ -211,13 +211,13 @@
             </div>
           </div>
         </div>
-        <a href="#" class="inline-block text-freshRed font-semibold text-sm hover:underline">すべてのレシピを見る →</a>
+        <a href="#" class="inline-block text-freshBlue font-semibold text-sm hover:underline">すべてのレシピを見る →</a>
       </section>
 
       <!-- 栄養素 -->
       <section id="nutrients" class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-lg bg-freshRed/10 text-freshRed flex items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-freshBlue/10 text-freshBlue flex items-center justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
           </div>
           <h2 class="text-2xl font-bold text-darkCharcoal">栄養と健康効果</h2>
@@ -225,60 +225,60 @@
         <p class="text-sm text-gray-600">ネギ特有の辛味成分やビタミン類がもたらす優れた健康・美容効果について。</p>
         <ul class="space-y-3 text-sm text-gray-600">
           <li class="flex items-center space-x-2">
-            <svg class="w-4 h-4 text-freshRed flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="w-4 h-4 text-freshBlue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span><strong>アリシン:</strong> 疲労回復や免疫力アップをサポート</span>
           </li>
           <li class="flex items-center space-x-2">
-            <svg class="w-4 h-4 text-freshRed flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="w-4 h-4 text-freshBlue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span><strong>ビタミンC:</strong> 美肌効果と風邪予防</span>
           </li>
           <li class="flex items-center space-x-2">
-            <svg class="w-4 h-4 text-freshRed flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <svg class="w-4 h-4 text-freshBlue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span><strong>カルシウム・カリウム:</strong> 骨の健康とむくみ解消</span>
           </li>
         </ul>
-        <a href="#" class="inline-block text-freshRed font-semibold text-sm hover:underline">栄養科学データを見る →</a>
+        <a href="#" class="inline-block text-freshBlue font-semibold text-sm hover:underline">栄養科学データを見る →</a>
       </section>
     </div>
 
     <!-- ピックアップ記事エリア -->
     <section class="space-y-8">
       <div class="border-b border-gray-200 pb-4">
-        <span class="text-freshRed font-semibold text-xs uppercase tracking-wider">Pickup</span>
+        <span class="text-freshBlue font-semibold text-xs uppercase tracking-wider">Pickup</span>
         <h2 class="text-3xl font-bold text-darkCharcoal mt-1">注目のピックアップ記事</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
-          <div class="h-48 bg-gradient-to-tr from-red-100 to-freshRed/20 flex flex-col items-center justify-center text-freshRed">
+          <div class="h-48 bg-gradient-to-tr from-blue-100 to-freshBlue/20 flex flex-col items-center justify-center text-freshBlue">
             <span class="text-4xl mb-2">🔍</span>
             <span class="text-xs font-semibold tracking-wider uppercase">Eye Catch</span>
           </div>
           <div class="p-6 space-y-3">
-            <span class="text-xs bg-freshRed/10 text-freshRed px-2.5 py-1 rounded-full font-medium">選び方</span>
+            <span class="text-xs bg-freshBlue/10 text-freshBlue px-2.5 py-1 rounded-full font-medium">選び方</span>
             <h3 class="font-bold text-darkCharcoal text-lg">新鮮で美味しいネギの見分け方 3つのポイント</h3>
             <p class="text-sm text-gray-600 line-clamp-2">スーパーでハズレを引かないための、巻きの固さや根元の特徴をプロが伝授します。</p>
             <div class="pt-2 text-xs text-gray-400">2026.11.15</div>
           </div>
         </div>
         <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
-          <div class="h-48 bg-gradient-to-tr from-red-100 to-freshRed/20 flex flex-col items-center justify-center text-freshRed">
+          <div class="h-48 bg-gradient-to-tr from-blue-100 to-freshBlue/20 flex flex-col items-center justify-center text-freshBlue">
             <span class="text-4xl mb-2">🧊</span>
             <span class="text-xs font-semibold tracking-wider uppercase">Eye Catch</span>
           </div>
           <div class="p-6 space-y-3">
-            <span class="text-xs bg-freshRed/10 text-freshRed px-2.5 py-1 rounded-full font-medium">保存法</span>
+            <span class="text-xs bg-freshBlue/10 text-freshBlue px-2.5 py-1 rounded-full font-medium">保存法</span>
             <h3 class="font-bold text-darkCharcoal text-lg">ネギのシャキシャキ感を長持ちさせる冷凍・冷蔵保存術</h3>
             <p class="text-sm text-gray-600 line-clamp-2">使い切れないネギもこれで安心。薬味用と鍋用に分けた正しい保存テクニック。</p>
             <div class="pt-2 text-xs text-gray-400">2026.11.12</div>
           </div>
         </div>
         <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
-          <div class="h-48 bg-gradient-to-tr from-red-100 to-freshRed/20 flex flex-col items-center justify-center text-freshRed">
+          <div class="h-48 bg-gradient-to-tr from-blue-100 to-freshBlue/20 flex flex-col items-center justify-center text-freshBlue">
             <span class="text-4xl mb-2">📜</span>
             <span class="text-xs font-semibold tracking-wider uppercase">Eye Catch</span>
           </div>
           <div class="p-6 space-y-3">
-            <span class="text-xs bg-freshRed/10 text-freshRed px-2.5 py-1 rounded-full font-medium">文化</span>
+            <span class="text-xs bg-freshBlue/10 text-freshBlue px-2.5 py-1 rounded-full font-medium">文化</span>
             <h3 class="font-bold text-darkCharcoal text-lg">日本全国ネギ事情：東の白ネギ、西の青ネギの歴史</h3>
             <p class="text-sm text-gray-600 line-clamp-2">なぜ関東と関西で好まれるネギが違うのか？その深くて面白い食文化の歴史を紐解く。</p>
             <div class="pt-2 text-xs text-gray-400">2026.11.08</div>
@@ -288,9 +288,9 @@
     </section>
 
     <!-- アフィリエイトレコメンドエリア -->
-    <section id="affiliate" class="bg-gradient-to-r from-freshRed/10 via-freshRed/5 to-white rounded-3xl p-8 sm:p-12 border border-freshRed/20 space-y-8">
+    <section id="affiliate" class="bg-gradient-to-r from-freshBlue/10 via-freshBlue/5 to-white rounded-3xl p-8 sm:p-12 border border-freshBlue/20 space-y-8">
       <div class="text-center max-w-2xl mx-auto space-y-2">
-        <span class="text-freshRed font-semibold text-xs uppercase tracking-wider">Affiliate Recommendation</span>
+        <span class="text-freshBlue font-semibold text-xs uppercase tracking-wider">Affiliate Recommendation</span>
         <h2 class="text-3xl font-bold text-darkCharcoal">ネギ生活を豊かにするおすすめアイテム</h2>
         <p class="text-sm text-gray-600">調理を快適にする専用キッチングッズや、自宅で手軽に始められる栽培キットをご紹介します。</p>
       </div>
@@ -299,7 +299,7 @@
         <!-- 商品1 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <div class="w-full h-36 bg-freshRed/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-36 bg-freshBlue/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-3xl mb-1">🔪</span>
               <span class="text-xs text-gray-500">調理ツール</span>
             </div>
@@ -307,14 +307,14 @@
             <p class="text-xs text-gray-500 mb-4">プロ並みの美しい白髪ネギがワンストロークで簡単に作れる便利調理器具。</p>
           </div>
           <div class="space-y-3">
-            <div class="text-freshRed font-bold text-lg">¥1,480 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshRed hover:bg-freshRed/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshRed/20 transition-all text-sm">詳細を見る</a>
+            <div class="text-freshBlue font-bold text-lg">¥1,480 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshBlue hover:bg-freshBlue/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshBlue/20 transition-all text-sm">詳細を見る</a>
           </div>
         </div>
         <!-- 商品2 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <div class="w-full h-36 bg-freshRed/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-36 bg-freshBlue/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-3xl mb-1">🪴</span>
               <span class="text-xs text-gray-500">栽培キット</span>
             </div>
@@ -322,14 +322,14 @@
             <p class="text-xs text-gray-500 mb-4">ベランダでも手軽にネギ栽培をスタートできる、初心者向けのオールインワンセット。</p>
           </div>
           <div class="space-y-3">
-            <div class="text-freshRed font-bold text-lg">¥2,980 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshRed hover:bg-freshRed/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshRed/20 transition-all text-sm">詳細を見る</a>
+            <div class="text-freshBlue font-bold text-lg">¥2,980 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshBlue hover:bg-freshBlue/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshBlue/20 transition-all text-sm">詳細を見る</a>
           </div>
         </div>
         <!-- 商品3 -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <div class="w-full h-36 bg-freshRed/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshRed font-bold">
+            <div class="w-full h-36 bg-freshBlue/5 rounded-xl mb-4 flex flex-col items-center justify-center text-freshBlue font-bold">
               <span class="text-3xl mb-1">✂️</span>
               <span class="text-xs text-gray-500">キッチンバサミ</span>
             </div>
@@ -337,8 +337,8 @@
             <p class="text-xs text-gray-500 mb-4">ネギの小口切りからパック開封までこれ一本でこなせる万能キッチンバサミ。</p>
           </div>
           <div class="space-y-3">
-            <div class="text-freshRed font-bold text-lg">¥3,200 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshRed hover:bg-freshRed/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshRed/20 transition-all text-sm">詳細を見る</a>
+            <div class="text-freshBlue font-bold text-lg">¥3,200 <span class="text-xs text-gray-400 font-normal">（税込）</span></div>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-freshBlue hover:bg-freshBlue/90 text-white text-center font-medium py-2.5 rounded-xl shadow-md shadow-freshBlue/20 transition-all text-sm">詳細を見る</a>
           </div>
         </div>
       </div>
@@ -351,7 +351,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-full bg-freshRed flex items-center justify-center text-white">
+          <div class="w-8 h-8 rounded-full bg-freshBlue flex items-center justify-center text-white">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
           </div>
           <span class="text-white font-bold text-lg">ネギ大百科</span>
