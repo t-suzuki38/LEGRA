@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubSplit - サブスク費用自動分配・トラッキング</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <link href="[link removed]" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background-color: #F8FAFC;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-24">
+
+  <!-- ヘッダー -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-200">
+          <i class="fa-solid fa-shapes"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-indigo-900">SubSplit</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition relative">
+          <i class="fa-regular fa-bell"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-indigo-100 border-2 border-indigo-500 overflow-hidden flex items-center justify-center text-indigo-700 font-bold">
+          <span>鈴木</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="max-w-md mx-auto px-4 pt-6 space-y-6">
+
+    <!-- グループ切り替えタブ -->
+    <div class="flex bg-slate-200/70 p-1 rounded-xl text-sm font-medium">
+      <button class="flex-1 py-2 bg-white text-indigo-900 rounded-lg shadow-sm transition">ファミリー (家族)</button>
+      <button class="flex-1 py-2 text-slate-600 hover:text-slate-900 transition">シェアハウス</button>
+      <button class="flex-1 py-2 text-slate-600 hover:text-slate-900 transition">友人グループ</button>
+    </div>
+
+    <!-- ダッシュボードカード -->
+    <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white rounded-2xl p-6 shadow-xl shadow-indigo-900/10 relative overflow-hidden">
+      <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+      
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <p class="text-xs font-medium text-indigo-200 uppercase tracking-wider">今月の共有サブスク総額</p>
+          <h2 class="text-3xl font-extrabold mt-1 tracking-tight">¥14,800</h2>
+        </div>
+        <span class="bg-emerald-400/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-semibold border border-emerald-400/30 flex items-center gap-1">
+          <i class="fa-solid fa-link text-[10px]"></i> 口座連携中
+        </span>
+      </div>
+
+      <div class="pt-4 border-t border-indigo-600/60 flex justify-between items-center text-sm">
+        <div>
+          <span class="text-indigo-200 block text-xs">あなたの負担額</span>
+          <span class="text-lg font-bold text-white">¥5,600 <span class="text-xs font-normal text-indigo-200">(3件利用)</span></span>
+        </div>
+        <div class="text-right">
+          <span class="text-indigo-200 block text-xs">次回自動引き落とし</span>
+          <span class="font-medium text-emerald-300">11月25日</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主要アクションボタン -->
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium text-sm shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-plus"></i> 新規サブスク追加
+      </button>
+      <button class="bg-white hover:bg-slate-100 text-indigo-600 border border-indigo-200 py-3 px-4 rounded-xl font-medium text-sm transition flex items-center justify-center gap-2 shadow-sm">
+        <i class="fa-solid fa-wallet"></i> 自動引き落とし設定
+      </button>
+    </div>
+
+    <!-- メンバー・利用状況セクション -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie text-indigo-600"></i> メンバー別利用状況
+        </h3>
+        <span class="text-xs text-slate-500 font-medium">透明性トラッキング</span>
+      </div>
+
+      <div class="space-y-4">
+        <!-- メンバー1: 鈴木 (自分) -->
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">鈴</span>
+              鈴木崚永 (あなた)
+            </span>
+            <span class="font-bold text-slate-800">¥5,600 <span class="text-xs font-normal text-slate-400">/ 38%</span></span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 38%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+            <span>Netflix, Spotify, YouTube</span>
+            <span class="text-emerald-600 font-medium"><i class="fa-solid fa-check"></i> 利用中</span>
+          </div>
+        </div>
+
+        <!-- メンバー2: 恵美 -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">恵</span>
+              佐藤恵美
+            </span>
+            <span class="font-bold text-slate-800">¥4,800 <span class="text-xs font-normal text-slate-400">/ 32%</span></span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 32%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+            <span>Amazon Prime, iCloud</span>
+            <span class="text-emerald-600 font-medium"><i class="fa-solid fa-check"></i> 利用中</span>
+          </div>
+        </div>
+
+        <!-- メンバー3: 蓮 -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">蓮</span>
+              鈴木蓮
+            </span>
+            <span class="font-bold text-slate-800">¥4,400 <span class="text-xs font-normal text-slate-400">/ 30%</span></span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div class="bg-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 30%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+            <span>Disney+, Nintendo Switch Online</span>
+            <span class="text-amber-600 font-medium"><i class="fa-solid fa-clock"></i> 最近未利用</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 共有サブスクリプション一覧 -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-indigo-600"></i> 共有サブスク一覧
+        </h3>
+        <span class="text-xs text-indigo-600 font-semibold cursor-pointer hover:underline">すべて見る</span>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-film"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-slate-800">Netflix (プレミアム)</h4>
+              <p class="text-xs text-slate-400">毎月15日引き落とし • 3人で分割</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold text-sm text-slate-800">¥1,980</span>
+            <span class="block text-[10px] text-emerald-600 font-medium">自動分配済</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-slate-800">Spotify (ファミリープラン)</h4>
+              <p class="text-xs text-slate-400">毎月20日引き落とし • 4人で分割</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold text-sm text-slate-800">¥1,680</span>
+            <span class="block text-[10px] text-emerald-600 font-medium">自動分配済</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ボトムナビゲーションバー -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 z-30">
+    <div class="max-w-md mx-auto px-6 h-20 flex justify-between items-center text-slate-400">
+      <button class="flex flex-col items-center text-indigo-600 gap-1">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-semibold">ホーム</span>
+      </button>
+      <button class="flex flex-col items-center hover:text-slate-700 gap-1 transition">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span class="text-[10px] font-medium">グループ</span>
+      </button>
+      <button class="flex flex-col items-center hover:text-slate-700 gap-1 transition">
+        <i class="fa-solid fa-building-columns text-lg"></i>
+        <span class="text-[10px] font-medium">口座連携</span>
+      </button>
+      <button class="flex flex-col items-center hover:text-slate-700 gap-1 transition">
+        <i class="fa-solid fa-gear text-lg"></i>
+        <span class="text-[10px] font-medium">設定</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- モーダル (新規サブスク追加) -->
+  <div id="subModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl transform transition-all">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg text-slate-800">新規サブスク追加</h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form class="space-y-4" onsubmit="event.preventDefault(); closeModal(); alert('新しいサブスクリプションを追加し、自動口座連携を設定しました。');">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">サービス名</label>
+          <input type="text" placeholder="例: YouTube Premium" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">月額料金 (円)</label>
+          <input type="number" placeholder="1280" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">分配グループ</label>
+          <select class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white">
+            <option>ファミリー (家族) - 3人</option>
+            <option>シェアハウス - 4人</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md shadow-indigo-600/20 transition text-sm mt-2">
+          口座連携して登録する
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('subModal').classList.remove('hidden');
+    }
+    function closeModal() {
+      document.getElementById('subModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
