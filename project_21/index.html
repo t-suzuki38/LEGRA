@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoCloset</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <link href="[link removed]" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deepNavy: '#0F172A',
+            champagneGold: '#D4AF37',
+            pureWhite: '#FFFFFF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background-color: #FFFFFF;
+      color: #0F172A;
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-pureWhite text-deepNavy min-h-screen pb-20 flex justify-center">
+  <!-- スマホフレーム風のコンテナ（モバイルファースト） -->
+  <div class="w-full max-w-md bg-pureWhite min-h-screen shadow-2xl relative flex flex-col justify-between">
+    
+    <!-- ヘッダー -->
+    <header class="flex justify-between items-center px-4 py-4 border-b border-gray-100 bg-white sticky top-0 z-50">
+      <div class="flex items-center space-x-2">
+        <span class="text-xl font-bold tracking-tight text-deepNavy">AutoCloset</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button class="relative text-deepNavy hover:text-champagneGold transition">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-champagneGold rounded-full"></span>
+        </button>
+        <button class="bg-champagneGold text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm flex items-center space-x-1">
+          <i class="fa-solid fa-crown text-[10px]"></i>
+          <span>PRO</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- メインビジュアル（ホーム画面） -->
+    <main class="flex-1 px-4 py-4 space-y-6 overflow-y-auto">
+      
+      <!-- EC・クレジットカード自動インポート状況 -->
+      <section class="bg-slate-50 border border-slate-100 rounded-2xl p-4 shadow-sm">
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-rotate text-champagneGold text-sm"></i>
+            <span class="text-xs font-medium text-slate-600">EC・クレジット自動インポート</span>
+          </div>
+          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded-full">同期完了</span>
+        </div>
+        <div class="flex justify-between items-end">
+          <div>
+            <p class="text-xs text-slate-500">最終同期: 今日 06:30</p>
+            <p class="text-sm font-bold text-deepNavy mt-0.5">新規追加アイテム: <span class="text-champagneGold">3点</span></p>
+          </div>
+          <button class="text-xs text-deepNavy font-semibold underline hover:text-champagneGold">詳細</button>
+        </div>
+      </section>
+
+      <!-- 本日のコーディネート提案 -->
+      <section>
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm font-bold text-deepNavy tracking-wide flex items-center space-x-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-champagneGold"></i>
+            <span>本日のコーディネート提案</span>
+          </h2>
+          <span class="text-xs text-slate-400">AI提案</span>
+        </div>
+        <!-- スワイプ可能なカード -->
+        <div class="flex space-x-4 overflow-x-auto pb-2 snap-x">
+          <div class="min-w-[260px] bg-white border border-slate-100 rounded-2xl p-4 shadow-sm snap-center relative">
+            <div class="absolute top-3 right-3 bg-champagneGold/10 text-champagneGold text-[10px] font-bold px-2 py-0.5 rounded-full">
+              お出かけ・キレイめ
+            </div>
+            <div class="h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
+              <img src="[link removed]" alt="Coordinate" class="object-cover w-full h-full">
+            </div>
+            <p class="text-xs font-bold text-deepNavy">ネイビージャケット × ホワイトパンツ</p>
+            <p class="text-[10px] text-slate-500 mt-1">気温20℃・湿度45%に合わせた最適な組み合わせ</p>
+          </div>
+          <div class="min-w-[260px] bg-white border border-slate-100 rounded-2xl p-4 shadow-sm snap-center relative">
+            <div class="absolute top-3 right-3 bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+              カジュアル
+            </div>
+            <div class="h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
+              <img src="[link removed]" alt="Coordinate" class="object-cover w-full h-full">
+            </div>
+            <p class="text-xs font-bold text-deepNavy">トレンチコート × デニム</p>
+            <p class="text-[10px] text-slate-500 mt-1">昨年の購入アイテムを活用した着回し</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- カテゴリ別所有アイテム一覧 -->
+      <section>
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm font-bold text-deepNavy tracking-wide">カテゴリ別所有アイテム</h2>
+          <span class="text-xs text-champagneGold font-medium">すべて見る</span>
+        </div>
+        <!-- タブ切り替え -->
+        <div class="flex space-x-2 border-b border-slate-100 pb-2 mb-4 overflow-x-auto text-xs">
+          <button class="px-3 py-1 bg-deepNavy text-white rounded-full font-medium whitespace-nowrap">すべて</button>
+          <button class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium whitespace-nowrap hover:bg-slate-200">トップス</button>
+          <button class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium whitespace-nowrap hover:bg-slate-200">ボトムス</button>
+          <button class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium whitespace-nowrap hover:bg-slate-200">アウター</button>
+          <button class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium whitespace-nowrap hover:bg-slate-200">シューズ</button>
+        </div>
+        <!-- アイテムサムネイルグリッド -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
+            <div class="h-32 bg-slate-100 rounded-lg mb-2 overflow-hidden">
+              <img src="[link removed]" alt="Item" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs font-bold text-deepNavy truncate">プレミアムコットンTシャツ</p>
+            <div class="flex justify-between items-center mt-1">
+              <span class="text-[10px] text-slate-400">着用 12回</span>
+              <span class="text-[10px] text-champagneGold font-semibold">メンテナンス期</span>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
+            <div class="h-32 bg-slate-100 rounded-lg mb-2 overflow-hidden">
+              <img src="[link removed]" alt="Item" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs font-bold text-deepNavy">ストレートデニムパンツ</p>
+            <div class="flex justify-between items-center mt-1">
+              <span class="text-[10px] text-slate-400">着用 28回</span>
+              <span class="text-[10px] text-emerald-600 font-semibold">良好</span>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
+            <div class="h-32 bg-slate-100 rounded-lg mb-2 overflow-hidden">
+              <img src="[link removed]" alt="Item" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs font-bold text-deepNavy">ウールブレンドチェスターコート</p>
+            <div class="flex justify-between items-center mt-1">
+              <span class="text-[10px] text-slate-400">着用 5回</span>
+              <span class="text-[10px] text-champagneGold font-semibold">メンテナンス期</span>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
+            <div class="h-32 bg-slate-100 rounded-lg mb-2 overflow-hidden">
+              <img src="[link removed]" alt="Item" class="w-full h-full object-cover">
+            </div>
+            <p class="text-xs font-bold text-deepNavy">レザースニーカー</p>
+            <div class="flex justify-between items-center mt-1">
+              <span class="text-[10px] text-slate-400">着用 15回</span>
+              <span class="text-[10px] text-emerald-600 font-semibold">良好</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ボトムナビゲーションバー（固定） -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50 shadow-lg">
+      <button class="flex flex-col items-center text-champagneGold">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] mt-1 font-medium">ホーム</span>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-deepNavy transition">
+        <i class="fa-solid fa-chart-pie text-lg"></i>
+        <span class="text-[10px] mt-1 font-medium">分析</span>
+      </button>
+      <!-- 中央プラスボタン -->
+      <button class="bg-deepNavy text-champagneGold w-12 h-12 rounded-full flex items-center justify-center shadow-md transform -translate-y-4 hover:scale-105 transition">
+        <i class="fa-solid fa-plus text-xl"></i>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-deepNavy transition">
+        <i class="fa-solid fa-shirt text-lg"></i>
+        <span class="text-[10px] mt-1 font-medium">コーデ</span>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-deepNavy transition">
+        <i class="fa-solid fa-user text-lg"></i>
+        <span class="text-[10px] mt-1 font-medium">マイページ</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('main section .flex.space-x-2.border-b button');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => {
+            t.classList.remove('bg-deepNavy', 'text-white');
+            t.classList.add('bg-slate-100', 'text-slate-600');
+          });
+          tab.classList.remove('bg-slate-100', 'text-slate-600');
+          tab.classList.add('bg-deepNavy', 'text-white');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
