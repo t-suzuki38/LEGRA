@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>即効！退去見積もりチェッカー</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            trustBlue: '#1E3A8A',
+            freshGreen: '#10B981',
+            lightGray: '#F8FAFC',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts -->
+  <link href="[link removed]" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-lightGray text-gray-800 min-h-screen flex flex-col justify-between">
+
+  <!-- ヘッダーセクション -->
+  <header class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-xl bg-trustBlue flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-file-invoice-dollar text-lg"></i>
+        </div>
+        <span class="font-bold text-lg text-trustBlue tracking-tight">退去見積もりチェッカー</span>
+      </div>
+      <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
+        <a href="#how-to" class="hover:text-trustBlue transition">使い方</a>
+        <a href="#faq" class="hover:text-trustBlue transition">よくある質問</a>
+        <a href="#expert" class="hover:text-trustBlue transition flex items-center space-x-1">
+          <i class="fa-solid fa-headset text-freshGreen"></i>
+          <span>専門家チャット</span>
+        </a>
+      </nav>
+      <div class="md:hidden">
+        <button id="menu-btn" class="text-gray-600 focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Nav -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 pt-2 pb-4 space-y-2">
+      <a href="#how-to" class="block text-gray-600 py-1 font-medium">使い方</a>
+      <a href="#faq" class="block text-gray-600 py-1 font-medium">よくある質問</a>
+      <a href="#expert" class="block text-gray-600 py-1 font-medium">専門家チャット</a>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-grow">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      
+      <!-- メインビジュアルセクション -->
+      <div class="text-center mb-10">
+        <span class="inline-block bg-blue-50 text-trustBlue text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 border border-blue-100">
+          AI自動判定システム
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
+          その退去見積もり、<br class="sm:hidden">本当に払う必要がありますか？
+        </h1>
+        <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+          スマホで撮影・アップロードするだけで、AIが数秒で適正価格を判定。知識不足による不当な高額請求の言いなりを防ぎます。
+        </p>
+      </div>
+
+      <!-- アップロードアクションセクション -->
+      <div id="upload-card" class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-10 transition-all duration-300">
+        <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 sm:p-12 text-center hover:border-freshGreen transition cursor-pointer relative group bg-gray-50/50" id="drop-zone">
+          <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*,application/pdf">
+          <div class="flex flex-col items-center justify-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-emerald-50 text-freshGreen flex items-center justify-center text-2xl group-hover:scale-110 transition shadow-sm">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+              <p class="text-base font-bold text-gray-800 mb-1">見積書を撮影・アップロードする</p>
+              <p class="text-xs text-gray-500">ファイルをドラッグ＆ドロップするか、タップして選択してください</p>
+            </div>
+            <span class="inline-block bg-white text-gray-50 text-xs px-3 py-1 rounded-lg border border-gray-200 text-gray-600 shadow-2xs">
+              対応形式: JPG, PNG, PDF
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-2 text-xs text-gray-500">
+            <i class="fa-solid fa-shield-halved text-freshGreen text-sm"></i>
+            <span>国土交通省のガイドラインに基づき自動判定</span>
+          </div>
+          <button id="upload-btn" class="w-full sm:w-auto bg-freshGreen hover:bg-emerald-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition flex items-center justify-center space-x-2">
+            <span>AI解析を開始する</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ローディング表示（初期非表示） -->
+      <div id="loading-state" class="hidden bg-white rounded-3xl shadow-xl border border-gray-100 p-12 text-center">
+        <div class="flex flex-col items-center justify-center space-y-4">
+          <div class="w-16 h-16 border-4 border-freshGreen border-t-transparent rounded-full animate-spin"></div>
+          <h3 class="text-lg font-bold text-gray-800">AIが御影石の見積書を解析中...</h3>
+          <p class="text-sm text-gray-500">ガイドラインとの突合および適正価格を算出し直しています（数秒かかります）</p>
+        </div>
+      </div>
+
+      <!-- 判定結果・バリュー提示セクション（初期非表示） -->
+      <div id="result-card" class="hidden bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-10 space-y-6">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+          <div class="flex items-center space-x-2">
+            <span class="bg-emerald-100 text-freshGreen text-xs font-bold px-3 py-1 rounded-full">解析完了</span>
+            <span class="text-sm text-gray-500">判定日時: 2026年11-25</span>
+          </div>
+          <button id="reset-btn" class="text-xs text-gray-400 hover:text-gray-600 underline">別の見積書を試す</button>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">適正価格判定サマリー</h3>
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 text-amber-800 text-sm mb-6">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 text-base"></i>
+            <div>
+              <span class="font-bold">総額に過剰請求の疑いがあります：</span> 提示額 142,000円 に対して、適正算出額は <span class="font-bold text-trustBlue">78,000円</span> です。
+            </div>
+          </div>
+        </div>
+
+        <!-- 判定結果カード (ハイライト) -->
+        <div class="space-y-3">
+          <div class="p-4 rounded-xl border border-red-100 bg-red-50/50 flex items-start justify-between">
+            <div class="space-y-1">
+              <span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded">借主負担ではありません</span>
+              <h4 class="font-bold text-gray-800 text-sm">クロス全面張替え費用 (65,000円)</h4>
+              <p class="text-xs text-gray-600">経年劣化および通常損耗のため、原則として貸主負担となります。</p>
+            </div>
+            <i class="fa-solid fa-circle-xmark text-red-500 text-lg mt-1"></i>
+          </div>
+
+          <div class="p-4 rounded-xl border border-emerald-100 bg-emerald-50/50 flex items-start justify-between">
+            <div class="space-y-1">
+              <span class="text-xs font-bold text-freshGreen bg-emerald-100 px-2 py-0.5 rounded">妥当な項目</span>
+              <h4 class="font-bold text-gray-800 text-sm">ハウスクリーニング特約部分 (13,000円)</h4>
+              <p class="text-xs text-gray-600">契約書の特約条項に有効な合意が確認できます。</p>
+            </div>
+            <i class="fa-solid fa-circle-check text-freshGreen text-lg mt-1"></i>
+          </div>
+        </div>
+
+        <!-- アクション導線 -->
+        <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button class="bg-trustBlue hover:bg-blue-900 text-white font-bold p-4 rounded-xl shadow-md transition flex items-center justify-center space-x-2 text-sm">
+            <i class="fa-solid fa-pen-nib"></i>
+            <span>詳細な交渉文面を作成する（有料）</span>
+          </button>
+          <button class="bg-white hover:bg-gray-50 text-trustBlue border-2 border-trustBlue font-bold p-4 rounded-xl transition flex items-center justify-center space-x-2 text-sm">
+            <i class="fa-solid fa-comments text-freshGreen"></i>
+            <span>専門家にチャットで相談する</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-white border-t border-gray-100 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-400">
+      &copy; 2026 LEGRA Inc. All rights reserved. 即効！退去見積もりチェッカー
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // モバイルメニューのトグル
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // 解析シミュレーション
+    const uploadCard = document.getElementById('upload-card');
+    const loadingState = document.getElementById('loading-state');
+    const resultCard = document.getElementById('result-card');
+    const uploadBtn = document.getElementById('upload-btn');
+    const fileInput = document.getElementById('file-input');
+    const resetBtn = document.getElementById('reset-btn');
+
+    function startAnalysis() {
+      uploadCard.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+
+      setTimeout(() => {
+        loadingState.classList.add('hidden');
+        resultCard.classList.remove('hidden');
+      }, 2000);
+    }
+
+    uploadBtn.addEventListener('click', startAnalysis);
+    
+    fileInput.addEventListener('change', () => {
+      if(fileInput.files.length > 0) {
+        startAnalysis();
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      resultCard.classList.add('hidden');
+      uploadCard.classList.remove('hidden');
+      fileInput.value = '';
+    });
+  </script>
+</body>
+</html>
