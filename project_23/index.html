@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フリーランス専門AIリーガルチェッカー「コウタクト」</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="[link removed]">
+  <link rel="preconnect" href="[link removed]" crossorigin>
+  <link href="[link removed]" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            royalBlue: '#0A192F',
+            deepBlue: '#172A45',
+            emeraldAccent: '#10B981',
+            emeraldHover: '#059669',
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .glass-card {
+      background: rgba(23, 42, 69, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-royalBlue text-slate-100 antialiased selection:bg-emeraldAccent selection:text-white">
+
+  <!-- ヘッダー -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-royalBlue/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-royalBlue to-emeraldAccent flex items-center justify-center border border-emeraldAccent/30 shadow-lg shadow-emeraldAccent/20">
+          <i class="fa-solid fa-shield-halved text-emeraldAccent text-lg"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-white">コウタクト</span>
+      </div>
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+        <a href="#features" class="hover:text-emeraldAccent transition-colors">機能紹介</a>
+        <a href="#pricing" class="hover:text-emeraldAccent transition-colors">料金プラン</a>
+        <a href="#login" class="hover:text-emeraldAccent transition-colors">ログイン</a>
+      </nav>
+      <div>
+        <a href="#upload-section" class="inline-flex items-center px-5 py-2.5 rounded-full bg-emeraldAccent hover:bg-emeraldHover text-white text-sm font-semibold transition-all shadow-lg shadow-emeraldAccent/25 hover:shadow-emeraldAccent/40 transform hover:-translate-y-0.5">
+          無料ではじめる
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- メインビジュアル -->
+    <section class="relative pt-32 pb-24 md:pt-44 md:pb-36 overflow-hidden">
+      <!-- 背景の光彩効果 -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emeraldAccent/10 rounded-full blur-[120px] pointer-events-none"></div>
+      
+      <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-emeraldAccent text-xs font-semibold mb-8 shadow-inner">
+          <i class="fa-solid fa-bolt"></i>
+          <span>フリーランス保護新法完全準拠</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+          契約書のアップロードだけで<br class="hidden md:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-emeraldAccent to-teal-300">不利な条項や買い叩きリスク</span>を瞬時に検出
+        </h1>
+        <p class="text-base md:text-lg text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+          高額な弁護士費用をかけずスマホから数秒で契約書の安全性を確認でき、不当な買い叩きや搾取から身を守れる。
+        </p>
+
+        <!-- アップロードアクションエリア -->
+        <div id="upload-section" class="max-w-2xl mx-auto glass-card rounded-2xl p-8 shadow-2xl border border-slate-700/60">
+          <div id="drop-zone" class="border-2 border-dashed border-slate-600 hover:border-emeraldAccent rounded-xl p-10 text-center cursor-pointer transition-all bg-slate-900/40 hover:bg-slate-900/60 group">
+            <div class="w-16 h-16 rounded-full bg-slate-800 group-hover:bg-emeraldAccent/20 flex items-center justify-center mx-auto mb-4 transition-colors">
+              <i class="fa-solid fa-cloud-arrow-up text-2xl text-emeraldAccent"></i>
+            </div>
+            <p class="text-base font-semibold text-white mb-2">契約書ファイル（PDF / Word）をここにドラッグ＆ドロップ</p>
+            <p class="text-xs text-slate-400 mb-6">または、ファイルを選択してアップロード</p>
+            <label class="inline-block px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium cursor-pointer border border-slate-600 transition-all">
+              ファイルを選択
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.doc,.docx">
+            </label>
+          </div>
+          
+          <!-- 解析ボタン -->
+          <div class="mt-6">
+            <button id="check-btn" class="w-full py-4 rounded-xl bg-emeraldAccent hover:bg-emeraldHover text-white font-bold transition-all shadow-lg shadow-emeraldAccent/30 flex items-center justify-center space-x-2 text-base">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>契約書をアップロードして今すぐチェック（無料）</span>
+            </button>
+          </div>
+          
+          <!-- モック結果表示エリア（初期非表示） -->
+          <div id="result-area" class="hidden mt-8 text-left border-t border-slate-700 pt-6 animate-fadeIn">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-sm font-semibold text-emeraldAccent flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>解析完了：リスク判定結果</span>
+              </span>
+              <span class="text-xs px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30">要注意：2件のリスク検出</span>
+            </div>
+            <div class="space-y-3 text-sm text-slate-300 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex items-start space-x-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 mt-1"></i>
+                <div>
+                  <p class="font-medium text-white">第8条（報酬の支払い期日について）</p>
+                  <p class="text-xs text-slate-400 mt-0.5">フリーランス保護新法に抵触する可能性のある長期的な支払いサイトが設定されています。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 機能・コアバリュー紹介セクション -->
+    <section id="features" class="py-24 bg-deepBlue/50 border-t border-slate-800/80">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl font-bold text-white mb-4">コウタクトが選ばれる理由</h2>
+          <p class="text-slate-400 text-sm md:text-base">フリーランスが安心して働き続けられる環境を、最先端のAI技術でサポートします。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- 特徴1 -->
+          <div class="glass-card p-8 rounded-2xl border border-slate-700/60 hover:border-emeraldAccent/50 transition-all group">
+            <div class="w-14 h-14 rounded-xl bg-emeraldAccent/10 text-emeraldAccent flex items-center justify-center text-xl mb-6 group-hover:bg-emeraldAccent group-hover:text-white transition-all">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-3">フリーランス保護新法準拠</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              高精度な条項解析エンジンが、最新の法改正に基づき不利な条件や隠れた義務を見逃さず検出します。
+            </p>
+          </div>
+          <!-- 特徴2 -->
+          <div class="glass-card p-8 rounded-2xl border border-slate-700/60 hover:border-emeraldAccent/50 transition-all group">
+            <div class="w-14 h-14 rounded-xl bg-emeraldAccent/10 text-emeraldAccent flex items-center justify-center text-xl mb-6 group-hover:bg-emeraldAccent group-hover:text-white transition-all">
+              <i class="fa-solid fa-bolt-lightning"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-3">ワンクリックでリスク判定</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              専門知識不要。分かりやすいリスク判定表示により、数秒で契約書の安全性を直感的に把握できます。
+            </p>
+          </div>
+          <!-- 特徴3 -->
+          <div class="glass-card p-8 rounded-2xl border border-slate-700/60 hover:border-emeraldAccent/50 transition-all group">
+            <div class="w-14 h-14 rounded-xl bg-emeraldAccent/10 text-emeraldAccent flex items-center justify-center text-xl mb-6 group-hover:bg-emeraldAccent group-hover:text-white transition-all">
+              <i class="fa-solid fa-file-pen"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-3">プレミアム詳細解説・自動生成</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              基本機能は無料。必要に応じたスポット課金や月額サブスクリプションで、修正文面まで自動生成します。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 料金プランセクション -->
+    <section id="pricing" class="py-24">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl font-bold text-white mb-4">シンプルで透明な料金プラン</h2>
+          <p class="text-slate-400 text-sm md:text-base">まずは無料で安全性を確認。ニーズに合わせた柔軟なプランをご用意しています。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- フリープラン -->
+          <div class="glass-card p-8 rounded-2xl border border-slate-700 flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">フリープラン</h3>
+              <p class="text-xs text-slate-400 mb-6">日常的な簡易チェックに最適</p>
+              <div class="text-3xl font-extrabold text-white mb-6">¥0 <span class="text-xs font-normal text-slate-400">/ ずっと無料</span></div>
+              <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>基本の条項解析機能</span></li>
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>リスク判定の表示</span></li>
+                <li class="flex items-center space-x-3 text-slate-500"><i class="fa-solid fa-xmark"></i><span>修正文面自動生成</span></li>
+              </ul>
+            </div>
+            <a href="#upload-section" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-center text-sm transition-all border border-slate-600">無料で試す</a>
+          </div>
+          <!-- スポット課金 -->
+          <div class="glass-card p-8 rounded-2xl border border-emeraldAccent/60 shadow-xl shadow-emeraldAccent/10 relative flex flex-col justify-between bg-gradient-to-b from-deepBlue to-royalBlue">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-emeraldAccent text-white text-xs font-bold rounded-full uppercase tracking-wider">人気</div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">スポット課金</h3>
+              <p class="text-xs text-slate-400 mb-6">必要な時だけ利用したい方に</p>
+              <div class="text-3xl font-extrabold text-white mb-6">¥980 <span class="text-xs font-normal text-slate-400">/ 1回</span></div>
+              <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>プレミアム詳細解説</span></li>
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>修正文面自動生成</span></li>
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>安心の弁護士監修ロジック</span></li>
+              </ul>
+            </div>
+            <a href="#upload-section" class="w-full py-3 rounded-xl bg-emeraldAccent hover:bg-emeraldHover text-white font-semibold text-center text-sm transition-all shadow-lg shadow-emeraldAccent/25">今すぐ利用する</a>
+          </div>
+          <!-- 月額サブスクリプション -->
+          <div class="glass-card p-8 rounded-2xl border border-slate-700 flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">プロサブスク</h3>
+              <p class="text-xs text-slate-400 mb-6">頻繁に契約書を締結する方へ</p>
+              <div class="text-3xl font-extrabold text-white mb-6">¥2,980 <span class="text-xs font-normal text-slate-400">/ 月</span></div>
+              <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>すべての機能が無制限</span></li>
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>優先解析サポート</span></li>
+                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emeraldAccent"></i><span>過去の契約書管理機能</span></li>
+              </ul>
+            </div>
+            <a href="#upload-section" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-center text-sm transition-all border border-slate-600">プラン詳細を見る</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-12">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-emeraldAccent/20 flex items-center justify-center text-emeraldAccent">
+          <i class="fa-solid fa-shield-halved text-sm"></i>
+        </div>
+        <span class="text-base font-bold text-white">コウタクト</span>
+      </div>
+      <div class="flex flex-wrap justify-center space-x-6 text-xs text-slate-400">
+        <a href="#" class="hover:text-emeraldAccent transition-colors">運営情報</a>
+        <a href="#" class="hover:text-emeraldAccent transition-colors">利用規約</a>
+        <a href="#" class="hover:text-emeraldAccent transition-colors">プライバシーポリシー</a>
+      </div>
+      <div class="text-xs text-slate-500">
+        &copy; 2026 コウタクト All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const checkBtn = document.getElementById('check-btn');
+    const resultArea = document.getElementById('result-area');
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+
+    checkBtn.addEventListener('click', () => {
+      checkBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>解析中...</span>';
+      setTimeout(() => {
+        checkBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>契約書をアップロードして今すぐチェック（無料）</span>';
+        resultArea.classList.remove('hidden');
+        resultArea.scrollIntoView({ behavior: 'smooth' });
+      }, 1500);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const fileName = e.target.files[0].name;
+        dropZone.querySelector('p').textContent = `選択中: ${fileName}`;
+      }
+    });
+  </script>
+</body>
+</html>
