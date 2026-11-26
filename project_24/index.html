@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奨学金返済ビジュアライザー「Pearly」</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mint: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            gold: {
+              400: '#facc15',
+              500: '#eab308',
+            },
+            sunshine: {
+              500: '#f97316',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-0 sm:p-4">
+  <div class="w-full max-w-md bg-white sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col h-screen sm:h-[850px] relative border border-slate-100">
+    <!-- Header -->
+    <header class="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
+      <div class="flex items-center space-x-2">
+        <div class="w-9 h-9 rounded-full bg-mint-100 flex items-center justify-center text-mint-600 shadow-inner">
+          <i class="fa-solid fa-gem text-mint-500"></i>
+        </div>
+        <span class="font-bold text-xl text-slate-900 tracking-tight">Pearly</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="text-xs font-semibold px-2.5 py-1 bg-mint-50 text-mint-700 rounded-full border border-mint-200">Stage 2: 34%</span>
+        <button class="relative text-slate-600 hover:text-slate-800 transition">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="absolute top-0 right-0 w-2 h-2 bg-sunshine-500 rounded-full"></span>
+        </button>
+        <button class="bg-gradient-to-r from-gold-400 to-sunshine-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md hover:opacity-95 transition">
+          <i class="fa-solid fa-crown mr-1"></i>PRO
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6 pb-24">
+      <!-- AI Notification Banner -->
+      <div class="bg-gradient-to-r from-mint-500 to-mint-600 text-white p-4 rounded-2xl shadow-lg shadow-mint-500/20 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 opacity-10 text-7xl">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="bg-white/20 p-2 rounded-xl mt-0.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-gold-400"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm">AIからの繰り上げ最適提案</h3>
+            <p class="text-xs text-mint-100 mt-1 leading-relaxed">今月、あと5,000円の節約で、完済期間がさらに1ヶ月短縮できます！</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard / Progress Map -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">返済クエスト進捗</h2>
+          <span class="text-xs font-bold text-mint-600">残り 3年8ヶ月</span>
+        </div>
+        
+        <div class="text-center my-6">
+          <p class="text-sm text-slate-500 font-medium">現在の奨学金残高</p>
+          <h1 id="remaining-balance" class="text-3xl font-extrabold text-slate-900 mt-1 tracking-tight">¥2,450,000</h1>
+          <p class="text-xs text-slate-400 mt-1">総額 ¥3,500,000 中 (利息軽減効果: ¥128,000)</p>
+        </div>
+
+        <!-- RPG Map Progress Bar -->
+        <div class="relative py-4">
+          <div class="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-slate-100">
+            <div id="progress-bar" style="width:34%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-mint-500 to-gold-400 transition-all duration-500"></div>
+          </div>
+          <div class="flex justify-between text-xs text-slate-400 font-medium">
+            <span class="text-mint-600 font-bold"><i class="fa-solid fa-flag-checkered mr-1"></i>Start</span>
+            <span>Stage 3</span>
+            <span>Goal (¥0)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Card UI -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center">
+            <i class="fa-solid fa-sliders text-mint-500 mr-2"></i>繰り上げ返済シミュレーター
+          </h3>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">リアルタイム</span>
+        </div>
+        
+        <div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-slate-600 font-medium">今月の追加返済額</span>
+            <span id="extra-payment-text" class="font-bold text-mint-600">¥15,000</span>
+          </div>
+          <input type="range" id="extra-payment-slider" min="0" max="50000" step="1000" value="15000" 
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-mint-500">
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>¥0</span>
+            <span>¥25,000</span>
+            <span>¥50,000</span>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-4 text-center">
+          <div class="bg-mint-50/50 p-3 rounded-xl border border-mint-100">
+            <p class="text-[11px] text-slate-500 font-medium">短縮される期間</p>
+            <p id="time-saved" class="text-lg font-bold text-mint-700 mt-0.5">約 7ヶ月</p>
+          </div>
+          <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+            <p class="text-[11px] text-slate-500 font-medium">削減できる利息</p>
+            <p id="interest-saved" class="text-lg font-bold text-amber-600 mt-0.5">¥45,200</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Navigation Bar -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 py-3 px-6 flex justify-around items-center z-10 shadow-lg">
+      <button class="flex flex-col items-center text-mint-600 space-y-1 transition">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] font-bold">ホーム</span>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-1 transition">
+        <i class="fa-solid fa-chart-line text-lg"></i>
+        <span class="text-[10px] font-medium">シミュレーション</span>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-1 transition">
+        <i class="fa-solid fa-piggy-bank text-lg"></i>
+        <span class="text-[10px] font-medium">節約チャレンジ</span>
+      </button>
+      <button class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-1 transition">
+        <i class="fa-solid fa-user text-lg"></i>
+        <span class="text-[10px] font-medium">マイページ</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const slider = document.getElementById('extra-payment-slider');
+    const extraPaymentText = document.getElementById('extra-payment-text');
+    const timeSaved = document.getElementById('time-saved');
+    const interestSaved = document.getElementById('interest-saved');
+    const progressBar = document.getElementById('progress-bar');
+
+    slider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      extraPaymentText.textContent = '¥' + val.toLocaleString();
+      
+      const months = Math.floor(val / 2000) + 2;
+      const interest = val * 3.1;
+      const progress = Math.min(34 + Math.floor(val / 2000), 100);
+
+      timeSaved.textContent = `約 ${months}ヶ月`;
+      interestSaved.textContent = '¥' + Math.floor(interest).toLocaleString();
+      progressBar.style.width = progress + '%';
+    });
+  </script>
+</body>
+</html>
