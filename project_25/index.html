@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デジタルエンディングノート「おもいで継承Web」</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              900: '#0B132B',
+              800: '#1C2541',
+              700: '#3A506B',
+            },
+            gold: {
+              DEFAULT: '#D4AF37',
+              light: '#E6CA65',
+              dark: '#AA8C2C',
+            },
+            purewhite: '#FFFFFF',
+            offwhite: '#F8FAFC'
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="[link removed]">
+  <!-- Google Fonts: Noto Sans JP -->
+  <link href="[link removed]" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #FFFFFF;
+      color: #1C2541;
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #D4AF37 0%, #F3E5AB 50%, #AA8C2C 100%);
+    }
+    .navy-gradient {
+      background: linear-gradient(135deg, #0B132B 0%, #1C2541 100%);
+    }
+  </style>
+</head>
+<body class="bg-purewhite text-navy-800 antialiased selection:bg-gold selection:text-navy-900">
+
+  <!-- ヘッダー -->
+  <header class="sticky top-0 z-50 bg-purewhite/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- ロゴ -->
+      <div class="flex items-center space-x-3 cursor-pointer">
+        <div class="w-10 h-10 rounded-xl navy-gradient flex items-center justify-center text-gold shadow-md">
+          <i class="fa-solid fa-shield-heart text-lg"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-navy-900">おもいで継承Web</span>
+      </div>
+      <!-- ナビゲーションメニュー -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-navy-700">
+        <a href="#features" class="hover:text-gold-dark transition-colors">特徴</a>
+        <a href="#security" class="hover:text-gold-dark transition-colors">安心の仕組み</a>
+        <a href="#pricing" class="hover:text-gold-dark transition-colors">料金プラン</a>
+        <a href="#faq" class="hover:text-gold-dark transition-colors">よくある質問</a>
+      </nav>
+      <!-- 右側アクション -->
+      <div class="hidden sm:flex items-center space-x-4">
+        <a href="#login" class="text-sm font-medium text-navy-800 hover:text-gold-dark transition-colors">ログイン</a>
+        <a href="#register" class="px-5 py-2.5 rounded-full navy-gradient text-white text-sm font-medium shadow-lg hover:shadow-xl hover:opacity-95 transition-all transform hover:-translate-y-0.5">
+          無料で始める
+        </a>
+      </div>
+      <!-- モバイルメニューボタン -->
+      <div class="md:hidden flex items-center">
+        <button id="menu-btn" class="text-navy-900 focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- モバイルメニュー -->
+    <div id="mobile-menu" class="hidden md:hidden bg-purewhite border-b border-gray-100 px-4 pt-2 pb-4 space-y-2">
+      <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-navy-700 hover:bg-offwhite">特徴</a>
+      <a href="#security" class="block px-3 py-2 rounded-md text-base font-medium text-navy-700 hover:bg-offwhite">安心の仕組み</a>
+      <a href="#pricing" class="block px-3 py-2 rounded-md text-base font-medium text-navy-700 hover:bg-offwhite">料金プラン</a>
+      <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-navy-700 hover:bg-offwhite">よくある質問</a>
+      <div class="pt-4 flex flex-col space-y-2">
+        <a href="#login" class="w-full text-center py-2 text-sm font-medium text-navy-800 border border-gray-200 rounded-md">ログイン</a>
+        <a href="#register" class="w-full text-center py-2.5 rounded-md navy-gradient text-white text-sm font-medium shadow-md">無料で始める</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- メインビジュアル（ファーストビュー） -->
+    <section class="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-32 bg-gradient-to-b from-slate-50 to-purewhite">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-12 items-center">
+          <div class="lg:col-span-7 text-center lg:text-left space-y-8">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-navy-900/5 text-navy-900 text-xs font-semibold tracking-wide border border-navy-900/10">
+              <span class="w-2 h-2 rounded-full bg-gold"></span>
+              <span>次世代デジタル終活プラットフォーム</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-navy-900 leading-tight">
+              大切なデジタル資産を、<br class="hidden sm:inline">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-navy-900 to-navy-700">未来の家族へ確実に届ける。</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-navy-700 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+              厳格な認証とゼロ知識暗号化による最高水準のセキュリティで、遺された家族の負担とトラブルを防ぎます。
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+              <a href="#register" class="w-full sm:w-auto px-8 py-4 rounded-xl navy-gradient text-white text-base font-medium shadow-xl hover:shadow-2xl hover:opacity-95 transition-all transform hover:-translate-y-0.5 text-center">
+                無料でアカウントを準備する
+              </a>
+              <a href="#features" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-purewhite border border-gray-200 text-navy-800 text-base font-medium hover:bg-offwhite transition-all text-center shadow-sm">
+                詳しく見る <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+              </a>
+            </div>
+            <!-- 信頼性バッジ -->
+            <div class="pt-4 flex items-center justify-center lg:justify-start space-x-6 text-sm text-gray-500">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check text-gold"></i>
+                <span>基本機能ずっと無料</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check text-gold"></i>
+                <span>クレジットカード不要</span>
+              </div>
+            </div>
+          </div>
+          <!-- ビジュアルプレビュー -->
+          <div class="mt-12 lg:mt-0 lg:col-span-5">
+            <div class="relative mx-auto max-w-md lg:max-w-none">
+              <div class="absolute -inset-1 rounded-2xl gold-gradient opacity-30 blur-xl"></div>
+              <div class="relative rounded-2xl bg-navy-900 p-6 text-white shadow-2xl border border-navy-700">
+                <div class="flex items-center justify-between pb-4 border-b border-navy-700">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <span class="text-xs font-mono text-gray-400">Secure Vault v2.4</span>
+                </div>
+                <div class="py-6 space-y-4">
+                  <div class="bg-navy-800 p-4 rounded-xl border border-navy-700 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fa-solid fa-key"></i>
+                      </div>
+                      <div>
+                        <p class="text-sm font-semibold">ゼロ知識暗号化</p>
+                        <p class="text-xs text-gray-400">エンドツーエンド保護</p>
+                      </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400">保護中</span>
+                  </div>
+                  <div class="bg-navy-800 p-4 rounded-xl border border-navy-700 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fa-solid fa-user-shield"></i>
+                      </div>
+                      <div>
+                        <p class="text-sm font-semibold">厳格な代理人認証</p>
+                        <p class="text-xs text-gray-400">本人確認プロセス完備</p>
+                      </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400">準備完了</span>
+                  </div>
+                  <div class="bg-navy-800 p-4 rounded-xl border border-navy-700 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                      </div>
+                      <div>
+                        <p class="text-sm font-semibold">自動実行システム</p>
+                        <p class="text-xs text-gray-400">放置リスクのゼロ化</p>
+                      </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400">稼働中</span>
+                  </div>
+                </div>
+                <div class="pt-2 text-center">
+                  <p class="text-xs text-gray-400"><i class="fa-solid fa-lock text-gold mr-1"></i> 最高水準の暗号化であなたの大切な情報を守ります</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- コアバリューセクション（3カラムレイアウト） -->
+    <section id="features" class="py-24 bg-purewhite">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-gold-dark">Core Values</h2>
+          <p class="text-3xl sm:text-4xl font-bold text-navy-900 tracking-tight">
+            選ばれる3つの最高水準の理由
+          </p>
+          <p class="text-navy-700 text-lg font-light">
+            万が一の際にも、確実かつ安全にデジタル資産を引き継ぐための先進的な仕組みを提供します。
+          </p>
+        </div>
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- 1 -->
+          <div class="bg-offwhite rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            <div class="w-14 h-14 rounded-2xl navy-gradient flex items-center justify-center text-gold text-2xl mb-6 shadow-md group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            <h3 class="text-xl font-bold text-navy-900 mb-3">厳格な本人・代理人認証プロセス</h3>
+            <p class="text-navy-700 text-sm leading-relaxed">
+              高度な公的証明書や多段階認証を活用し、不正アクセスを完全にブロック。指定された代理人への安全な権利移転を実現します。
+            </p>
+          </div>
+          <!-- 2 -->
+          <div class="bg-offwhite rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            <div class="w-14 h-14 rounded-2xl navy-gradient flex items-center justify-center text-gold text-2xl mb-6 shadow-md group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-xl font-bold text-navy-900 mb-3">ゼロ知識暗号化</h3>
+            <p class="text-navy-700 text-sm leading-relaxed">
+              運営者であっても中身を閲覧できないゼロ知識暗号化を採用。あなたにしか開けないプライベートな空間でデータを保護します。
+            </p>
+          </div>
+          <!-- 3 -->
+          <div id="security" class="bg-offwhite rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            <div class="w-14 h-14 rounded-2xl navy-gradient flex items-center justify-center text-gold text-2xl mb-6 shadow-md group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h3 class="text-xl font-bold text-navy-900 mb-3">アカウント放置を防ぐ自動実行機能</h3>
+            <p class="text-navy-700 text-sm leading-relaxed">
+              定期的な生存確認やトリガー検知により、万が一の際にも手続きが滞ることなく自動的に引き継ぎプロセスが稼働します。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ユーザーベネフィットセクション（ストーリー形式） -->
+    <section class="py-24 bg-gradient-to-b from-purewhite to-offwhite border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+          <div class="lg:col-span-6 space-y-6">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gold/10 text-gold-dark text-xs font-semibold tracking-wide border border-gold/20">
+              <span class="w-2 h-2 rounded-full bg-gold"></span>
+              <span>User Benefit</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-navy-900 tracking-tight leading-tight">
+              解約トラブルや精神的負担に<br>悩まされずに済む圧倒的な安心感。
+            </h2>
+            <p class="text-navy-700 leading-relaxed font-light text-base sm:text-lg">
+              サブスクリプションの解約忘れや、SNSアカウントの放置、大切な写真・メッセージの行方。遺された家族は、複雑なデジタル資産の整理に大きな負担を感じています。
+            </p>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start space-x-4">
+                <div class="w-6 h-6 rounded-full bg-gold/20 text-gold-dark flex items-center justify-center flex-shrink-0 mt-1">
+                  <i class="fa-solid fa-check text-xs"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-navy-900 text-base">放置アカウントのトラブルを未然に防止</h4>
+                  <p class="text-navy-700 text-sm">契約しているサービスの一覧化と引き継ぎにより、死後の不意な課金や乗っ取りを防ぎます。</p>
+                </div>
+              </div>
+              <div class="flex items-start space-x-4">
+                <div class="w-6 h-6 rounded-full bg-gold/20 text-gold-dark flex items-center justify-center flex-shrink-0 mt-1">
+                  <i class="fa-solid fa-check text-xs"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-navy-900 text-base">遺された家族の精神的負担を大幅に軽減</h4>
+                  <p class="text-navy-700 text-sm">「どうすればいいかわからない」という不安を取り除き、温かい思い出だけを確実に手渡します。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-12 lg:mt-0 lg:col-span-6">
+            <div class="bg-navy-900 rounded-3xl p-8 lg:p-10 text-white shadow-2xl relative overflow-hidden">
+              <div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-gold/10 blur-3xl pointer-events-none"></div>
+              <div class="space-y-6 relative z-10">
+                <div class="flex items-center space-x-3 pb-6 border-b border-navy-700">
+                  <div class="w-12 h-12 rounded-2xl gold-gradient flex items-center justify-center text-navy-900 text-xl shadow-md">
+                    <i class="fa-solid fa-quote-left"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg">利用者様からの声</h3>
+                    <p class="text-xs text-gray-400">事前準備をして本当によかったこと</p>
+                  </div>
+                </div>
+                <p class="text-gray-300 italic font-light text-base leading-relaxed">
+                  「自分が万が一のとき、スマホの中の写真やサブスクの契約で家族が困惑する姿を想像すると心配でした。『おもいで継承Web』のおかげで、必要な情報だけを整理して、安心して家族に託す準備ができました。」
+                </p>
+                <div class="flex items-center justify-between pt-4 border-t border-navy-700 text-sm">
+                  <span class="font-medium text-gold">40代会社員・利用者の声</span>
+                  <div class="flex text-gold text-xs space-x-1">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 料金プランセクション -->
+    <section id="pricing" class="py-24 bg-purewhite">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-gold-dark">Pricing Plans</h2>
+          <p class="text-3xl sm:text-4xl font-bold text-navy-900 tracking-tight">
+            シンプルで透明性の高い料金体系
+          </p>
+          <p class="text-navy-700 text-lg font-light">
+            まずは基本機能無料でスタート。必要に応じて専門家連携や高度な自動実行機能を追加できます。
+          </p>
+        </div>
+        <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <!-- エントリープラン -->
+          <div class="bg-offwhite rounded-3xl p-8 sm:p-10 border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-xl transition-all">
+            <div>
+              <div class="flex justify-between items-center mb-6">
+                <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-navy-800">エントリープラン</span>
+                <span class="text-xs text-gray-500">ずっと無料</span>
+              </div>
+              <h3 class="text-2xl font-bold text-navy-900 mb-2">基本機能フリー</h3>
+              <p class="text-navy-700 text-sm mb-6">デジタル終活の第一歩を、費用負担なく手軽に始めたい方に最適です。</p>
+              <div class="flex items-baseline mb-8">
+                <span class="text-5xl font-extrabold text-navy-900">¥0</span>
+                <span class="text-gray-500 ml-2 text-sm">/ ずっと無料</span>
+              </div>
+              <ul class="space-y-4 text-sm text-navy-800 mb-8">
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>基本情報・メッセージの登録</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>標準ゼロ知識暗号化ストレージ</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>信頼できる代理人1名の指定</span>
+                </li>
+                <li class="flex items-center space-x-3 text-gray-400">
+                  <i class="fa-solid fa-xmark"></i>
+                  <span>専門家による法的サポート連携</span>
+                </li>
+              </ul>
+            </div>
+            <a href="#register" class="w-full py-4 rounded-xl bg-purewhite border-2 border-navy-900 text-navy-900 text-center font-medium hover:bg-navy-900 hover:text-white transition-all">
+              無料で始める
+            </a>
+          </div>
+          <!-- サブスクリプションプラン -->
+          <div class="bg-navy-900 text-white rounded-3xl p-8 sm:p-10 border border-navy-700 shadow-2xl flex flex-col justify-between relative overflow-hidden transform lg:-translate-y-2">
+            <div class="absolute top-0 right-0 bg-gold text-navy-900 text-xs font-bold px-4 py-1.5 rounded-bl-xl">
+              RECOMMENDED
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-6">
+                <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold">プレミアムプラン</span>
+                <span class="text-xs text-gray-400">月額サブスクリプション</span>
+              </div>
+              <h3 class="text-2xl font-bold text-white mb-2">プロフェッショナル</h3>
+              <p class="text-gray-300 text-sm mb-6">専門家連携や高度な自動実行機能ですべての不安を解消します。</p>
+              <div class="flex items-baseline mb-8">
+                <span class="text-5xl font-extrabold text-white">¥980</span>
+                <span class="text-gray-400 ml-2 text-sm">/ 月（税込）</span>
+              </div>
+              <ul class="space-y-4 text-sm text-gray-300 mb-8">
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>無制限のデータ保存容量</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>高度な自動実行・トリガー設定</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>複数名の代理人・相続人への細かな権限設定</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                  <i class="fa-solid fa-check text-gold"></i>
+                  <span>専門家（弁護士・司法書士）連携サポート</span>
+                </li>
+              </ul>
+            </div>
+            <a href="#register" class="w-full py-4 rounded-xl gold-gradient text-navy-900 text-center font-bold hover:opacity-95 shadow-lg transition-all">
+              プレミアムで安心を手に入れる
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- よくある質問セクション -->
+    <section id="faq" class="py-24 bg-offwhite border-t border-gray-100">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center space-y-4 mb-16">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-gold-dark">FAQ</h2>
+          <p class="text-3xl sm:text-4xl font-bold text-navy-900 tracking-tight">
+            よくあるご質問
+          </p>
+        </div>
+        <div class="space-y-4">
+          <!-- FAQ 1 -->
+          <div class="bg-purewhite rounded-2xl p-6 border border-gray-200 shadow-sm">
+            <button class="faq-toggle w-full flex justify-between items-center text-left font-bold text-navy-900 text-lg focus:outline-none">
+              <span>運営者や他人に中身を見られることはありませんか？</span>
+              <i class="fa-solid fa-chevron-down text-sm text-gold transition-transform duration-300"></i>
+            </button>
+            <div class="faq-content hidden mt-4 text-navy-700 text-sm leading-relaxed">
+              ご安心ください。当サービスではゼロ知識暗号化を採用しているため、お客様が入力・アップロードしたデータは暗号化され、運営者であっても閲覧することは一切できません。
+            </div>
+          </div>
+          <!-- FAQ 2 -->
+          <div class="bg-purewhite rounded-2xl p-6 border border-gray-200 shadow-sm">
+            <button class="faq-toggle w-full flex justify-between items-center text-left font-bold text-navy-900 text-lg focus:outline-none">
+              <span>万が一の際、どのように代理人へ引き継がれますか？</span>
+              <i class="fa-solid fa-chevron-down text-sm text-gold transition-transform duration-300"></i>
+            </button>
+            <div class="faq-content hidden mt-4 text-navy-700 text-sm leading-relaxed">
+              あらかじめ指定された生存確認の仕組みや、厳格な本人・代理人認証プロセスを経て、万が一の際に自動的または安全に代理人へアクセス権が移転される仕組みになっています。
+            </div>
+          </div>
+          <!-- FAQ 3 -->
+          <div class="bg-purewhite rounded-2xl p-6 border border-gray-200 shadow-sm">
+            <button class="faq-toggle w-full flex justify-between items-center text-left font-bold text-navy-900 text-lg focus:outline-none">
+              <span>無料プランから有料プランへの切り替えは簡単ですか？</span>
+              <i class="fa-solid fa-chevron-down text-sm text-gold transition-transform duration-300"></i>
+            </button>
+            <div class="faq-content hidden mt-4 text-navy-700 text-sm leading-relaxed">
+              はい、マイページからいつでもワンクリックでプレミアムプランへのアップグレードが可能です。データの移行や再設定の手間は一切かかりません。
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-navy-900 text-gray-400 py-16 border-t border-navy-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div class="space-y-4 md:col-span-1">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center text-navy-900">
+              <i class="fa-solid fa-shield-heart text-sm"></i>
+            </div>
+            <span class="text-lg font-bold text-white">おもいで継承Web</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            万が一の際にデジタル資産を安全に遺族へ引き渡すBtoC向けデジタル終活プラットフォーム。
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-semibold mb-4">メニュー</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#features" class="hover:text-gold transition-colors">特徴</a></li>
+            <li><a href="#security" class="hover:text-gold transition-colors">安心の仕組み</a></li>
+            <li><a href="#pricing" class="hover:text-gold transition-colors">料金プラン</a></li>
+            <li><a href="#faq" class="hover:text-gold transition-colors">よくある質問</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-semibold mb-4">ポリシー & 規約</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-gold transition-colors">利用規約</a></li>
+            <li><a href="#" class="hover:text-gold transition-colors">プライバシーポリシー</a></li>
+            <li><a href="#" class="hover:text-gold transition-colors">セキュリティポリシー</a></li>
+            <li><a href="#" class="hover:text-gold transition-colors">運営会社情報</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white text-sm font-semibold mb-4">LEGRA Inc.</h4>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">
+            先進のテクノロジーと最高水準のセキュリティで、人々の未来と大切な思い出を繋ぎます。
+          </p>
+          <div class="flex space-x-4 text-lg">
+            <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-navy-800 text-center text-xs text-gray-500">
+        <p>&copy; 2026 おもいで継承Web / LEGRA Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // モバイルメニューのトグル
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // FAQの開閉アコーディオン
+    const faqToggles = document.querySelectorAll('.faq-toggle');
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const content = toggle.nextElementSibling;
+        const icon = toggle.querySelector('i');
+        
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+      });
+    });
+  </script>
+</body>
+</html>
