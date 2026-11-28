@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中世ヨーロッパの世界</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="[link removed]">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            antiqueGold: '#D4AF37',
+            deepBurgundy: '#58111A',
+            charcoalBlack: '#1E1E1E',
+            parchmentWhite: '#F4F1EA',
+          },
+          fontFamily: {
+            serif: ['Cinzel', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="[link removed]" rel="stylesheet">
+  <style>
+    body {
+      background-color: #1E1E1E;
+      color: #F4F1EA;
+      font-family: 'Inter', sans-serif;
+    }
+    .font-serif {
+      font-family: 'Cinzel', serif;
+    }
+    .hero-bg {
+      background: linear-gradient(rgba(30,30,30,0.7), rgba(88,17,26,0.8)), url('[link removed]') no-repeat center center/cover;
+    }
+  </style>
+</head>
+<body class="bg-charcoalBlack text-parchmentWhite antialiased selection:bg-antiqueGold selection:text-charcoalBlack">
+
+  <!-- ヘッダーエリア -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-charcoalBlack/90 backdrop-blur-md border-b border-antiqueGold/20">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-10 h-10 rounded-full bg-deepBurgundy border border-antiqueGold flex items-center justify-center text-antiqueGold shadow-lg">
+          <i class="fa-solid fa-chess-rook text-lg"></i>
+        </div>
+        <span class="font-serif text-xl font-bold tracking-wider text-parchmentWhite">中世ヨーロッパの世界</span>
+      </div>
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
+        <a href="#videos" class="hover:text-antiqueGold transition-colors duration-200">動画一覧</a>
+        <a href="#history" class="hover:text-antiqueGold transition-colors duration-200">歴史背景</a>
+        <a href="#contact" class="hover:text-antiqueGold transition-colors duration-200">お問い合わせ</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="#videos" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-gradient-to-r from-antiqueGold to-yellow-600 text-charcoalBlack font-semibold text-sm shadow-md hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-play mr-2"></i>チャンネルを観る
+        </a>
+        <button id="mobile-menu-btn" class="md:hidden text-parchmentWhite focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- モバイルメニュー -->
+    <div id="mobile-menu" class="hidden md:hidden bg-charcoalBlack border-b border-antiqueGold/20 px-6 py-4 space-y-3">
+      <a href="#videos" class="block hover:text-antiqueGold py-1">動画一覧</a>
+      <a href="#history" class="block hover:text-antiqueGold py-1">歴史背景</a>
+      <a href="#contact" class="block hover:text-antiqueGold py-1">お問い合わせ</a>
+    </div>
+  </header>
+
+  <!-- メインビジュアル / ヒーローセクション -->
+  <section class="relative min-h-screen hero-bg flex items-center justify-center text-center px-6 pt-20">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative z-10 max-w-4xl mx-auto space-y-8">
+      <div class="inline-block px-4 py-1.5 rounded-full border border-antiqueGold/40 bg-charcoalBlack/50 backdrop-blur-sm text-antiqueGold text-xs uppercase tracking-widest font-semibold">
+        YouTube Educational Series
+      </div>
+      <div class="space-y-4">
+        <div class="w-24 h-0.5 bg-antiqueGold mx-auto"></div>
+        <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide text-parchmentWhite drop-shadow-md">
+          中世ヨーロッパの世界
+        </h1>
+        <div class="w-24 h-0.5 bg-antiqueGold mx-auto"></div>
+      </div>
+      <p class="text-base sm:text-lg md:text-xl text-parchmentWhite/90 max-w-2xl mx-auto font-light leading-relaxed">
+        中世ヨーロッパの歴史と文化を映像で体感する。当時の生活様式や歴史的背景を分かりやすく解説する映像構成で、手軽かつ視覚的に学べます。
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <a href="#videos" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-antiqueGold to-yellow-600 text-charcoalBlack font-bold text-base shadow-xl hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+          <i class="fa-solid fa-play mr-2"></i>動画を再生する
+        </a>
+        <a href="#history" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-deepBurgundy/80 hover:bg-deepBurgundy border border-antiqueGold/40 text-parchmentWhite font-semibold text-base shadow-xl transition-all duration-200 flex items-center justify-center">
+          <i class="fa-solid fa-book-open mr-2"></i>詳細を学ぶ
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 動画一覧セクション -->
+  <section id="videos" class="py-24 px-6 max-w-7xl mx-auto">
+    <div class="text-center space-y-4 mb-16">
+      <span class="text-antiqueGold text-sm tracking-widest uppercase font-semibold">Featured Content</span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-parchmentWhite">動画コンテンツ一覧</h2>
+      <div class="w-16 h-0.5 bg-antiqueGold mx-auto"></div>
+      <p class="text-parchmentWhite/70 max-w-xl mx-auto text-sm sm:text-base">
+        城塞都市の生活から王侯貴族のドラマまで、中世の息吹をそのままにお届けします。
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- カード1 -->
+      <div class="bg-charcoalBlack border border-antiqueGold/20 rounded-2xl overflow-hidden shadow-2xl hover:border-antiqueGold/60 transition-all duration-300 group flex flex-col">
+        <div class="relative overflow-hidden aspect-video">
+          <img src="[link removed]" alt="中世の城塞と生活" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-charcoalBlack/20"></div>
+          <div class="absolute bottom-3 right-3 bg-charcoalBlack/80 text-antiqueGold text-xs px-2.5 py-1 rounded font-mono border border-antiqueGold/30">
+            18:45
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs text-antiqueGold font-semibold uppercase tracking-wider">第1回講義</span>
+            <h3 class="font-serif text-xl font-bold text-parchmentWhite group-hover:text-antiqueGold transition-colors">中世ヨーロッパの城塞都市と日常生活</h3>
+            <p class="text-sm text-parchmentWhite/70 line-clamp-2">
+              城壁に守られた閉ざされた社会の中で、人々はどのように働き、暮らしていたのか。当時のリアルな日常に迫ります。
+            </p>
+          </div>
+          <button onclick="openVideoModal('中世ヨーロッパの城塞都市と日常生活')" class="w-full py-2.5 rounded-lg bg-deepBurgundy hover:bg-deepBurgundy/90 border border-antiqueGold/30 text-parchmentWhite font-medium text-sm transition-colors flex items-center justify-center">
+            <i class="fa-solid fa-circle-play mr-2 text-antiqueGold"></i>視聴する
+          </button>
+        </div>
+      </div>
+
+      <!-- カード2 -->
+      <div class="bg-charcoalBlack border border-antiqueGold/20 rounded-2xl overflow-hidden shadow-2xl hover:border-antiqueGold/60 transition-all duration-300 group flex flex-col">
+        <div class="relative overflow-hidden aspect-video">
+          <img src="[link removed]" alt="騎士道と甲冑" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-charcoalBlack/20"></div>
+          <div class="absolute bottom-3 right-3 bg-charcoalBlack/80 text-antiqueGold text-xs px-2.5 py-1 rounded font-mono border border-antiqueGold/30">
+            24:10
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs text-antiqueGold font-semibold uppercase tracking-wider">第2回講義</span>
+            <h3 class="font-serif text-xl font-bold text-parchmentWhite group-hover:text-antiqueGold transition-colors">騎士道と真実のアーマー文化</h3>
+            <p class="text-sm text-parchmentWhite/70 line-clamp-2">
+              鋼鉄の甲冑に身を包んだ騎士たちの誇り高き精神世界と、実戦における装備の変遷を徹底解説。
+            </p>
+          </div>
+          <button onclick="openVideoModal('騎士道と真実のアーマー文化')" class="w-full py-2.5 rounded-lg bg-deepBurgundy hover:bg-deepBurgundy/90 border border-antiqueGold/30 text-parchmentWhite font-medium text-sm transition-colors flex items-center justify-center">
+            <i class="fa-solid fa-circle-play mr-2 text-antiqueGold"></i>視聴する
+          </button>
+        </div>
+      </div>
+
+      <!-- カード3 -->
+      <div class="bg-charcoalBlack border border-antiqueGold/20 rounded-2xl overflow-hidden shadow-2xl hover:border-antiqueGold/60 transition-all duration-300 group flex flex-col">
+        <div class="relative overflow-hidden aspect-video">
+          <img src="[link removed]" alt="中世の芸術と音楽" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-charcoalBlack/20"></div>
+          <div class="absolute bottom-3 right-3 bg-charcoalBlack/80 text-antiqueGold text-xs px-2.5 py-1 rounded font-mono border border-antiqueGold/30">
+            15:30
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="text-xs text-antiqueGold font-semibold uppercase tracking-wider">第3回講義</span>
+            <h3 class="font-serif text-xl font-bold text-parchmentWhite group-hover:text-antiqueGold transition-colors">教会建築と神秘のグレゴリオ聖歌</h3>
+            <p class="text-sm text-parchmentWhite/70 line-clamp-2">
+              天へとそびえ立つ大聖堂の建築美と、心を揺さぶる聖歌の響きに隠された宗教的背景を紐解く。
+            </p>
+          </div>
+          <button onclick="openVideoModal('教会建築と神秘のグレゴリオ聖歌')" class="w-full py-2.5 rounded-lg bg-deepBurgundy hover:bg-deepBurgundy/90 border border-antiqueGold/30 text-parchmentWhite font-medium text-sm transition-colors flex items-center justify-center">
+            <i class="fa-solid fa-circle-play mr-2 text-antiqueGold"></i>視聴する
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 歴史背景セクション -->
+  <section id="history" class="py-24 bg-charcoalBlack/60 border-t border-b border-antiqueGold/10">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6">
+        <span class="text-antiqueGold text-sm tracking-widest uppercase font-semibold">Historical Background</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-parchmentWhite leading-tight">
+          重厚な歴史のロマンを、現代の美学と共に。
+        </h2>
+        <p class="text-parchmentWhite/80 leading-relaxed font-light">
+          中世ヨーロッパは約1000年にわたる壮大な歴史の舞台です。暗黒時代と称された側面もありながら、そこには独自の哲学、芸術、そして人々の強い営みがありました。当チャンネルでは、アカデミックな正確性を保ちつつ、現代の洗練されたビジュアルでその魅力を余すところなくお伝えします。
+        </p>
+        <div class="grid grid-cols-2 gap-6 pt-4">
+          <div class="border-l-2 border-antiqueGold pl-4">
+            <h4 class="font-serif text-2xl font-bold text-antiqueGold">1000+</h4>
+            <p class="text-sm text-parchmentWhite/70 mt-1">年の歴史的変遷</p>
+          </div>
+          <div class="border-l-2 border-antiqueGold pl-4">
+            <h4 class="font-serif text-2xl font-bold text-antiqueGold">Visual</h4>
+            <p class="text-sm text-parchmentWhite/70 mt-1">圧倒的没入感の映像美</p>
+          </div>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="absolute -inset-2 bg-gradient-to-r from-antiqueGold to-deepBurgundy rounded-3xl blur opacity-30"></div>
+        <div class="relative bg-charcoalBlack border border-antiqueGold/30 rounded-2xl p-8 space-y-6 shadow-2xl">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full bg-deepBurgundy border border-antiqueGold flex items-center justify-center text-antiqueGold text-xl">
+              <i class="fa-solid fa-feather"></i>
+            </div>
+            <div>
+              <h3 class="font-serif text-lg font-bold text-parchmentWhite">コンセプト設計</h3>
+              <p class="text-xs text-antiqueGold">Academic & Entertainment</p>
+            </div>
+          </div>
+          <p class="text-sm text-parchmentWhite/70 leading-relaxed">
+            当時の生活様式や歴史的背景を初心者にも分かりやすく解説。難しい専門用語を排し、ドラマチックなストーリーテリングで視聴者を中世の世界へと誘います。
+          </p>
+          <div class="pt-2">
+            <a href="#videos" class="inline-flex items-center text-antiqueGold text-sm font-semibold hover:underline">
+              すべての動画をチェックする <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- お問い合わせセクション -->
+  <section id="contact" class="py-24 max-w-4xl mx-auto px-6">
+    <div class="bg-charcoalBlack border border-antiqueGold/30 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-deepBurgundy/20 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="text-center space-y-4 mb-10 relative z-10">
+        <span class="text-antiqueGold text-sm tracking-widest uppercase font-semibold">Get in Touch</span>
+        <h2 class="font-serif text-3xl font-bold text-parchmentWhite">お問い合わせ・ご感想</h2>
+        <div class="w-16 h-0.5 bg-antiqueGold mx-auto"></div>
+        <p class="text-parchmentWhite/70 text-sm">
+          動画へのリクエストやコラボレーションのご相談など、お気軽にお寄せください。
+        </p>
+      </div>
+
+      <form onsubmit="handleSubmit(event)" class="space-y-6 relative z-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-xs uppercase tracking-wider text-antiqueGold font-semibold">お名前</label>
+            <input type="text" required class="w-full bg-charcoalBlack border border-antiqueGold/30 rounded-xl px-4 py-3 text-parchmentWhite placeholder-parchmentWhite/30 focus:outline-none focus:border-antiqueGold text-sm" placeholder="中世 太郎">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs uppercase tracking-wider text-antiqueGold font-semibold">メールアドレス</label>
+            <input type="email" required class="w-full bg-charcoalBlack border border-antiqueGold/30 rounded-xl px-4 py-3 text-parchmentWhite placeholder-parchmentWhite/30 focus:outline-none focus:border-antiqueGold text-sm" placeholder="taro@example.com">
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="block text-xs uppercase tracking-wider text-antiqueGold font-semibold">メッセージ内容</label>
+          <textarea rows="4" required class="w-full bg-charcoalBlack border border-antiqueGold/30 rounded-xl px-4 py-3 text-parchmentWhite placeholder-parchmentWhite/30 focus:outline-none focus:border-antiqueGold text-sm" placeholder="次に取り上げてほしいテーマやご意見をご記入ください。"></textarea>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-antiqueGold to-yellow-600 text-charcoalBlack font-bold text-sm shadow-xl hover:opacity-90 transition-opacity">
+            送信する
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="bg-charcoalBlack border-t border-antiqueGold/20 py-12 text-center text-xs text-parchmentWhite/50 space-y-4">
+    <div class="flex items-center justify-center space-x-2 text-parchmentWhite font-serif text-lg">
+      <div class="w-8 h-8 rounded-full bg-deepBurgundy border border-antiqueGold flex items-center justify-center text-antiqueGold text-sm">
+        <i class="fa-solid fa-chess-rook"></i>
+      </div>
+      <span>中世ヨーロッパの世界</span>
+    </div>
+    <p>Monetization via YouTube Ads &copy; 2026 LEGRA All Rights Reserved.</p>
+  </footer>
+
+  <!-- 動画再生モーダル -->
+  <div id="video-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-charcoalBlack border border-antiqueGold/40 rounded-2xl max-w-2xl w-full p-6 relative shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-antiqueGold/20 pb-4">
+        <h3 id="modal-title" class="font-serif text-xl font-bold text-antiqueGold">動画再生</h3>
+        <button onclick="closeVideoModal()" class="text-parchmentWhite/70 hover:text-parchmentWhite text-xl focus:outline-none">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="aspect-video bg-black rounded-lg flex items-center justify-center relative overflow-hidden border border-antiqueGold/20">
+        <!-- プレースホルダープレイヤー -->
+        <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('[link removed]')"></div>
+        <div class="relative z-10 text-center space-y-3">
+          <div class="w-16 h-16 rounded-full bg-antiqueGold text-charcoalBlack flex items-center justify-center mx-auto text-2xl shadow-lg animate-pulse">
+            <i class="fa-solid fa-play ml-1"></i>
+          </div>
+          <p class="text-sm font-medium text-parchmentWhite">YouTube動画を再生中（デモプレビュー）</p>
+        </div>
+      </div>
+      <p class="text-xs text-parchmentWhite/60 text-center">
+        ※実際のYouTubeチャンネル公開後にプレイヤーが埋め込まれます。
+      </p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // モバイルメニューのトグル
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // モバイルメニュー内のリンクをクリックしたら閉じる
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // 動画再生モーダル
+    function openVideoModal(title) {
+      const modal = document.getElementById('video-modal');
+      const modalTitle = document.getElementById('modal-title');
+      modalTitle.textContent = title;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // モーダルの外側をクリックしたら閉じる
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('video-modal');
+      if (e.target === modal) {
+        closeVideoModal();
+      }
+    });
+
+    // お問い合わせフォーム送信ハンドラ
+    function handleSubmit(e) {
+      e.preventDefault();
+      alert('メッセージが送信されました。ありがとうございます！');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>
